@@ -11,6 +11,14 @@
     var username = window.jsBridge.getUserName();
     var h2 = document.getElementById("h2");
     h2.innerHTML = username;
+    function a(data){
+       h2.innerHTML = data;
+    }
+    // 报错：Uncaught TypeError: undefined is not a function
+    window.jsBridge.asyncGetUserName(function(data){
+        h2.innerHTML = data;
+    });
+    window.jsBridge.showImage("http://****.png");
 </script>
 </body>
 </html>
