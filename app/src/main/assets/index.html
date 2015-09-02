@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<h2 id="h2">hello world</h2>
+<input type="button" value="弹出框" onclick="window.jsBridge.alert(12345)"/>
+<script type="text/javascript">
+    var username = window.jsBridge.getUserName();
+    var h2 = document.getElementById("h2");
+    h2.innerHTML = username;
+</script>
+</body>
+</html>
