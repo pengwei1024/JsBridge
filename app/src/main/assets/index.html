@@ -15,10 +15,14 @@
        h2.innerHTML = data;
     }
     // 报错：Uncaught TypeError: undefined is not a function
+    /*
     window.jsBridge.asyncGetUserName(function(data){
         h2.innerHTML = data;
+    }); */
+    //window.jsBridge.showImage("http://****.png");
+    prompt("abc",function(token){
+        alert(token);
     });
-    window.jsBridge.showImage("http://****.png");
 </script>
 </body>
 </html>
