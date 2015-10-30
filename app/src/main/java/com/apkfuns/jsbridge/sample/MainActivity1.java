@@ -13,9 +13,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import java.util.Objects;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity1 extends ActionBarActivity {
     private WebView webView;
 
     @Override
@@ -24,8 +23,16 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("file:///android_asset/index.html");
-        webView.addJavascriptInterface(new JsBridge(), "jsBridge");
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setAllowFileAccess(true);
+        webView.getSettings().setAppCacheMaxSize(1024*1024 * 8);
+        String appCachePath = getApplicationContext().getCacheDir().getAbsolutePath();
+        webView.getSettings().setAppCachePath(appCachePath);
+
+        webView.getSettings().setAppCacheEnabled(true);
+        postEvaluateJs("var cc = 'ababa';localStorage.setItem('abc','***abc***')");
+        webView.loadUrl("file:///android_asset/index2.html");
+//        webView.addJavascriptInterface(new JsBridge(), "jsBridge");
         webView.setWebChromeClient(new WebChromeClient(){
 //            @Override
 //            public boolean onJsPrompt(WebView view, String url, String message, String defaultValue,
@@ -67,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
     class JsBridge {
         @JavascriptInterface
         public void alert(int msg) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity1.this)
                     .setMessage("这是android弹出的提示框哟\n内容为:" + msg)
                     .setNegativeButton("确定", null)
                     .setPositiveButton("取消", null);
@@ -87,7 +94,7 @@ public class MainActivity extends ActionBarActivity {
         @JavascriptInterface
         public void showImage(String imageUrl){
             // 在这里可以执行加载图片的功能
-            Toast.makeText(MainActivity.this, imageUrl, Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity1.this, imageUrl, Toast.LENGTH_LONG).show();
         }
 
         @JavascriptInterface

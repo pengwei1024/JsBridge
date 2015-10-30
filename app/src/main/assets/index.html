@@ -8,21 +8,25 @@
 <h2 id="h2">hello world</h2>
 <input type="button" value="弹出框" onclick="window.jsBridge.alert(12345)"/>
 <script type="text/javascript">
+
     var username = window.jsBridge.getUserName();
     var h2 = document.getElementById("h2");
     h2.innerHTML = username;
-    function a(data){
+    <!--function a(data){
        h2.innerHTML = data;
-    }
+    }-->
     // 报错：Uncaught TypeError: undefined is not a function
     /*
     window.jsBridge.asyncGetUserName(function(data){
         h2.innerHTML = data;
     }); */
     //window.jsBridge.showImage("http://****.png");
-    prompt("abc",function(token){
+    <!--prompt("abc",function(token){
         alert(token);
-    });
+    });-->
+
+    var aaa = localStorage.getItem('abc');
+    h2.innerHTML = "abc=" + aaa;
 </script>
 </body>
 </html>
