@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<h2 id="h2">aabbcc</h2>
+<script src="jsBridge.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //JSBridge.call('service',"getTicket",{}, function(result){
+    //    alert(JSON.stringify(result));
+    //})
+
+    JSBridge.call('service',"alertDialog",{'msg':'abcd'}, function(result){alert(JSON.stringify(result.data))},-1);
+
+</script>
+</body>
+</html>

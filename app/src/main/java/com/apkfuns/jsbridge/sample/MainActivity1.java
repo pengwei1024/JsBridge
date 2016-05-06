@@ -13,6 +13,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.apkfuns.jsbridge.JSBridge;
+
 
 public class MainActivity1 extends ActionBarActivity {
     private WebView webView;
@@ -21,19 +23,20 @@ public class MainActivity1 extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        JSBridge.register(ServiceBridgeMethods.class);
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setAllowFileAccess(true);
-        webView.getSettings().setAppCacheMaxSize(1024*1024 * 8);
+        webView.getSettings().setAppCacheMaxSize(1024 * 1024 * 8);
         String appCachePath = getApplicationContext().getCacheDir().getAbsolutePath();
         webView.getSettings().setAppCachePath(appCachePath);
 
         webView.getSettings().setAppCacheEnabled(true);
-        postEvaluateJs("var cc = 'ababa';localStorage.setItem('abc','***abc***')");
-        webView.loadUrl("file:///android_asset/index2.html");
+//        postEvaluateJs("var cc = 'ababa';localStorage.setItem('abc','***abc***')");
+        webView.loadUrl("file:///android_asset/index3.html");
 //        webView.addJavascriptInterface(new JsBridge(), "jsBridge");
-        webView.setWebChromeClient(new WebChromeClient(){
+        webView.setWebChromeClient(new WebChromeClient() {
 //            @Override
 //            public boolean onJsPrompt(WebView view, String url, String message, String defaultValue,
 //                                      JsPromptResult result) {
@@ -49,22 +52,15 @@ public class MainActivity1 extends ActionBarActivity {
 
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                final String callback = defaultValue;
-                final boolean useAsync = !TextUtils.isEmpty(callback);
-                if ("abc".equals(message)) {
-                    String p = "pengwei08";
-                    postEvaluateJs("(" + callback + ")(\""+p+"\")");
-                    result.confirm();
-                    return true;
-                }
-                return super.onJsPrompt(view, url, message, defaultValue, result);
+                result.confirm(JSBridge.onJsPrompt(webView, message));
+                return true;
             }
 
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 boolean consumed = super.onConsoleMessage(consoleMessage);
                 if (!consumed) {
-                    Log.d("abab", consoleMessage.message());
+                    Log.d("WebView", consoleMessage.message());
                 }
                 return consumed;
             }
@@ -74,11 +70,7 @@ public class MainActivity1 extends ActionBarActivity {
     class JsBridge {
         @JavascriptInterface
         public void alert(int msg) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity1.this)
-                    .setMessage("这是android弹出的提示框哟\n内容为:" + msg)
-                    .setNegativeButton("确定", null)
-                    .setPositiveButton("取消", null);
-            builder.create().show();
+
         }
 
         @JavascriptInterface
@@ -92,7 +84,7 @@ public class MainActivity1 extends ActionBarActivity {
         }
 
         @JavascriptInterface
-        public void showImage(String imageUrl){
+        public void showImage(String imageUrl) {
             // 在这里可以执行加载图片的功能
             Toast.makeText(MainActivity1.this, imageUrl, Toast.LENGTH_LONG).show();
         }
@@ -104,6 +96,7 @@ public class MainActivity1 extends ActionBarActivity {
                 protected String doInBackground(Object... params) {
                     return "pengwei08++";
                 }
+
                 @Override
                 protected void onPostExecute(String aVoid) {
                     super.onPostExecute(aVoid);
