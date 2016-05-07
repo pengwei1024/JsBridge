@@ -18,6 +18,8 @@ public class JSBridge {
 
     private static Map<String, HashMap<String, Method>> exposedMethods = new HashMap<>();
 
+    public static final String SCHEMA = "JSBridge";
+
     /**
      * 注册JS交互方法
      *
@@ -66,13 +68,16 @@ public class JSBridge {
      * @param uriString
      * @return
      */
-    public static String onJsPrompt(WebView webView, String uriString) {
+    public static String callJsPrompt(WebView webView, String uriString) {
+        if (webView == null || TextUtils.isEmpty(uriString)) {
+            return null;
+        }
+        Uri uri = Uri.parse(uriString);
         String methodName = "";
         String className = "";
         String param = "{}";
         String port = "";
-        if (!TextUtils.isEmpty(uriString) && uriString.startsWith("JSBridge")) {
-            Uri uri = Uri.parse(uriString);
+        if (uriString.startsWith(SCHEMA)) {
             className = uri.getHost();
             param = uri.getQuery();
             port = uri.getPort() + "";
@@ -83,7 +88,6 @@ public class JSBridge {
         }
         if (exposedMethods.containsKey(className)) {
             HashMap<String, Method> methodHashMap = exposedMethods.get(className);
-
             if (methodHashMap != null && methodHashMap.size() != 0 && methodHashMap.containsKey(methodName)) {
                 Method method = methodHashMap.get(methodName);
                 if (method != null) {

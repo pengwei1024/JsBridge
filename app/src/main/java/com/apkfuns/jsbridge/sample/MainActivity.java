@@ -1,10 +1,8 @@
 package com.apkfuns.jsbridge.sample;
 
-import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -16,7 +14,7 @@ import android.widget.Toast;
 import com.apkfuns.jsbridge.JSBridge;
 
 
-public class MainActivity1 extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity {
     private WebView webView;
 
     @Override
@@ -31,28 +29,12 @@ public class MainActivity1 extends ActionBarActivity {
         webView.getSettings().setAppCacheMaxSize(1024 * 1024 * 8);
         String appCachePath = getApplicationContext().getCacheDir().getAbsolutePath();
         webView.getSettings().setAppCachePath(appCachePath);
-
         webView.getSettings().setAppCacheEnabled(true);
-//        postEvaluateJs("var cc = 'ababa';localStorage.setItem('abc','***abc***')");
         webView.loadUrl("file:///android_asset/index3.html");
-//        webView.addJavascriptInterface(new JsBridge(), "jsBridge");
         webView.setWebChromeClient(new WebChromeClient() {
-//            @Override
-//            public boolean onJsPrompt(WebView view, String url, String message, String defaultValue,
-//                                      JsPromptResult result) {
-//                final String callback = defaultValue;
-//                final boolean useAsync = !TextUtils.isEmpty(callback);
-//                if ("abc".equals(message)) {
-//                    postEvaluateJs("(" + callback + ")(\"1234\")");
-//                    return true;
-//                }
-//                return false;
-//            }
-
-
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                result.confirm(JSBridge.onJsPrompt(webView, message));
+                result.confirm(JSBridge.callJsPrompt(webView, message));
                 return true;
             }
 
@@ -86,7 +68,7 @@ public class MainActivity1 extends ActionBarActivity {
         @JavascriptInterface
         public void showImage(String imageUrl) {
             // 在这里可以执行加载图片的功能
-            Toast.makeText(MainActivity1.this, imageUrl, Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, imageUrl, Toast.LENGTH_LONG).show();
         }
 
         @JavascriptInterface

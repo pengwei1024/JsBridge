@@ -2,6 +2,7 @@ package com.apkfuns.jsbridge.sample;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.JsMethodType;
@@ -29,6 +30,24 @@ public class ServiceBridgeMethods implements JsMethodType {
                 }
             }
         }).start();
+    }
+
+    public static void getData(WebView webView, JSONObject object, final JSCallback callback) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                return "abcdefg";
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                try {
+                    callback.applySuccess(new JSONObject().put("data", s));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
     }
 
     public static void alertDialog(WebView webView, JSONObject object, final JSCallback callback) {
