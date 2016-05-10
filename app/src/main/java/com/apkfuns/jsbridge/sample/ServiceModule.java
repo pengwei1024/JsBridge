@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.webkit.WebView;
 
-import com.apkfuns.jsbridge.JsPlatform;
+import com.apkfuns.jsbridge.JsModule;
 import com.apkfuns.jsbridge.JSCallback;
 
 import org.json.JSONException;
@@ -14,10 +14,10 @@ import org.json.JSONObject;
 /**
  * Created by pengwei on 16/5/6.
  */
-public class ServiceBridgeMethods implements JsPlatform {
+public class ServiceModule implements JsModule {
 
     @Override
-    public String getPlatform() {
+    public String getModuleName() {
         return "service";
     }
 

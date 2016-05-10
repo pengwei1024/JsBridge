@@ -35,11 +35,11 @@ public class JSBridge {
      *
      * @param clazz
      */
-    public static void register(Class<? extends JsPlatform> clazz) {
+    public static void register(Class<? extends JsModule> clazz) {
         try {
-            JsPlatform type = clazz.newInstance();
-            if (!exposedMethods.containsKey(type.getPlatform())) {
-                exposedMethods.put(type.getPlatform(), getAllMethod(clazz));
+            JsModule type = clazz.newInstance();
+            if (!exposedMethods.containsKey(type.getModuleName())) {
+                exposedMethods.put(type.getModuleName(), getAllMethod(clazz));
             }
         } catch (Exception e) {
             e.printStackTrace();

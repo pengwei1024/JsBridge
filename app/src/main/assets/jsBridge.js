@@ -24,8 +24,7 @@
             }
             if (timeout > 0) {
                 timers[port] = setTimeout(function () {
-                    JSBridge.onFailure(port,
-                        {'errorCode': -1, 'errorMsg': 'timeout', data: null});
+                    JSBridge.onFailure(port, Utils.getResultMsg(-1, 'timeout', null));
                 }, timeout);
             }
             if (Utils.getDevice() === 'ios') {
@@ -33,8 +32,7 @@
             } else if (Utils.getDevice() === 'android') {
                 window.prompt(uri, "");
             } else {
-                JSBridge.onFailure(port,
-                    {'errorCode': -1, 'errorMsg': 'platform error', data: null});
+                JSBridge.onFailure(port, Utils.getResultMsg(-1, 'platform error', null));
             }
         },
         get: function (module, method, params) {
@@ -48,16 +46,16 @@
             return null;
         },
         onFinish: function (port, jsonObj) {
-            var result = {'errorCode': 0, 'errorMsg': '', data: jsonObj};
+            var result = Utils.getResultMsg(0, '', jsonObj);
             var callback = callbacks[port];
             callback && callback(result);
             onComplete(port);
         },
         onFailure: function (port, jsonObj) {
-            var result = {'errorCode': 101, 'errorMsg': '', data: jsonObj};
+            var result = Utils.getResultMsg(101, jsonObj, null);
             if (jsonObj && jsonObj.errorCode !== undefined && jsonObj.errorMsg != undefined
                 && jsonObj.data !== undefined) {
-                result = JSON.stringify(jsonObj);
+                result = jsonObj;
             }
             var callback = callbacks[port];
             callback && callback(result);
@@ -92,6 +90,9 @@
                 return 'android';
             }
             return "other";
+        },
+        getResultMsg: function (errorCode, errorMsg, data) {
+            return {'errorCode': errorCode, 'errorMsg': errorMsg, data: data};
         }
     };
     for (var key in Core) {
