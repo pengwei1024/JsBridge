@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.webkit.WebView;
 
-import com.apkfuns.jsbridge.JsMethodType;
+import com.apkfuns.jsbridge.JsPlatform;
 import com.apkfuns.jsbridge.JSCallback;
 
 import org.json.JSONException;
@@ -14,7 +14,12 @@ import org.json.JSONObject;
 /**
  * Created by pengwei on 16/5/6.
  */
-public class ServiceBridgeMethods implements JsMethodType {
+public class ServiceBridgeMethods implements JsPlatform {
+
+    @Override
+    public String getPlatform() {
+        return "service";
+    }
 
     public static void getTicket(WebView webView, JSONObject object, final JSCallback callback) {
         final JSONObject jsonObject = new JSONObject();
@@ -71,10 +76,5 @@ public class ServiceBridgeMethods implements JsMethodType {
             e.printStackTrace();
         }
         builder.create().show();
-    }
-
-    @Override
-    public String getTypeName() {
-        return "service";
     }
 }

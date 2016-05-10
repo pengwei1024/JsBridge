@@ -16,20 +16,30 @@ import java.util.Map;
  */
 public class JSBridge {
 
+    private static String schema;
+
     private static Map<String, HashMap<String, Method>> exposedMethods = new HashMap<>();
 
     public static final String SCHEMA = "JSBridge";
+
+    public static String getSchema() {
+        return TextUtils.isEmpty(schema) ? SCHEMA : schema;
+    }
+
+    public static void setSchema(String schema) {
+        JSBridge.schema = schema;
+    }
 
     /**
      * 注册JS交互方法
      *
      * @param clazz
      */
-    public static void register(Class<? extends JsMethodType> clazz) {
+    public static void register(Class<? extends JsPlatform> clazz) {
         try {
-            JsMethodType type = clazz.newInstance();
-            if (!exposedMethods.containsKey(type.getTypeName())) {
-                exposedMethods.put(type.getTypeName(), getAllMethod(clazz));
+            JsPlatform type = clazz.newInstance();
+            if (!exposedMethods.containsKey(type.getPlatform())) {
+                exposedMethods.put(type.getPlatform(), getAllMethod(clazz));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,6 +71,20 @@ public class JSBridge {
         return mMethodsMap;
     }
 
+    public static void d() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("window." + getSchema() + " = {");
+        for (String platform : exposedMethods.keySet()) {
+            builder.append(platform + ":{");
+            HashMap<String, Method> methods = exposedMethods.get(platform);
+            for (String method : methods.keySet()) {
+                
+            }
+            builder.append("},");
+        }
+        builder.append("};");
+    }
+
     /**
      * 执行js回调
      *
@@ -77,7 +101,7 @@ public class JSBridge {
         String className = "";
         String param = "{}";
         String port = "";
-        if (uriString.startsWith(SCHEMA)) {
+        if (uriString.startsWith(getSchema())) {
             className = uri.getHost();
             param = uri.getQuery();
             port = uri.getPort() + "";
