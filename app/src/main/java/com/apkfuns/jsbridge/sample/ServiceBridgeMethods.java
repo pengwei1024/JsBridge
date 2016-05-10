@@ -77,4 +77,8 @@ public class ServiceBridgeMethods implements JsPlatform {
         }
         builder.create().show();
     }
+
+    public static String getA(WebView webView, JSONObject object, final JSCallback callback) {
+        return "";
+    }
 }
