@@ -2,6 +2,8 @@ package com.apkfuns.jsbridge;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
 import android.webkit.WebView;
 
 import org.json.JSONObject;
@@ -18,7 +20,7 @@ public class JSBridge {
 
     private static String schema;
 
-    private static Map<String, HashMap<String, Method>> exposedMethods = new HashMap<>();
+    private static Map<String, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
 
     public static final String SCHEMA = "JSBridge";
 
@@ -53,8 +55,8 @@ public class JSBridge {
      * @return
      * @throws Exception
      */
-    private static HashMap<String, Method> getAllMethod(Class injectedCls) throws Exception {
-        HashMap<String, Method> mMethodsMap = new HashMap<>();
+    private static HashMap<String, JsMethod> getAllMethod(Class injectedCls) throws Exception {
+        HashMap<String, JsMethod> mMethodsMap = new HashMap<>();
         Method[] methods = injectedCls.getDeclaredMethods();
         for (Method method : methods) {
             String name;
@@ -62,27 +64,24 @@ public class JSBridge {
                 continue;
             }
             Class[] parameters = method.getParameterTypes();
-            if (null != parameters && parameters.length == 3) {
-                if (parameters[0] == WebView.class && parameters[1] == JSONObject.class && parameters[2] == JSCallback.class) {
-                    mMethodsMap.put(name, method);
+            if (null != parameters) {
+                switch (parameters.length) {
+                    case 2:
+                        if (parameters[0] == WebView.class && parameters[1] == JSONObject.class) {
+                            mMethodsMap.put(name, JsMethod.create(false, method));
+                        }
+                        break;
+                    case 3:
+                        if (parameters[0] == WebView.class && parameters[1] == JSONObject.class && parameters[2] == JSCallback.class) {
+                            mMethodsMap.put(name, JsMethod.create(true, method));
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         }
         return mMethodsMap;
-    }
-
-    public static void d() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("window." + getSchema() + " = {");
-        for (String platform : exposedMethods.keySet()) {
-            builder.append(platform + ":{");
-            HashMap<String, Method> methods = exposedMethods.get(platform);
-            for (String method : methods.keySet()) {
-                
-            }
-            builder.append("},");
-        }
-        builder.append("};");
     }
 
     /**
@@ -111,12 +110,19 @@ public class JSBridge {
             }
         }
         if (exposedMethods.containsKey(className)) {
-            HashMap<String, Method> methodHashMap = exposedMethods.get(className);
+            HashMap<String, JsMethod> methodHashMap = exposedMethods.get(className);
             if (methodHashMap != null && methodHashMap.size() != 0 && methodHashMap.containsKey(methodName)) {
-                Method method = methodHashMap.get(methodName);
-                if (method != null) {
+                JsMethod method = methodHashMap.get(methodName);
+                if (method != null && method.getJavaMethod() != null) {
                     try {
-                        method.invoke(null, webView, new JSONObject(param), new JSCallback(webView, port));
+                        if (!method.isAsync()) {
+                            Object ret = method.getJavaMethod().invoke(null, webView, new JSONObject(param));
+                            if (ret != null) {
+                                return ret.toString();
+                            }
+                        } else {
+                            method.getJavaMethod().invoke(null, webView, new JSONObject(param), new JSCallback(webView, port));
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

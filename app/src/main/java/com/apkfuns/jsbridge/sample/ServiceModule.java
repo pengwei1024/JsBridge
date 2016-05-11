@@ -3,6 +3,7 @@ package com.apkfuns.jsbridge.sample;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.JsModule;
@@ -78,7 +79,7 @@ public class ServiceModule implements JsModule {
         builder.create().show();
     }
 
-    public static String getA(WebView webView, JSONObject object, final JSCallback callback) {
-        return "";
+    public static String getA(WebView webView, JSONObject object) {
+        return Build.MODEL;
     }
 }

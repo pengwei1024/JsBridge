@@ -2,6 +2,12 @@
  * Created by pengwei on 16/5/6.
  * version : 1.1.0
  * 协议格式: schema://module:port/method?param
+ *
+ * errorCode
+ * 0:success
+ * 1:timeout
+ * 2:platform not support
+ * 101:用户返回错误
  */
 
 (function (win) {
@@ -24,7 +30,7 @@
             }
             if (timeout > 0) {
                 timers[port] = setTimeout(function () {
-                    JSBridge.onFailure(port, Utils.getResultMsg(-1, 'timeout', null));
+                    JSBridge.onFailure(port, Utils.getResultMsg(1, 'timeout', null));
                 }, timeout);
             }
             if (Utils.getDevice() === 'ios') {
@@ -32,7 +38,7 @@
             } else if (Utils.getDevice() === 'android') {
                 window.prompt(uri, "");
             } else {
-                JSBridge.onFailure(port, Utils.getResultMsg(-1, 'platform error', null));
+                JSBridge.onFailure(port, Utils.getResultMsg(2, 'platform not support', null));
             }
         },
         get: function (module, method, params) {
@@ -41,7 +47,9 @@
                 return window.prompt(uri, "");
             } else if (Utils.getDevice() === 'ios') {
                 window.location.href = uri;
-                return localStorage.getItem(uri);
+                var value = localStorage.getItem(uri);
+                localStorage.removeItem(uri);
+                return value;
             }
             return null;
         },
