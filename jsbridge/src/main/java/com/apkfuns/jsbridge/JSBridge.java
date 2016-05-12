@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+import android.webkit.JsPromptResult;
 import android.webkit.WebView;
 
 import org.json.JSONObject;
@@ -63,6 +64,7 @@ public class JSBridge {
             if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || (name = method.getName()) == null) {
                 continue;
             }
+            Log.wtf("abc", method.getName());
             Class[] parameters = method.getParameterTypes();
             if (null != parameters) {
                 switch (parameters.length) {
@@ -83,6 +85,30 @@ public class JSBridge {
         }
         return mMethodsMap;
     }
+
+    /**
+     * 注入JS
+     */
+    public static String injectJs() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("window." + getSchema() + " = {");
+        for (String platform : exposedMethods.keySet()) {
+            builder.append(platform + ":{");
+            HashMap<String, JsMethod> methods = exposedMethods.get(platform);
+            for (String method : methods.keySet()) {
+                JsMethod jsMethod = methods.get(method);
+                if (jsMethod.isAsync()) {
+                    builder.append(method + ":function(param, callback){window.prompt(param)}");
+                } else {
+                    builder.append(method + ":function(param){return 0;}");
+                }
+            }
+            builder.append("},");
+        }
+        builder.append("};");
+        return builder.toString();
+    }
+
 
     /**
      * 执行js回调
@@ -130,5 +156,9 @@ public class JSBridge {
             }
         }
         return null;
+    }
+
+    public static void callJsPrompt(WebView webView, JsPromptResult result, String message) {
+
     }
 }

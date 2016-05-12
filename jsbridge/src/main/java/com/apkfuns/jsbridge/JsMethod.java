@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 public class JsMethod {
     private boolean isAsync;
     private Method javaMethod;
+    private String moduleName;
 
     public boolean isAsync() {
         return isAsync;
@@ -23,6 +24,17 @@ public class JsMethod {
 
     public void setJavaMethod(Method javaMethod) {
         this.javaMethod = javaMethod;
+    }
+
+    public String getFunction() {
+        return String.format("%s.%s.%s", JSBridge.getSchema(), moduleName, javaMethod.getName());
+    }
+
+    public String getCallbackFunction() {
+        if (isAsync()) {
+            return getFunction() + "Callback";
+        }
+        return null;
     }
 
     public static JsMethod create(boolean needCallback, Method method) {

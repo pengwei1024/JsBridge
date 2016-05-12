@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>1234567</title>
 </head>
 <body>
 <h2 id="h2">aabbcc</h2>
@@ -12,8 +12,13 @@
     //    alert(JSON.stringify(result));
     //})
 
-    alert(JSBridge.get('service','getA',''));
+    window.onload = function(){
+         alert(JSBridge.get('service','getA',''));
     alert(localStorage.getItem('abc'));
+    }
+
+    <!--alert(JSBridge.get('service','getA',''));-->
+    <!--alert(localStorage.getItem('abc'));-->
 
     <!--alert(localStorage.length);-->
 
