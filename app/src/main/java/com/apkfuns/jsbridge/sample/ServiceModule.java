@@ -8,6 +8,7 @@ import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.JsModule;
 import com.apkfuns.jsbridge.JSCallback;
+import com.apkfuns.jsbridge.JsReturn;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,64 +23,91 @@ public class ServiceModule implements JsModule {
         return "service";
     }
 
-    public static void getTicket(WebView webView, JSONObject object, final JSCallback callback) {
-        final JSONObject jsonObject = new JSONObject();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                    jsonObject.put("ticket", "aaa+bcd");
-                    callback.applySuccess(jsonObject);
-                } catch (JSONException | InterruptedException e) {
-                    callback.applyError(jsonObject);
-                }
-            }
-        }).start();
+    public static String setTitleBackground(WebView webView, String param){
+        return "";
     }
 
-    public static void getData(WebView webView, JSONObject object, final JSCallback callback) {
+    public static void getTicket(WebView webView, final String object, final JSCallback callback) {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                return "abcdefg";
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return object;
             }
 
             @Override
             protected void onPostExecute(String s) {
-                try {
-                    callback.applySuccess(new JSONObject().put("data", s));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                callback.apply(s);
             }
         }.execute();
     }
 
-    public static void alertDialog(WebView webView, JSONObject object, final JSCallback callback) {
-        AlertDialog.Builder builder = null;
-        try {
-            builder = new AlertDialog.Builder(webView.getContext())
-                    .setMessage("这是android弹出的提示框哟\n内容为:")
-                    .setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            callback.applySuccess(null);
-                        }
-                    })
-                    .setPositiveButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            callback.applyError(null);
-                        }
-                    });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        builder.create().show();
+    public static String getName(WebView webView, String object) {
+        return JsReturn.appleSuccess("1234");
     }
 
-    public static String getA(WebView webView, JSONObject object) {
-        return Build.MODEL;
-    }
+//    public static void getTicket(WebView webView, JSONObject object, final JSCallback callback) {
+//        final JSONObject jsonObject = new JSONObject();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(5000);
+//                    jsonObject.put("ticket", "aaa+bcd");
+//                    callback.applySuccess(jsonObject);
+//                } catch (JSONException | InterruptedException e) {
+//                    callback.applyError(jsonObject);
+//                }
+//            }
+//        }).start();
+//    }
+//
+//    public static void getData(WebView webView, JSONObject object, final JSCallback callback) {
+//        new AsyncTask<Void, Void, String>() {
+//            @Override
+//            protected String doInBackground(Void... params) {
+//                return "abcdefg";
+//            }
+//
+//            @Override
+//            protected void onPostExecute(String s) {
+//                try {
+//                    callback.applySuccess(new JSONObject().put("data", s));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }.execute();
+//    }
+//
+//    public static void alertDialog(WebView webView, JSONObject object, final JSCallback callback) {
+//        AlertDialog.Builder builder = null;
+//        try {
+//            builder = new AlertDialog.Builder(webView.getContext())
+//                    .setMessage("这是android弹出的提示框哟\n内容为:")
+//                    .setNegativeButton("确定", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            callback.applySuccess(null);
+//                        }
+//                    })
+//                    .setPositiveButton("取消", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            callback.applyError(null);
+//                        }
+//                    });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        builder.create().show();
+//    }
+//
+//    public static String getA(WebView webView, JSONObject object) {
+//        return Build.MODEL;
+//    }
 }

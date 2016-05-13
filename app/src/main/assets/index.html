@@ -2,31 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>1234567</title>
 </head>
 <body>
-<h2 id="h2">hello world</h2>
-<input type="button" value="弹出框" onclick="window.jsBridge.alert(12345)"/>
+<h2 id="h2">aabbcc</h2>
+<script src="jsBridge.js" type="text/javascript"></script>
 <script type="text/javascript">
+    //JSBridge.call('service',"getTicket",{}, function(result){
+    //    alert(JSON.stringify(result));
+    //})
 
-    var username = window.jsBridge.getUserName();
-    var h2 = document.getElementById("h2");
-    h2.innerHTML = username;
-    <!--function a(data){
-       h2.innerHTML = data;
-    }-->
-    // 报错：Uncaught TypeError: undefined is not a function
-    /*
-    window.jsBridge.asyncGetUserName(function(data){
-        h2.innerHTML = data;
-    }); */
-    //window.jsBridge.showImage("http://****.png");
-    <!--prompt("abc",function(token){
-        alert(token);
-    });-->
+    <!--window.onload = function(){-->
+         <!--alert(JSBridge.get('service','getA',''));-->
+    <!--alert(localStorage.getItem('abc'));-->
+    <!--}-->
 
-    var aaa = localStorage.getItem('abc');
-    h2.innerHTML = "abc=" + aaa;
+    window.onDuLifeBridgeReady = function(){
+        var x = window.DuLifeBridge.service.getName();
+        alert(x);
+        <!--window.DuLifeBridge.service.getTicket({data:'aaabbccc',onListener:function(res){alert(res)}});-->
+        <!--console.error(typeof(window.DuLifeBridge.service.getName) === 'function');-->
+        <!--console.error(x);-->
+        <!--alert(window.DuLifeBridge.sdk.getVersion());-->
+        window.DuLifeBridge.service.getName({'onSuccess':function(res){alert(res)},'onFailure':function(res){alert('1'+res)}});
+    }
+
+    <!--alert(JSBridge.get('service','getA',''));-->
+    <!--alert(localStorage.getItem('abc'));-->
+
+    <!--alert(localStorage.length);-->
+
+    <!--JSBridge.call('service',"getData",{'msg':'abcd'}, function(result){alert(JSON.stringify(result.data))});-->
+
 </script>
 </body>
 </html>

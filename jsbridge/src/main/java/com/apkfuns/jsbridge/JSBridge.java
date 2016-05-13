@@ -3,110 +3,56 @@ package com.apkfuns.jsbridge;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 import android.webkit.JsPromptResult;
 import android.webkit.WebView;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by pengwei on 16/5/6.
  */
 public class JSBridge {
 
-    private static String schema;
+    private static JsBridgeConfigImpl config = JsBridgeConfigImpl.getInstance();
 
-    private static Map<String, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
-
-    public static final String SCHEMA = "JSBridge";
-
-    public static String getSchema() {
-        return TextUtils.isEmpty(schema) ? SCHEMA : schema;
+    static {
+        config.registerMethodRun(JSBridgeReadyRun.class);
+        config.registerModule(SdkModule.class);
     }
 
-    public static void setSchema(String schema) {
-        JSBridge.schema = schema;
-    }
-
-    /**
-     * 注册JS交互方法
-     *
-     * @param clazz
-     */
-    public static void register(Class<? extends JsModule> clazz) {
-        try {
-            JsModule type = clazz.newInstance();
-            if (!exposedMethods.containsKey(type.getModuleName())) {
-                exposedMethods.put(type.getModuleName(), getAllMethod(clazz));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 获取类的所有static方法
-     *
-     * @param injectedCls
-     * @return
-     * @throws Exception
-     */
-    private static HashMap<String, JsMethod> getAllMethod(Class injectedCls) throws Exception {
-        HashMap<String, JsMethod> mMethodsMap = new HashMap<>();
-        Method[] methods = injectedCls.getDeclaredMethods();
-        for (Method method : methods) {
-            String name;
-            if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || (name = method.getName()) == null) {
-                continue;
-            }
-            Log.wtf("abc", method.getName());
-            Class[] parameters = method.getParameterTypes();
-            if (null != parameters) {
-                switch (parameters.length) {
-                    case 2:
-                        if (parameters[0] == WebView.class && parameters[1] == JSONObject.class) {
-                            mMethodsMap.put(name, JsMethod.create(false, method));
-                        }
-                        break;
-                    case 3:
-                        if (parameters[0] == WebView.class && parameters[1] == JSONObject.class && parameters[2] == JSCallback.class) {
-                            mMethodsMap.put(name, JsMethod.create(true, method));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        return mMethodsMap;
+    public static JsBridgeConfig getConfig() {
+        return config;
     }
 
     /**
      * 注入JS
      */
-    public static String injectJs() {
+    public static void injectJs(WebView webView) {
         StringBuilder builder = new StringBuilder();
-        builder.append("window." + getSchema() + " = {");
-        for (String platform : exposedMethods.keySet()) {
+        // 注入默认方法
+        builder.append("window." + config.getProtocol() + " = {");
+        for (String platform : config.getExposedMethods().keySet()) {
             builder.append(platform + ":{");
-            HashMap<String, JsMethod> methods = exposedMethods.get(platform);
+            HashMap<String, JsMethod> methods = config.getExposedMethods().get(platform);
             for (String method : methods.keySet()) {
                 JsMethod jsMethod = methods.get(method);
-                if (jsMethod.isAsync()) {
-                    builder.append(method + ":function(param, callback){window.prompt(param)}");
-                } else {
-                    builder.append(method + ":function(param){return 0;}");
-                }
+                builder.append(jsMethod.getInjectJs());
             }
             builder.append("},");
         }
         builder.append("};");
-        return builder.toString();
+        // 注入可执行方法
+        for (Class<? extends JsMethodRun> run : config.getMethodRuns()) {
+            try {
+                builder.append(run.newInstance().execJs());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Log.wtf("abc", builder.toString());
+        webView.loadUrl("javascript:" + builder.toString());
     }
 
 
@@ -124,30 +70,29 @@ public class JSBridge {
         Uri uri = Uri.parse(uriString);
         String methodName = "";
         String className = "";
-        String param = "{}";
-        String port = "";
-        if (uriString.startsWith(getSchema())) {
+        String param = "";
+        if (uriString.startsWith(config.getProtocol())) {
             className = uri.getHost();
             param = uri.getQuery();
-            port = uri.getPort() + "";
             String path = uri.getPath();
             if (!TextUtils.isEmpty(path)) {
                 methodName = path.replace("/", "");
             }
         }
-        if (exposedMethods.containsKey(className)) {
-            HashMap<String, JsMethod> methodHashMap = exposedMethods.get(className);
+        if (config.getExposedMethods().containsKey(className)) {
+            HashMap<String, JsMethod> methodHashMap = config.getExposedMethods().get(className);
             if (methodHashMap != null && methodHashMap.size() != 0 && methodHashMap.containsKey(methodName)) {
                 JsMethod method = methodHashMap.get(methodName);
                 if (method != null && method.getJavaMethod() != null) {
                     try {
-                        if (!method.isAsync()) {
-                            Object ret = method.getJavaMethod().invoke(null, webView, new JSONObject(param));
-                            if (ret != null) {
-                                return ret.toString();
-                            }
+                        Object ret;
+                        if (!method.needCallback()) {
+                            ret = method.getJavaMethod().invoke(null, webView, param);
                         } else {
-                            method.getJavaMethod().invoke(null, webView, new JSONObject(param), new JSCallback(webView, port));
+                            ret = method.getJavaMethod().invoke(null, webView, param, new JSCallback(webView, method));
+                        }
+                        if (ret != null) {
+                            return ret.toString();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -156,9 +101,5 @@ public class JSBridge {
             }
         }
         return null;
-    }
-
-    public static void callJsPrompt(WebView webView, JsPromptResult result, String message) {
-
     }
 }
