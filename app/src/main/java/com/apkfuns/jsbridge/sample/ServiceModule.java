@@ -2,8 +2,8 @@ package com.apkfuns.jsbridge.sample;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.JsModule;
@@ -21,7 +21,7 @@ public class ServiceModule implements JsModule {
     }
 
     public static String setTitleBackground(MainActivity activity, String param) {
-        activity.setTitle("黑猫警长" + param);
+        activity.setTitleBackground(Color.parseColor(param));
         return JsReturn.appleSuccess("success");
     }
 
@@ -57,40 +57,6 @@ public class ServiceModule implements JsModule {
     public static String getName(WebView webView, String option) {
         return JsReturn.appleSuccess("1234");
     }
-
-//    public static void getTicket(WebView webView, JSONObject object, final JSCallback callback) {
-//        final JSONObject jsonObject = new JSONObject();
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(5000);
-//                    jsonObject.put("ticket", "aaa+bcd");
-//                    callback.applySuccess(jsonObject);
-//                } catch (JSONException | InterruptedException e) {
-//                    callback.applyError(jsonObject);
-//                }
-//            }
-//        }).start();
-//    }
-//
-//    public static void getData(WebView webView, JSONObject object, final JSCallback callback) {
-//        new AsyncTask<Void, Void, String>() {
-//            @Override
-//            protected String doInBackground(Void... params) {
-//                return "abcdefg";
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String s) {
-//                try {
-//                    callback.applySuccess(new JSONObject().put("data", s));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }.execute();
-//    }
 
     public static String alertDialog(WebView webView, String option, final JSCallback callback) {
         AlertDialog.Builder builder = null;

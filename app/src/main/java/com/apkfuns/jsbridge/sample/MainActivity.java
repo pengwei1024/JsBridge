@@ -2,6 +2,7 @@ package com.apkfuns.jsbridge.sample;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,13 +14,13 @@ import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.apkfuns.jsbridge.JSBridge;
 
 
 public class MainActivity extends ActionBarActivity {
     private WebView webView;
-
 
     private Menu menu;
 
@@ -101,11 +102,14 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public void setTitleBackground(int color) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getTitle().equals("啊啊啊")) {
-//            Toast.makeText(MainActivity.this, "aaa", Toast.LENGTH_SHORT).show();
-//        }
         return super.onOptionsItemSelected(item);
     }
 

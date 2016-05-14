@@ -1,6 +1,5 @@
 package com.apkfuns.jsbridge;
 
-import android.webkit.WebView;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
