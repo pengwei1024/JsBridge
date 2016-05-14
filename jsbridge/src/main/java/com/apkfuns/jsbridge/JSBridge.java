@@ -113,6 +113,7 @@ public class JSBridge {
                             default:
                                 break;
                         }
+                        Log.wtf("abc&&&&&&&&&", methodName + (ret == null ? "null" : ret.toString()));
                         if (ret != null) {
                             return ret.toString();
                         }

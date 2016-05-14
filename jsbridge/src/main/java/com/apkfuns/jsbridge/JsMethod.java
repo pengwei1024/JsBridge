@@ -98,10 +98,10 @@ public class JsMethod {
         builder.append("if(option.onSuccess ===  undefined && option.onFailure === undefined && option.onListener === undefined){");
         builder.append("params = option;}else{params = option.data;}");
         builder.append("var result = prompt('" + getUrl() + "' + (encodeURIComponent(params ||'')));");
-        builder.append("if(result === null) return;");
+        builder.append("if(result === undefined || result === null) return;");
         builder.append("var data = eval('(' + result + ')');");
-        builder.append("if(data && data.onSuccess){option.onSuccess(data.data);}");
-        builder.append("else if(data && data.onFailure){option.onFailure(data.errorMsg);}");
+        builder.append("if(data && data.onSuccess && option.onSuccess){option.onSuccess(data.data);}");
+        builder.append("else if(data && data.onFailure && option.onFailure){option.onFailure(data.errorMsg);}");
         builder.append("},");
         return builder.toString();
     }

@@ -43,6 +43,7 @@ public class MainActivity extends ActionBarActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+                Log.wtf("abc", "message=" + message);
 //                JsMethod method = JsMethod.get(message);
 //                if (method != null) {
 //                    Log.wtf("ABC", method.getModuleAndMethod());

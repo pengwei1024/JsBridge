@@ -1,5 +1,7 @@
 package com.apkfuns.jsbridge.sample;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.WebView;
@@ -89,31 +91,29 @@ public class ServiceModule implements JsModule {
 //            }
 //        }.execute();
 //    }
-//
-//    public static void alertDialog(WebView webView, JSONObject object, final JSCallback callback) {
-//        AlertDialog.Builder builder = null;
-//        try {
-//            builder = new AlertDialog.Builder(webView.getContext())
-//                    .setMessage("这是android弹出的提示框哟\n内容为:")
-//                    .setNegativeButton("确定", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            callback.applySuccess(null);
-//                        }
-//                    })
-//                    .setPositiveButton("取消", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            callback.applyError(null);
-//                        }
-//                    });
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        builder.create().show();
-//    }
-//
-//    public static String getA(WebView webView, JSONObject object) {
-//        return Build.MODEL;
-//    }
+
+    public static String alertDialog(WebView webView, String option, final JSCallback callback) {
+        AlertDialog.Builder builder = null;
+        try {
+            builder = new AlertDialog.Builder(webView.getContext())
+                    .setMessage("这是android弹出的提示框哟\n内容为:" + option)
+                    .setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            callback.apply("确定");
+                        }
+                    })
+                    .setPositiveButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            callback.apply("取消");
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        builder.create().show();
+        return JsReturn.appleSuccess("aa");
+    }
+
 }

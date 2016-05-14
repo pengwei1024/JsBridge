@@ -20,6 +20,14 @@
     window.onDuLifeBridgeReady = function(){
 
          DuLifeBridge.service.addNavIcon({data:'你好世界',onListener:function(res){alert(res)}});
+         DuLifeBridge.service.alertDialog({data:'德玛西亚',onListener:function(res){alert(res)}});
+
+          <!--var x = window.DuLifeBridge.service.getName();-->
+        <!--alert(x);-->
+         <!--var y = window.DuLifeBridge.service.getName();-->
+        <!--alert(y);-->
+
+
 
          <!--DuLifeBridge.service.setTitleBackground('#!~$%^&**()_+');-->
 
@@ -29,7 +37,7 @@
         <!--console.error(typeof(window.DuLifeBridge.service.getName) === 'function');-->
         <!--console.error(x);-->
         <!--alert(window.DuLifeBridge.sdk.getVersion());-->
-        window.DuLifeBridge.service.getName({'onSuccess':function(res){alert(res)},'onFailure':function(res){alert('1'+res)}});
+        <!--window.DuLifeBridge.service.getName({'onSuccess':function(res){alert(res)},'onFailure':function(res){alert('1'+res)}});-->
     }
 
     <!--alert(JSBridge.get('service','getA',''));-->
@@ -38,6 +46,7 @@
     <!--alert(localStorage.length);-->
 
     <!--JSBridge.call('service',"getData",{'msg':'abcd'}, function(result){alert(JSON.stringify(result.data))});-->
+
 
 </script>
 </body>
