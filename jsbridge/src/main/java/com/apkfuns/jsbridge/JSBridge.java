@@ -3,7 +3,6 @@ package com.apkfuns.jsbridge;
 import android.app.Activity;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.WebView;
 
 
@@ -50,7 +49,6 @@ public class JSBridge {
                 e.printStackTrace();
             }
         }
-        Log.wtf("abc", builder.toString());
         webView.loadUrl("javascript:" + builder.toString());
     }
 
@@ -113,7 +111,6 @@ public class JSBridge {
                             default:
                                 break;
                         }
-                        Log.wtf("abc&&&&&&&&&", methodName + (ret == null ? "null" : ret.toString()));
                         if (ret != null) {
                             return ret.toString();
                         }

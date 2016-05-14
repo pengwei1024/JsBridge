@@ -1,7 +1,6 @@
 package com.apkfuns.jsbridge.sample;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -14,7 +13,6 @@ import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import com.apkfuns.jsbridge.JSBridge;
 
@@ -31,7 +29,6 @@ public class MainActivity extends ActionBarActivity {
 
         JSBridge.getConfig().setProtocol("DuLifeBridge").setSdkVersion(1).registerModule(ServiceModule.class);
 
-
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
@@ -44,15 +41,6 @@ public class MainActivity extends ActionBarActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                Log.wtf("abc", "message=" + message);
-//                JsMethod method = JsMethod.get(message);
-//                if (method != null) {
-//                    Log.wtf("ABC", method.getModuleAndMethod());
-//                    if (method.getModuleAndMethod().equals("service.setTitleBackground")) {
-//                        Log.wtf("abc", method.getParams() + "***" + message);
-//                        setTitle(method.getParams());
-//                    }
-//                }
                 result.confirm(JSBridge.callJsPrompt(MainActivity.this, webView, message));
                 return true;
             }
@@ -68,12 +56,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
-
-            @Override
+             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 JSBridge.injectJs(webView);
@@ -106,11 +89,6 @@ public class MainActivity extends ActionBarActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     private void postEvaluateJs(final String script) {

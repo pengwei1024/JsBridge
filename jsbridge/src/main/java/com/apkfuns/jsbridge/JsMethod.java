@@ -3,7 +3,6 @@ package com.apkfuns.jsbridge;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
