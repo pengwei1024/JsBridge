@@ -1,17 +1,12 @@
 package com.apkfuns.jsbridge.sample;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.os.Build;
+import android.util.Log;
 import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.JsModule;
 import com.apkfuns.jsbridge.JSCallback;
 import com.apkfuns.jsbridge.JsReturn;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by pengwei on 16/5/6.
@@ -23,8 +18,19 @@ public class ServiceModule implements JsModule {
         return "service";
     }
 
-    public static String setTitleBackground(WebView webView, String param){
-        return "";
+    public static String setTitleBackground(MainActivity activity, String param) {
+        activity.setTitle("黑猫警长" + param);
+        return JsReturn.appleSuccess("success");
+    }
+
+    public static String addNavIcon(MainActivity activity, final String param, final JSCallback callback) {
+        activity.addMenu(param, new Runnable() {
+            @Override
+            public void run() {
+                callback.apply(param);
+            }
+        });
+        return JsReturn.appleSuccess("success");
     }
 
     public static void getTicket(WebView webView, final String object, final JSCallback callback) {
@@ -46,7 +52,7 @@ public class ServiceModule implements JsModule {
         }.execute();
     }
 
-    public static String getName(WebView webView, String object) {
+    public static String getName(WebView webView, String option) {
         return JsReturn.appleSuccess("1234");
     }
 

@@ -27,23 +27,38 @@ public class Utils {
                 continue;
             }
             Class[] parameters = method.getParameterTypes();
-            if (null != parameters) {
-                switch (parameters.length) {
-                    case 2:
-                        if (parameters[0] == WebView.class && parameters[1] == String.class) {
-                            mMethodsMap.put(name, JsMethod.create(false, module, method));
-                        }
-                        break;
-                    case 3:
-                        if (parameters[0] == WebView.class && parameters[1] == String.class && parameters[2] == JSCallback.class) {
-                            mMethodsMap.put(name, JsMethod.create(true, module, method));
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            int parameterType = ParameterType.getParameterType(parameters);
+            switch (parameterType) {
+                case ParameterType.TYPE_O:
+                case ParameterType.TYPE_AO:
+                case ParameterType.TYPE_WO:
+                case ParameterType.TYPE_AWO:
+                    mMethodsMap.put(name, JsMethod.create(false, module, method, parameterType));
+                    break;
+                case ParameterType.TYPE_AOJ:
+                case ParameterType.TYPE_OJ:
+                case ParameterType.TYPE_WOJ:
+                case ParameterType.TYPE_AWOJ:
+                    mMethodsMap.put(name, JsMethod.create(true, module, method, parameterType));
+                    break;
+                default:
+                    break;
             }
         }
         return mMethodsMap;
+    }
+
+    /**
+     * 是否相关
+     *
+     * @param cla1
+     * @param cla2
+     * @return
+     */
+    public static boolean classIsRelative(Class cla1, Class cla2) {
+        if (cla1 != null && cla2 != null) {
+            return cla2.isAssignableFrom(cla1) || cla2.equals(cla1);
+        }
+        return false;
     }
 }

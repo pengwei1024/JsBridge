@@ -1,12 +1,11 @@
 package com.apkfuns.jsbridge;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.JsPromptResult;
 import android.webkit.WebView;
 
-import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -63,7 +62,7 @@ public class JSBridge {
      * @param uriString
      * @return
      */
-    public static String callJsPrompt(WebView webView, String uriString) {
+    public static String callJsPrompt(Activity activity, WebView webView, String uriString) {
         if (webView == null || TextUtils.isEmpty(uriString)) {
             return null;
         }
@@ -83,13 +82,36 @@ public class JSBridge {
             HashMap<String, JsMethod> methodHashMap = config.getExposedMethods().get(className);
             if (methodHashMap != null && methodHashMap.size() != 0 && methodHashMap.containsKey(methodName)) {
                 JsMethod method = methodHashMap.get(methodName);
-                if (method != null && method.getJavaMethod() != null) {
+                if (method != null && method.getJavaMethod() != null && method.getParameterType() != -1) {
                     try {
-                        Object ret;
-                        if (!method.needCallback()) {
-                            ret = method.getJavaMethod().invoke(null, webView, param);
-                        } else {
-                            ret = method.getJavaMethod().invoke(null, webView, param, new JSCallback(webView, method));
+                        Object ret = null;
+                        switch (method.getParameterType()) {
+                            case ParameterType.TYPE_O:
+                                ret = method.invoke(param);
+                                break;
+                            case ParameterType.TYPE_AO:
+                                ret = method.invoke(activity, param);
+                                break;
+                            case ParameterType.TYPE_WO:
+                                ret = method.invoke(webView, param);
+                                break;
+                            case ParameterType.TYPE_AWO:
+                                ret = method.invoke(activity, webView, param);
+                                break;
+                            case ParameterType.TYPE_AOJ:
+                                ret = method.invoke(activity, param, new JSCallback(webView, method));
+                                break;
+                            case ParameterType.TYPE_OJ:
+                                ret = method.invoke(param, new JSCallback(webView, method));
+                                break;
+                            case ParameterType.TYPE_WOJ:
+                                ret = method.invoke(webView, param, new JSCallback(webView, method));
+                                break;
+                            case ParameterType.TYPE_AWOJ:
+                                ret = method.invoke(activity, webView, param, new JSCallback(webView, method));
+                                break;
+                            default:
+                                break;
                         }
                         if (ret != null) {
                             return ret.toString();

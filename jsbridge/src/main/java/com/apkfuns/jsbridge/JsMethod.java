@@ -1,5 +1,9 @@
 package com.apkfuns.jsbridge;
 
+import android.net.Uri;
+import android.text.TextUtils;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -10,6 +14,18 @@ public class JsMethod {
     private Method javaMethod;
     private String moduleName;
     private String methodName;
+
+    private String params;
+
+    private int parameterType = -1;
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
+    }
 
     private JsMethod() {
     }
@@ -54,6 +70,10 @@ public class JsMethod {
                 getModuleName(), getMethodName());
     }
 
+    public String getModuleAndMethod() {
+        return getModuleName() + "." + getMethodName();
+    }
+
     public String getCallbackFunction() {
         if (needCallback()) {
             return getFunction() + "Callback";
@@ -74,7 +94,10 @@ public class JsMethod {
             builder.append(getCallbackFunction() + "=" + "option.onListener;");
             builder.append("}");
         }
-        builder.append("var result = prompt('" + getUrl() + "' + (option.data ||''));");
+        builder.append("var params;");
+        builder.append("if(option.onSuccess ===  undefined && option.onFailure === undefined && option.onListener === undefined){");
+        builder.append("params = option;}else{params = option.data;}");
+        builder.append("var result = prompt('" + getUrl() + "' + (encodeURIComponent(params ||'')));");
         builder.append("if(result === null) return;");
         builder.append("var data = eval('(' + result + ')');");
         builder.append("if(data && data.onSuccess){option.onSuccess(data.data);}");
@@ -93,11 +116,51 @@ public class JsMethod {
                 getModuleName(), 0, getMethodName());
     }
 
-    public static JsMethod create(boolean needCallback, String moduleName, Method method) {
+    public Object invoke(Object... args) throws Exception {
+        if (javaMethod != null) {
+            return javaMethod.invoke(null, args);
+        }
+        return null;
+    }
+
+    public int getParameterType() {
+        return parameterType;
+    }
+
+    public void setParameterType(int parameterType) {
+        this.parameterType = parameterType;
+    }
+
+    public static JsMethod create(boolean needCallback, String moduleName, Method method, int parameterType) {
         JsMethod jsMethod = new JsMethod();
         jsMethod.setNeedCallback(needCallback);
         jsMethod.setJavaMethod(method);
         jsMethod.setModuleName(moduleName);
+        jsMethod.setParameterType(parameterType);
         return jsMethod;
+    }
+
+    /**
+     * 获取JsMethod
+     *
+     * @param url
+     * @return
+     */
+    public static JsMethod get(String url) {
+        Uri uri = Uri.parse(url);
+        if (uri != null) {
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+            String path = uri.getPath();
+            if (!TextUtils.isEmpty(scheme) && scheme.equals(JsBridgeConfigImpl.getInstance().getProtocol())
+                    && !TextUtils.isEmpty(host) && !TextUtils.isEmpty(path)) {
+                JsMethod method = new JsMethod();
+                method.setMethodName(path.replace("/", ""));
+                method.setModuleName(host);
+                method.setParams(uri.getQuery());
+                return method;
+            }
+        }
+        return null;
     }
 }

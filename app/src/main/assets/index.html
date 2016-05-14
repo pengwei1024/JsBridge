@@ -18,8 +18,13 @@
     <!--}-->
 
     window.onDuLifeBridgeReady = function(){
-        var x = window.DuLifeBridge.service.getName();
-        alert(x);
+
+         DuLifeBridge.service.addNavIcon({data:'你好世界',onListener:function(res){alert(res)}});
+
+         <!--DuLifeBridge.service.setTitleBackground('#!~$%^&**()_+');-->
+
+        <!--var x = window.DuLifeBridge.service.getName();-->
+        <!--alert(x);-->
         <!--window.DuLifeBridge.service.getTicket({data:'aaabbccc',onListener:function(res){alert(res)}});-->
         <!--console.error(typeof(window.DuLifeBridge.service.getName) === 'function');-->
         <!--console.error(x);-->
