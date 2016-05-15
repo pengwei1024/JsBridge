@@ -171,6 +171,33 @@ html的完整版
 </html>
 ```
 
+关于js方法中的options，完整参数方法如下
+```javascript
+MyBridge.native.setNavMenu({
+            data: '我是来自网页的按钮',
+            onListener: function (res) {
+                alert('点击按钮了，按钮名称是:' + res)
+            },
+            onSuccess: function (suc) {
+
+            },
+            onFailure: function (fai) {
+                
+            }
+        });
+```
+data和onListener已经用过了，onSuccess和onFailure的值从哪里来的呢？
+还记得NativeModule里面的setNavMenu方法吗？之前写的setNavMenu返回值为void，所以没有onsuccess或者onFailure，name返回值要遵循哪种规定呢，框架已经帮封装好了，直接return JsReturn.appleSuccess("success") 或者return JsReturn.appleFailure("failure")就可以接收到了。<br/>
+
+还有有点需要注意的，如果options里面仅仅包含options.data,则不需要使用options.data，直接输入数据就好了，如下面的:
+这种写法不推荐
+```javascript
+MyBridge.native.setNavMenu({'data':'按钮名称'});
+```
+可以直接写成下面的
+```javascript
+MyBridge.native.setNavMenu('按钮名称');
+```
 
 ### 历史版本
 [查看历史版本](./doc/HISTORY.md)
