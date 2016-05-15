@@ -35,28 +35,29 @@
         li[i].onclick = function () {
             switch (this.index) {
                 case 0:
-                    DuLifeBridge.service.addNavIcon({
+                    MyBridge.service.addNavIcon({
                         data: '我是来自网页的按钮', onListener: function (res) {
                             alert('点击按钮了，数据是:' + res)
                         }
                     });
                     break;
                 case 1:
-                    DuLifeBridge.service.setTitleBackground('#ffff00');
+                    MyBridge.service.setTitleBackground('#ffff00');
                     break;
                 case 2:
-                    DuLifeBridge.service.alertDialog({
+                    MyBridge.service.alertDialog({
                         data: '德玛西亚', onListener: function (res) {
                             alert(res)
                         }
                     });
                     break;
                 case 3:
-                    alert(window.DuLifeBridge.sdk.getVersion());
+                    alert(window.MyBridge.sdk.getVersion());
                     break;
                 case 4:
-                    window.DuLifeBridge.service.getTicket({
-                        data: 'aaabbccc', onListener: function (res) {
+                    window.MyBridge.service.getTicket({
+                        data: 'aaabbccc',
+                        onListener: function (res) {
                             alert('延迟5s回调数据:' + res)
                         }
                     });
@@ -66,8 +67,8 @@
             }
         }
     }
-    window.onDuLifeBridgeReady = function () {
-        console.log("DuLifeBridge初始化完毕");
+    window.onMyBridgeReady = function () {
+        console.log("MyBridge初始化完毕");
     }
 
 </script>

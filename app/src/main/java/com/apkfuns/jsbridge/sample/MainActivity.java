@@ -27,7 +27,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        JSBridge.getConfig().setProtocol("DuLifeBridge").setSdkVersion(1).registerModule(ServiceModule.class);
+        JSBridge.getConfig().setProtocol("MyBridge").setSdkVersion(1).registerModule(ServiceModule.class);
 
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
