@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JsBridge测试Demo</title>
+</head>
+<body>
+<button id="btn_add_menu">点击添加菜单</button>
+<script type="text/javascript">
+    window.onMyBridgeReady = function () {
+        document.getElementById('btn_add_menu').onclick = function () {
+            MyBridge.native.setNavMenu({
+                data: '我是来自网页的按钮', onListener: function (res) {
+                    alert('点击按钮了，按钮名称是:' + res)
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>
