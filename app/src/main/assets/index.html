@@ -69,6 +69,18 @@
     }
     window.onMyBridgeReady = function () {
         console.log("MyBridge初始化完毕");
+        window.MyBridge.service.getTicket({
+                        data: 'aaabbccc',
+                        onListener: function (res) {
+                            alert('1延迟5s回调数据:' + res)
+                        }
+                    });
+                    window.MyBridge.service.getTicket({
+                        data: 'xxxxxxx',
+                        onListener: function (res) {
+                            alert('2延迟5s回调数据:' + res)
+                        }
+                    });
     }
 
 </script>

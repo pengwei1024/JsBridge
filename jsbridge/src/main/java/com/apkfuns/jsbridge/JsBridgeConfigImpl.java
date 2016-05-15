@@ -43,6 +43,9 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
             for (Class<? extends JsModule> module : modules) {
                 try {
                     String moduleName = module.newInstance().getModuleName();
+                    if (TextUtils.isEmpty(moduleName)) {
+                        throw new NullPointerException("moduleName can not be empty");
+                    }
                     if (!exposedMethods.containsKey(moduleName)) {
                         exposedMethods.put(moduleName, Utils.getAllMethod(moduleName, module));
                     }
