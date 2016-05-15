@@ -1,6 +1,5 @@
 package com.apkfuns.jsbridge.sample;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -27,16 +26,12 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // JSBridge配置
         JSBridge.getConfig().setProtocol("MyBridge").setSdkVersion(1).registerModule(ServiceModule.class);
 
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setAllowFileAccess(true);
-        webView.getSettings().setAppCacheMaxSize(1024 * 1024 * 8);
-        String appCachePath = getApplicationContext().getCacheDir().getAbsolutePath();
-        webView.getSettings().setAppCachePath(appCachePath);
-        webView.getSettings().setAppCacheEnabled(true);
         webView.loadUrl("file:///android_asset/index.html");
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -48,8 +43,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 boolean consumed = super.onConsoleMessage(consoleMessage);
+                // 输出js console打印的日志
                 if (!consumed) {
-                    Log.wtf("WebView", consoleMessage.message());
+                    Log.d("consoleMessage", consoleMessage.message());
                 }
                 return consumed;
             }
@@ -70,6 +66,11 @@ public class MainActivity extends ActionBarActivity {
         return true;
     }
 
+    /**
+     * 添加右上角菜单
+     * @param title
+     * @param r
+     */
     public void addMenu(String title, final Runnable r) {
         if (menu != null) {
             menu.clear();
@@ -85,21 +86,13 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * 设置标题栏颜色
+     * @param color
+     */
     public void setTitleBackground(int color) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
         }
-    }
-
-    private void postEvaluateJs(final String script) {
-        if (script == null) {
-            return;
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                webView.loadUrl("javascript:" + script, null);
-            }
-        });
     }
 }

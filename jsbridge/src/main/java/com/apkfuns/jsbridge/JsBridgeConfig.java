@@ -6,7 +6,7 @@ package com.apkfuns.jsbridge;
 public interface JsBridgeConfig {
 
     // 默认协议
-    String DEFAULT_PROTOCOL = "jsBridge";
+    String DEFAULT_PROTOCOL = "JsBridge";
 
     // 注册module
     JsBridgeConfig registerModule(Class<? extends JsModule>... modules);

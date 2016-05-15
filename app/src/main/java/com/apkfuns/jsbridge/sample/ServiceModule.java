@@ -20,11 +20,24 @@ public class ServiceModule implements JsModule {
         return "service";
     }
 
+    /**
+     * 设置标题栏颜色
+     * @param activity
+     * @param param
+     * @return
+     */
     public static String setTitleBackground(MainActivity activity, String param) {
         activity.setTitleBackground(Color.parseColor(param));
         return JsReturn.appleSuccess("success");
     }
 
+    /**
+     * 增加右上角菜单
+     * @param activity
+     * @param param
+     * @param callback
+     * @return
+     */
     public static String addNavIcon(MainActivity activity, final String param, final JSCallback callback) {
         activity.addMenu(param, new Runnable() {
             @Override
@@ -35,7 +48,12 @@ public class ServiceModule implements JsModule {
         return JsReturn.appleSuccess("success");
     }
 
-    public static void getTicket(WebView webView, final String object, final JSCallback callback) {
+    /**
+     * 异步获取ticket
+     * @param object
+     * @param callback
+     */
+    public static void getTicket(final String object, final JSCallback callback) {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
@@ -54,10 +72,22 @@ public class ServiceModule implements JsModule {
         }.execute();
     }
 
-    public static String getName(WebView webView, String option) {
+    /**
+     * 获取用户名
+     * @param option
+     * @return
+     */
+    public static String getName(String option) {
         return JsReturn.appleSuccess("1234");
     }
 
+    /**
+     * 原生alert
+     * @param webView
+     * @param option
+     * @param callback
+     * @return
+     */
     public static String alertDialog(WebView webView, String option, final JSCallback callback) {
         AlertDialog.Builder builder = null;
         try {
