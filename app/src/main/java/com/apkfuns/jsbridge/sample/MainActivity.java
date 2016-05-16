@@ -1,6 +1,10 @@
 package com.apkfuns.jsbridge.sample;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -15,19 +19,32 @@ import android.webkit.WebViewClient;
 
 import com.apkfuns.jsbridge.JSBridge;
 
+import java.util.List;
+
 
 public class MainActivity extends ActionBarActivity {
     private WebView webView;
 
     private Menu menu;
+    private LocationManager mLocationManager;
+    private String locationProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        if (providers.contains(LocationManager.GPS_PROVIDER)) {
+            //如果是GPS
+            locationProvider = LocationManager.GPS_PROVIDER;
+        } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+            //如果是Network
+            locationProvider = LocationManager.NETWORK_PROVIDER;
+        }
 
         // JSBridge配置
-        JSBridge.getConfig().setProtocol("MyBridge").setSdkVersion(1).registerModule(ServiceModule.class);
+        JSBridge.getConfig().setProtocol("MyBridge").registerModule(ServiceModule.class, SdkModule.class);
 
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -52,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         webView.setWebViewClient(new WebViewClient() {
-             @Override
+            @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 JSBridge.injectJs(webView);
@@ -68,6 +85,7 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * 添加右上角菜单
+     *
      * @param title
      * @param r
      */
@@ -88,11 +106,24 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * 设置标题栏颜色
+     *
      * @param color
      */
     public void setTitleBackground(int color) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
         }
+    }
+
+    /**
+     * 定位并设置位置改动监听
+     *
+     * @param listener
+     * @return
+     */
+    public Location getLocation(LocationListener listener) {
+        Location location = mLocationManager.getLastKnownLocation(locationProvider);
+        mLocationManager.requestLocationUpdates(locationProvider, 3000, 1, listener);
+        return location;
     }
 }

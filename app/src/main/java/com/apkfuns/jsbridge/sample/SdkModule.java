@@ -1,6 +1,8 @@
-package com.apkfuns.jsbridge;
+package com.apkfuns.jsbridge.sample;
 
 import android.webkit.WebView;
+
+import com.apkfuns.jsbridge.JsModule;
 
 
 /**
@@ -13,6 +15,6 @@ public class SdkModule implements JsModule {
     }
 
     public static int getVersion(WebView webView, String param) {
-        return JsBridgeConfigImpl.getInstance().getSdkVersionCode();
+        return 1;
     }
 }

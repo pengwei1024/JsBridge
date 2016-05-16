@@ -16,7 +16,4 @@ public interface JsBridgeConfig {
 
     // 设置协议头
     JsBridgeConfig setProtocol(String protocol);
-
-    // 设置当前sdk版本
-    JsBridgeConfig setSdkVersion(int versionCode);
 }

@@ -15,7 +15,6 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
     private Map<String, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
     private Set<Class<? extends JsMethodRun>> methodRuns = new HashSet<>();
     private String protocol;
-    private int sdkVersionCode;
 
     private JsBridgeConfigImpl() {
     }
@@ -80,15 +79,5 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
 
     public String getProtocol() {
         return TextUtils.isEmpty(protocol) ? DEFAULT_PROTOCOL : protocol;
-    }
-
-    @Override
-    public JsBridgeConfig setSdkVersion(int versionCode) {
-        this.sdkVersionCode = versionCode;
-        return this;
-    }
-
-    public int getSdkVersionCode() {
-        return sdkVersionCode;
     }
 }

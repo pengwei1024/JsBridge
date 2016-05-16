@@ -100,7 +100,7 @@ public class JsMethod {
         builder.append("if(result === undefined || result === null) return;");
         builder.append("var data = eval('(' + result + ')');");
         builder.append("if(data && data.onSuccess && option.onSuccess){option.onSuccess(data.data);}");
-        builder.append("else if(data && data.onFailure && option.onFailure){option.onFailure(data.errorMsg);}");
+        builder.append("else if(data && data.onFailure && option.onFailure){option.onFailure(data.data);}");
         builder.append("},");
         return builder.toString();
     }

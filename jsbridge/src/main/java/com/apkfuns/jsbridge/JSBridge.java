@@ -17,7 +17,6 @@ public class JSBridge {
 
     static {
         config.registerMethodRun(JSBridgeReadyRun.class);
-        config.registerModule(SdkModule.class);
     }
 
     public static JsBridgeConfig getConfig() {

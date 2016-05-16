@@ -9,16 +9,23 @@ import org.json.JSONObject;
  */
 public class JsReturn {
 
-    /**
-     * 返回成功
-     *
-     * @param data
-     * @return
-     */
-    public static String appleSuccess(String data) {
+    private boolean success;
+    private String data;
+
+    public JsReturn(boolean success, String data) {
+        this.success = success;
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
         JSONObject res = new JSONObject();
         try {
-            res.put("onSuccess", 1);
+            if (success) {
+                res.put("onSuccess", 1);
+            } else {
+                res.put("onFailure", 1);
+            }
             res.put("data", data);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -27,19 +34,23 @@ public class JsReturn {
     }
 
     /**
+     * 返回成功
+     *
+     * @param data
+     * @return
+     */
+    public static String appleSuccess(String data) {
+        return new JsReturn(true, data).toString();
+    }
+
+    /**
      * 返回失败
+     *
      * @param errorMsg
      * @return
      */
     public static String appleFailure(String errorMsg) {
-        JSONObject res = new JSONObject();
-        try {
-            res.put("onFailure", 1);
-            res.put("errorMsg", errorMsg);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return res.toString();
+        return new JsReturn(false, errorMsg).toString();
     }
 
 }
