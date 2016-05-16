@@ -62,7 +62,7 @@ public class MainActivity extends ActionBarActivity {
                 boolean consumed = super.onConsoleMessage(consoleMessage);
                 // 输出js console打印的日志
                 if (!consumed) {
-                    Log.d("consoleMessage", consoleMessage.message());
+                    Log.wtf("consoleMessage", consoleMessage.message());
                 }
                 return consumed;
             }

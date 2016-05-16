@@ -3,6 +3,7 @@ package com.apkfuns.jsbridge;
 import android.app.Activity;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.WebView;
 
 
@@ -48,6 +49,7 @@ public class JSBridge {
                 e.printStackTrace();
             }
         }
+        Log.wtf("injectJs", builder.toString());
         webView.loadUrl("javascript:" + builder.toString());
     }
 
@@ -67,10 +69,12 @@ public class JSBridge {
         String methodName = "";
         String className = "";
         String param = "";
+        String port = "";
         if (uriString.startsWith(config.getProtocol())) {
             className = uri.getHost();
             param = uri.getQuery();
             String path = uri.getPath();
+            port = uri.getPort() + "";
             if (!TextUtils.isEmpty(path)) {
                 methodName = path.replace("/", "");
             }
@@ -96,16 +100,16 @@ public class JSBridge {
                                 ret = method.invoke(activity, webView, param);
                                 break;
                             case ParameterType.TYPE_AOJ:
-                                ret = method.invoke(activity, param, new JSCallback(webView, method));
+                                ret = method.invoke(activity, param, new JSCallback(webView, method, port));
                                 break;
                             case ParameterType.TYPE_OJ:
-                                ret = method.invoke(param, new JSCallback(webView, method));
+                                ret = method.invoke(param, new JSCallback(webView, method, port));
                                 break;
                             case ParameterType.TYPE_WOJ:
-                                ret = method.invoke(webView, param, new JSCallback(webView, method));
+                                ret = method.invoke(webView, param, new JSCallback(webView, method, port));
                                 break;
                             case ParameterType.TYPE_AWOJ:
-                                ret = method.invoke(activity, webView, param, new JSCallback(webView, method));
+                                ret = method.invoke(activity, webView, param, new JSCallback(webView, method, port));
                                 break;
                             default:
                                 break;

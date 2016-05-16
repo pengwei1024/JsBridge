@@ -2,6 +2,7 @@ package com.apkfuns.jsbridge;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.reflect.Method;
 
@@ -87,20 +88,25 @@ public class JsMethod {
      */
     public String getInjectJs() {
         StringBuilder builder = new StringBuilder(getMethodName() + ":function(option){");
+        builder.append("try{");
         builder.append("if(option === undefined){return prompt('" + getUrl() + "');};");
+        builder.append("var port = Math.floor(Math.random() * (1 << 30));");
         if (needCallback()) {
             builder.append("if(option.onListener && typeof(option.onListener) === 'function'){");
-            builder.append(getCallbackFunction() + "=" + "option.onListener;");
+            builder.append("if(!(" + getCallbackFunction() + " instanceof Array)){" + getCallbackFunction() + "=[];};");
+            builder.append(getCallbackFunction().trim() + "[port] = option.onListener;");
             builder.append("}");
         }
         builder.append("var params;");
         builder.append("if(option.onSuccess ===  undefined && option.onFailure === undefined && option.onListener === undefined){");
         builder.append("params = option;}else{params = option.data;}");
-        builder.append("var result = prompt('" + getUrl() + "' + (encodeURIComponent(params ||'')));");
-        builder.append("if(result === undefined || result === null) return;");
+        builder.append("var requestUri = '" + getUrl() + "'.replace(/:0/, ':'+port);");
+        builder.append("var result = prompt(requestUri + (encodeURIComponent(params ||'')));");
+        builder.append("if(result === undefined || result === null || result === '') return;");
         builder.append("var data = eval('(' + result + ')');");
         builder.append("if(data && data.onSuccess && option.onSuccess){option.onSuccess(data.data);}");
         builder.append("else if(data && data.onFailure && option.onFailure){option.onFailure(data.data);}");
+        builder.append("}catch(e){console.error(e);};");
         builder.append("},");
         return builder.toString();
     }
@@ -111,8 +117,12 @@ public class JsMethod {
      * @return
      */
     public String getUrl() {
+        return getUrl(0);
+    }
+
+    public String getUrl(int port) {
         return String.format("%s://%s:%d/%s?", JsBridgeConfigImpl.getInstance().getProtocol(),
-                getModuleName(), 0, getMethodName());
+                getModuleName(), port, getMethodName());
     }
 
     public Object invoke(Object... args) throws Exception {
