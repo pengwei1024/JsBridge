@@ -12,7 +12,7 @@ android WebView和Javascript双向交互的框架,更简单的Hybrid实现方案
 
 #### 1.导入JSBridge
 ```
-compile 'com.apkfuns.jsbridge:jsbridge:1.1.0'
+compile 'com.apkfuns.jsbridge:jsbridge:1.2.0'
 ```
 
 #### 2.设置prompt监听和注入JS方法
@@ -107,20 +107,19 @@ JsCallback | JsCallback | 可缺省
 * (Activity activity, WebView view, String options)
 * (Activity activity, String options, JsCallback call)
 * (WebView view, String options, JsCallback call)
-* (Activity activity, WebView view, String options, sCallback call)
+* (Activity activity, WebView view, String options, JsCallback call)
 
 怎么去选择合适的参数呢，看你方法内部情况了，如果需要设置界面一般都得用activity，webView用于webView相关操作，JsCallback的话就是用于异步回调给js，这下理解了吧。
 
 #### 4.设置协议和可调用方法
 ```java
-JSBridge.getConfig().setProtocol("MyBridge").setSdkVersion(1).registerModule(NativeModule.class);
+JSBridge.getConfig().setProtocol("MyBridge").registerModule(NativeModule.class);
 ```
-方法 | 值 | 描述  
-------- | ------- | -------  
-setProtocol | string | 使用的协议，也是JS调用的对象名,如MyBridge.native.setNavMenu(options);
-setSdkVersion | int | 设置sdk版本，用于解决客户端不断迭代导致早起版本方法不存在的问题
-registerModule | JsModule | 注册js和java交互方法，如刚才写的NativeModule
-registerMethodRun | JsMethodRun | 注册可直接运行的js脚本
+方法 | 值 | 描述 | 默认
+------- | ------- | -------  | ------- 
+setProtocol | string | 使用的协议，也是JS调用的对象名,如MyBridge.native.setNavMenu(options);|JsBridge
+registerModule | JsModule | 注册js和java交互方法，如刚才写的NativeModule|无
+registerMethodRun | JsMethodRun | 注册可直接运行的js脚本|默认运行JSBridgeReadyRun
 
 #### 5.JS调用
 这样android端就完成注入了，网页端怎么访问呢？

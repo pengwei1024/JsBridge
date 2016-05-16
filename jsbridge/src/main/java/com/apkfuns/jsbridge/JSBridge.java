@@ -49,7 +49,7 @@ public class JSBridge {
                 e.printStackTrace();
             }
         }
-        Log.wtf("injectJs", builder.toString());
+//        Log.wtf("injectJs", builder.toString());
         webView.loadUrl("javascript:" + builder.toString());
     }
 

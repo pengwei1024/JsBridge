@@ -2,7 +2,6 @@ package com.apkfuns.jsbridge;
 
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.lang.reflect.Method;
 

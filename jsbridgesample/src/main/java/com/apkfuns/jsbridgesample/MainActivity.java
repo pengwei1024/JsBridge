@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        JSBridge.getConfig().setProtocol("MyBridge").setSdkVersion(1).registerModule(NativeModule.class);
+        JSBridge.getConfig().setProtocol("MyBridge").registerModule(NativeModule.class);
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl("file:///android_asset/index.html");
