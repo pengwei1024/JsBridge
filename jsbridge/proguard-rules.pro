@@ -15,3 +15,10 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keep public class com.apkfuns.jsbridge.JSBridge{*;}
+-keep public class com.apkfuns.jsbridge.JsBridgeConfigImpl{*;}
+-keep public class com.apkfuns.jsbridge.JSCallback{*;}
+-keep public class com.apkfuns.jsbridge.JsMethodRun{*;}
+-keep public class com.apkfuns.jsbridge.JsModule{*;}
+-keep public class com.apkfuns.jsbridge.JsReturn{*;}

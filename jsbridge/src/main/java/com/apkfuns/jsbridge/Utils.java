@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * Created by pengwei on 16/5/13.
  */
-public class Utils {
+final class Utils {
 
     /**
      * 获取类的静态公开方法

@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 /**
  * Created by pengwei on 16/5/11.
  */
-public class JsMethod {
+class JsMethod {
     private boolean needCallback;
     private Method javaMethod;
     private String moduleName;
