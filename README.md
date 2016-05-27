@@ -6,7 +6,7 @@ android WebView和Javascript双向交互的框架,更简单的Hybrid实现方案
 * 支持同步异步回调，直接注入JS对象，无需考虑平台
 * 避免WebView addJavascriptInterface漏洞，兼容API 8+
 
-更多使用方法请参考[app](./app)
+更多使用方法请参考[app](./app) <br/>
 <img src='./screenshot/ss02.png' width='420px'/><br/>
 
 ### 下面通过示例详细介绍JSBridge如何使用
