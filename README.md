@@ -6,6 +6,9 @@ android WebView和Javascript双向交互的框架,更简单的Hybrid实现方案
 * 支持同步异步回调，直接注入JS对象，无需考虑平台
 * 避免WebView addJavascriptInterface漏洞，兼容API 8+
 
+更多使用方法请参考[app](./app)
+<img src='./screenshot/ss02.png'/><br/>
+
 ### 下面通过示例详细介绍JSBridge如何使用
 <img src='./screenshot/ss01.gif'/><br/>
 效果如上图，通过js按钮点击设置android ActionBar右上角菜单，并将点击事件传回给js处理, [demo代码](https://github.com/pengwei1024/JsBridge/tree/master/jsbridgesample)
