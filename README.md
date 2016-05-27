@@ -7,7 +7,7 @@ android WebView和Javascript双向交互的框架,更简单的Hybrid实现方案
 * 避免WebView addJavascriptInterface漏洞，兼容API 8+
 
 更多使用方法请参考[app](./app)
-<img src='./screenshot/ss02.png'/><br/>
+<img src='./screenshot/ss02.png' width='100%'/><br/>
 
 ### 下面通过示例详细介绍JSBridge如何使用
 <img src='./screenshot/ss01.gif'/><br/>
