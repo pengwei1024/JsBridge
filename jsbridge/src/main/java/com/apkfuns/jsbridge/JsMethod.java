@@ -64,15 +64,27 @@ class JsMethod {
         this.methodName = methodName;
     }
 
+    /**
+     * 执行方法名
+     * @return
+     */
     public String getFunction() {
         return String.format("%s.%s.%s", JsBridgeConfigImpl.getInstance().getProtocol(),
                 getModuleName(), getMethodName());
     }
 
+    /**
+     * module + method
+     * @return
+     */
     public String getModuleAndMethod() {
         return getModuleName() + "." + getMethodName();
     }
 
+    /**
+     * 回调函数名称
+     * @return
+     */
     public String getCallbackFunction() {
         if (needCallback()) {
             return getFunction() + "Callback";
@@ -97,8 +109,10 @@ class JsMethod {
             builder.append("}");
         }
         builder.append("var params;");
-        builder.append("if(option.onSuccess ===  undefined && option.onFailure === undefined && option.onListener === undefined){");
+        builder.append("if(option.onSuccess ===  undefined && option.onFailure === undefined && option.onListener === undefined && option.data === undefined){");
         builder.append("params = option;}else{params = option.data;}");
+        // 将js对象转化为string
+        builder.append("if(typeof params === 'object'){params = JSON.stringify(params);} ");
         builder.append("var requestUri = '" + getUrl() + "'.replace(/:0/, ':'+port);");
         builder.append("var result = prompt(requestUri + (encodeURIComponent(params ||'')));");
         builder.append("if(result === undefined || result === null || result === '') return;");

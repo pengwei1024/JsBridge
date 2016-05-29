@@ -19,6 +19,8 @@ import com.apkfuns.jsbridge.JsReturn;
  */
 public class ServiceModule implements JsModule {
 
+    private static final String TAG = "ServiceModule";
+
     @Override
     public String getModuleName() {
         return "service";
@@ -32,6 +34,7 @@ public class ServiceModule implements JsModule {
      * @return
      */
     public static String setTitleBackground(MainActivity activity, String param) {
+        Log.d(TAG, "setTitleBackground: " + param);
         activity.setTitleBackground(Color.parseColor(param));
         return JsReturn.appleSuccess("success");
     }
@@ -150,6 +153,10 @@ public class ServiceModule implements JsModule {
             return JsReturn.appleSuccess("定位成功");
         }
         return JsReturn.appleFailure("定位失败");
+    }
+
+    public static void getJsObject(String options) {
+        Log.d(TAG, "getObject: " + options);
     }
 
 }

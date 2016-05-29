@@ -10,7 +10,7 @@ class JSBridgeReadyRun implements JsMethodRun {
     @Override
     public String execJs() {
         StringBuilder builder = new StringBuilder("try{");
-        builder.append("var ready = window.on" + config.getProtocol() + "Ready;");
+        builder.append("var ready = window." + config.getReadyFuncName() + ";");
         builder.append("if(ready && typeof(ready) === 'function'){setTimeout(ready(), 100)}");
         builder.append("}catch(e){};");
         return builder.toString();

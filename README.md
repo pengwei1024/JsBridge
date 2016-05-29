@@ -123,6 +123,7 @@ JSBridge.getConfig().setProtocol("MyBridge").registerModule(NativeModule.class);
 setProtocol | string | 使用的协议，也是JS调用的对象名,如MyBridge.native.setNavMenu(options);|JsBridge
 registerModule | JsModule | 注册js和java交互方法，如刚才写的NativeModule|无
 registerMethodRun | JsMethodRun | 注册可直接运行的js脚本|默认运行JSBridgeReadyRun
+setLoadReadyFuncName | string | jsBridge加载完成回调 | 'on' + Protocol + 'Ready',如window.onMyBridgeReady= function(){}
 
 #### 5.JS调用
 这样android端就完成注入了，网页端怎么访问呢？

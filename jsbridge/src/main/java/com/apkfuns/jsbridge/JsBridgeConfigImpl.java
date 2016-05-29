@@ -15,6 +15,7 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
     private Map<String, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
     private Set<Class<? extends JsMethodRun>> methodRuns = new HashSet<>();
     private String protocol;
+    private String readyFuncName;
 
     private JsBridgeConfigImpl() {
     }
@@ -79,5 +80,18 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
 
     public String getProtocol() {
         return TextUtils.isEmpty(protocol) ? DEFAULT_PROTOCOL : protocol;
+    }
+
+    @Override
+    public JsBridgeConfig setLoadReadyFuncName(String readyName) {
+        this.readyFuncName = readyName;
+        return this;
+    }
+
+    public String getReadyFuncName() {
+        if (TextUtils.isEmpty(this.readyFuncName)) {
+            return String.format("on%sReady", getProtocol());
+        }
+        return readyFuncName;
     }
 }

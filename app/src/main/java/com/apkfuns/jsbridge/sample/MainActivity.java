@@ -44,7 +44,9 @@ public class MainActivity extends ActionBarActivity {
         }
 
         // JSBridge配置
-        JSBridge.getConfig().setProtocol("MyBridge").registerModule(ServiceModule.class, SdkModule.class);
+        JSBridge.getConfig().setProtocol("MyBridge")
+                .setLoadReadyFuncName("onJsReady")
+                .registerModule(ServiceModule.class, SdkModule.class);
 
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
