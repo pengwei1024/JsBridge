@@ -15,7 +15,7 @@ android WebView和Javascript双向交互的框架,更简单的Hybrid实现方案
 
 #### 1.导入JSBridge
 ```
-compile 'com.apkfuns.jsbridge:jsbridge:1.2.0'
+compile 'com.apkfuns.jsbridge:jsbridge:1.2.1'
 ```
 
 #### 2.设置prompt监听和注入JS方法
