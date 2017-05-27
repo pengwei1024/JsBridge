@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                result.confirm(JSBridge.callJsPrompt(MainActivity.this, view, message));
+                JSBridge.callJsPrompt(MainActivity.this, view, message, result);
                 return true;
             }
         });

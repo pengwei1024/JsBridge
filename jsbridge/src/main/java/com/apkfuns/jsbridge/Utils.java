@@ -1,6 +1,8 @@
 package com.apkfuns.jsbridge;
 
 
+import android.text.TextUtils;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -21,9 +23,16 @@ final class Utils {
         HashMap<String, JsMethod> mMethodsMap = new HashMap<>();
         Method[] methods = injectedCls.getDeclaredMethods();
         for (Method method : methods) {
-            String name;
-            if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || (name = method.getName()) == null) {
+            String name = method.getName();
+            if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || name == null) {
                 continue;
+            }
+            JSBridgeMethod annotation = method.getAnnotation(JSBridgeMethod.class);
+            if (annotation == null) {
+                continue;
+            }
+            if (!TextUtils.isEmpty(annotation.methodName())) {
+                name = annotation.methodName();
             }
             Class[] parameters = method.getParameterTypes();
             int parameterType = ParameterType.getParameterType(parameters);
@@ -38,6 +47,7 @@ final class Utils {
                 case ParameterType.TYPE_OJ:
                 case ParameterType.TYPE_WOJ:
                 case ParameterType.TYPE_AWOJ:
+                case ParameterType.TYPE_AWOJR:
                     mMethodsMap.put(name, JsMethod.create(true, module, method, parameterType));
                     break;
                 default:

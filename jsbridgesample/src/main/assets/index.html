@@ -10,8 +10,12 @@
     window.onMyBridgeReady = function () {
         document.getElementById('btn_add_menu').onclick = function () {
             MyBridge.native.setNavMenu({
-                data: '我是来自网页的按钮', onListener: function (res) {
+                data: '我是来自网页的按钮',
+                onListener: function (res) {
                     alert('点击按钮了，按钮名称是:' + res)
+                },
+                onSuccess: function(msg){
+                    alert(msg)
                 }
             });
         }

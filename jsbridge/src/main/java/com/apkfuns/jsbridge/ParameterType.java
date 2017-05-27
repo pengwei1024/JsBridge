@@ -27,6 +27,7 @@ public class ParameterType {
     public static final int TYPE_WOJ = 32;
     public static final int TYPE_AWO = 33;
     public static final int TYPE_AWOJ = 41;
+    public static final int TYPE_AWOJR = 51;
 
 
     public static int getParameterType(Class[] parameters) {
@@ -60,6 +61,15 @@ public class ParameterType {
                             && Utils.classIsRelative(parameters[2], String.class) && Utils.classIsRelative(parameters[3], JSCallback.class)) {
                         return TYPE_AWOJ;
                     }
+                    break;
+                case 5:
+                    if (Utils.classIsRelative(parameters[0], Activity.class) && Utils.classIsRelative(parameters[1], WebView.class)
+                            && Utils.classIsRelative(parameters[2], String.class) && Utils.classIsRelative(parameters[3], JSCallback.class)
+                            && Utils.classIsRelative(parameters[4], JsReturn.class)) {
+                        return TYPE_AWOJR;
+                    }
+                    break;
+                default:
                     break;
             }
         }

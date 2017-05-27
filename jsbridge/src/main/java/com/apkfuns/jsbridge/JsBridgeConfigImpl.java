@@ -12,7 +12,7 @@ import java.util.Set;
  */
 class JsBridgeConfigImpl implements JsBridgeConfig {
 
-    private Map<String, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
+    private Map<JsModule, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
     private Set<Class<? extends JsMethodRun>> methodRuns = new HashSet<>();
     private String protocol;
     private String readyFuncName;
@@ -40,14 +40,44 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
     @Override
     public JsBridgeConfig registerModule(Class<? extends JsModule>... modules) {
         if (modules != null && modules.length > 0) {
-            for (Class<? extends JsModule> module : modules) {
+            for (Class<? extends JsModule> moduleCls : modules) {
                 try {
-                    String moduleName = module.newInstance().getModuleName();
-                    if (TextUtils.isEmpty(moduleName)) {
-                        throw new NullPointerException("moduleName can not be empty");
+                    JsModule module = moduleCls.newInstance();
+                    if (module != null) {
+                        HashMap<String, JsMethod> methodsMap = Utils.getAllMethod(
+                                module.getModuleName(), moduleCls);
+                        if (!methodsMap.isEmpty()) {
+                            exposedMethods.put(module, methodsMap);
+                        }
                     }
-                    if (!exposedMethods.containsKey(moduleName)) {
-                        exposedMethods.put(moduleName, Utils.getAllMethod(moduleName, module));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public JsBridgeConfig registerJsMethod(Class<? extends JsMethodExt>... methods) {
+        if (methods != null && methods.length > 0) {
+            for (Class<? extends JsMethodExt> cls: methods) {
+                try {
+                    JsMethodExt ext = cls.newInstance();
+                    if (ext == null || TextUtils.isEmpty(ext.getJsMethod())) {
+                        throw new NullPointerException("methodName must not be empty");
+                    }
+                    String module = ext.getModuleName();
+                    if (TextUtils.isEmpty(module)) {
+                        module = JsBridgeConfig.MODULE_NONE;
+                    }
+                    if (exposedMethods.containsKey(module) && exposedMethods.get(module) != null) {
+                        HashMap<String, JsMethod> maps = exposedMethods.get(module);
+                        maps.put(ext.getJsMethod(), ext);
+                    } else {
+                        HashMap<String, JsMethod> maps = new HashMap<>();
+                        maps.put(ext.getJsMethod(), ext);
+                        exposedMethods.put(module, maps);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -68,7 +98,7 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
     }
 
 
-    public Map<String, HashMap<String, JsMethod>> getExposedMethods() {
+    public Map<JsModule, HashMap<String, JsMethod>> getExposedMethods() {
         return exposedMethods;
     }
 

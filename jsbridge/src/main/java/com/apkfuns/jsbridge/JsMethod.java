@@ -26,7 +26,7 @@ class JsMethod {
         this.params = params;
     }
 
-    private JsMethod() {
+    protected JsMethod() {
     }
 
     public boolean needCallback() {

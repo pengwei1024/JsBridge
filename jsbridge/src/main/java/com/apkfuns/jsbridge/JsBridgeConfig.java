@@ -5,11 +5,17 @@ package com.apkfuns.jsbridge;
  */
 public interface JsBridgeConfig {
 
+    // 空module
+    String MODULE_NONE = "*";
+
     // 默认协议
     String DEFAULT_PROTOCOL = "JsBridge";
 
     // 注册module
     JsBridgeConfig registerModule(Class<? extends JsModule>... modules);
+
+    // 注册JSMethod
+    JsBridgeConfig registerJsMethod(Class<? extends JsMethodExt>... methods);
 
     // 注册可运行方法
     JsBridgeConfig registerMethodRun(Class<? extends JsMethodRun>... methodRuns);

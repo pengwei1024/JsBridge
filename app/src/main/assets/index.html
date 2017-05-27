@@ -19,7 +19,18 @@
     margin: 10px;
     padding: 8px;
     }
+
+    img {max-width:100%}
 </style>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
+<img src='http://imgst-dl.meilishuo.net/pic/_o/84/a4/a30be77c4ca62cd87156da202faf_1440_900.jpg'/>
 <ul id="ul">
     <li>设置菜单</li>
     <li>设置标题栏颜色</li>
@@ -82,9 +93,16 @@
         }
     }
 
-    window.onJsReady = function () {
+     window.onJsReady = function () {
         console.log("MyBridge初始化完毕");
+         alert("SDK:" +window.MyBridge.sdk.getVersion());
     }
+
+    for (var i= 0;i<1000;i++) {
+        <!--console.log(i);-->
+    }
+
+alert(-1);
 
 
 </script>

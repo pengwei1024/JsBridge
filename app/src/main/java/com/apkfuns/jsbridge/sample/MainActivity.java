@@ -1,6 +1,7 @@
 package com.apkfuns.jsbridge.sample;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,6 +17,7 @@ import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.apkfuns.jsbridge.JSBridge;
 
@@ -55,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                result.confirm(JSBridge.callJsPrompt(MainActivity.this, webView, message));
+                JSBridge.callJsPrompt(MainActivity.this, webView, message, result);
                 return true;
             }
 
@@ -74,7 +76,13 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
                 JSBridge.injectJs(webView);
+                Toast.makeText(MainActivity.this, "onPageStarted", Toast.LENGTH_SHORT).show();
             }
         });
     }
