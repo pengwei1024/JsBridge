@@ -10,6 +10,8 @@ import android.webkit.JsPromptResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
+import com.alibaba.fastjson.JSON;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -20,10 +22,6 @@ import java.util.Scanner;
 public class JSBridge {
 
     private static JsBridgeConfigImpl config = JsBridgeConfigImpl.getInstance();
-
-    static {
-        config.registerMethodRun(JSBridgeReadyRun.class);
-    }
 
     public static JsBridgeConfig getConfig() {
         return config;
@@ -43,12 +41,17 @@ public class JSBridge {
             if (module == null || TextUtils.isEmpty(module.getModuleName())) {
                 continue;
             }
-            // 为JsModule设置context
+            // 为JsModule设置context 和 WebView
             try {
-                Method contextMethod = module.getClass().getMethod("setContext", Context.class);
-                contextMethod.setAccessible(true);
-                if (contextMethod != null) {
-                    contextMethod.invoke(null, webView.getContext());
+                Method setContextMethod = module.getClass().getMethod("setContext", Context.class);
+                setContextMethod.setAccessible(true);
+                if (setContextMethod != null) {
+                    setContextMethod.invoke(null, webView.getContext());
+                }
+                Method setWebViewMethod = module.getClass().getMethod("setWebView", WebView.class);
+                setWebViewMethod.setAccessible(true);
+                if (setWebViewMethod != null) {
+                    setWebViewMethod.invoke(null, webView);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -76,94 +79,30 @@ public class JSBridge {
 
     /**
      * 执行js回调
-     *
-     * @param webView
      * @param uriString
+     * @param result
      */
-    public static void callJsPrompt(Activity activity, WebView webView, String uriString, JsPromptResult result) {
+    public static void callJsPrompt(String uriString, JsPromptResult result) {
         if (result == null) {
             throw new NullPointerException("JsPromptResult must not null");
         }
         if (TextUtils.isEmpty(uriString)) {
             throw new NullPointerException("uriString must not null");
         }
-        Uri uri = Uri.parse(uriString);
-        String methodName = "";
-        String className = "";
-        String param = "";
-        String port = "";
-        if (uriString.startsWith(config.getProtocol())) {
-            className = uri.getHost();
-            param = uri.getQuery();
-            String path = uri.getPath();
-            port = uri.getPort() + "";
-            if (!TextUtils.isEmpty(path)) {
-                methodName = path.replace("/", "");
+        JBArgumentParser argumentParser = JSON.parseObject(uriString, JBArgumentParser.class);
+        if (argumentParser != null) {
+            HashMap<String, JsMethod> methodHashMap = config.getExposedMethods().get(argumentParser.getModule());
+            if (methodHashMap != null && !methodHashMap.isEmpty() && methodHashMap.containsKey(
+                    argumentParser.getMethod())) {
+                JsMethod method = methodHashMap.get(argumentParser.getMethod());
+                try {
+                    Object ret = method.invoke("");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
-        if (config.getExposedMethods().containsKey(className)) {
-            HashMap<String, JsMethod> methodHashMap = config.getExposedMethods().get(className);
-            if (methodHashMap != null && methodHashMap.size() != 0 && methodHashMap.containsKey(methodName)) {
-                JsMethod method = methodHashMap.get(methodName);
-                if (method == null) {
-                    result.confirm();
-                    return;
-                }
-                if (method instanceof JsMethodExt) {
-                    ((JsMethodExt) method).handleResult(result, activity, param);
-                } else {
-                    if (method != null && method.getJavaMethod() != null && method.getParameterType() != -1) {
-                        try {
-                            if (method.getParameterType() == ParameterType.TYPE_AWOJR) {
-                                method.invoke(activity, webView, param, new JSCallback(webView, method, port),
-                                        new JsReturn(result));
-                                return;
-                            }
-                            Object ret = null;
-                            switch (method.getParameterType()) {
-                                case ParameterType.TYPE_O:
-                                    ret = method.invoke(param);
-                                    break;
-                                case ParameterType.TYPE_AO:
-                                    ret = method.invoke(activity, param);
-                                    break;
-                                case ParameterType.TYPE_WO:
-                                    ret = method.invoke(webView, param);
-                                    break;
-                                case ParameterType.TYPE_AWO:
-                                    ret = method.invoke(activity, webView, param);
-                                    break;
-                                case ParameterType.TYPE_AOJ:
-                                    ret = method.invoke(activity, param, new JSCallback(webView, method, port));
-                                    break;
-                                case ParameterType.TYPE_OJ:
-                                    ret = method.invoke(param, new JSCallback(webView, method, port));
-                                    break;
-                                case ParameterType.TYPE_WOJ:
-                                    ret = method.invoke(webView, param, new JSCallback(webView, method, port));
-                                    break;
-                                case ParameterType.TYPE_AWOJ:
-                                    ret = method.invoke(activity, webView, param, new JSCallback(webView, method, port));
-                                    break;
-                                default:
-                                    break;
-                            }
-                            if (ret != null) {
-                                result.confirm(ret.toString());
-                            } else {
-                                result.confirm();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            } else {
-                result.confirm();
-            }
-        } else {
-            result.confirm();
-        }
+        result.confirm();
     }
 
     /**

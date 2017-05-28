@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pengwei on 16/5/11.
@@ -13,6 +15,8 @@ class JsMethod {
     private Method javaMethod;
     private String moduleName;
     private String methodName;
+    private String resultValue;
+    private List<Integer> parameters = new ArrayList<>();
 
     private String params;
 
@@ -24,6 +28,10 @@ class JsMethod {
 
     public void setParams(String params) {
         this.params = params;
+    }
+
+    public void setResultValue(String resultValue) {
+        this.resultValue = resultValue;
     }
 
     protected JsMethod() {

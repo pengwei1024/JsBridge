@@ -35,6 +35,7 @@ final class Utils {
                 name = annotation.methodName();
             }
             Class[] parameters = method.getParameterTypes();
+            JsMethod createMethod = JsMethod.create(false, module, method, 0);
             int parameterType = ParameterType.getParameterType(parameters);
             switch (parameterType) {
                 case ParameterType.TYPE_O:

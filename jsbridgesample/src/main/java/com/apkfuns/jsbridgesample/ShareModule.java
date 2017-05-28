@@ -2,8 +2,8 @@ package com.apkfuns.jsbridgesample;
 
 import android.widget.Toast;
 
-import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.JSBridgeMethod;
+import com.apkfuns.jsbridge.JSCallback;
 import com.apkfuns.jsbridge.JsModule;
 
 /**
@@ -17,7 +17,7 @@ public class ShareModule extends JsModule {
     }
 
     @JSBridgeMethod
-    public void share(int platform, String msg, JBCallback success, JBCallback failure) {
+    public void share(int platform, String msg, JSCallback success, JSCallback failure) {
         Toast.makeText(getContext(), "abc", Toast.LENGTH_SHORT).show();
     }
 
