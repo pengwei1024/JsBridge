@@ -3,6 +3,8 @@ package com.apkfuns.jsbridge;
 
 import android.text.TextUtils;
 
+import com.apkfuns.jsbridge.util.JBMap;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -59,7 +61,7 @@ final class Utils {
     }
 
     /**
-     * 是否相关
+     * 是否是派生类
      *
      * @param cla1
      * @param cla2
@@ -69,6 +71,28 @@ final class Utils {
         if (cla1 != null && cla2 != null) {
             return cla2.isAssignableFrom(cla1) || cla2.equals(cla1);
         }
+        return false;
+    }
+
+    /**
+     * 参数是否匹配
+     * @param jsType
+     * @param nativeObject
+     * @return
+     */
+    public static boolean isParameterMatch(@JSArgumentType.Type int jsType, Object nativeObject) {
+        if (nativeObject != null) {
+            switch (jsType) {
+                case JSArgumentType.TYPE_OBJECT:
+                    return nativeObject instanceof JBMap;
+                case JSArgumentType.TYPE_BOOL:
+                    return nativeObject instanceof Boolean;
+                case JSArgumentType.TYPE_NUMBER:
+                    return nativeObject instanceof Integer || nativeObject instanceof Float
+                            || nativeObject instanceof Double;
+            }
+        }
+        // Parameter don't match, expect JBMap, actual string
         return false;
     }
 }

@@ -10,14 +10,15 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 public interface JSArgumentType {
-    int TYPE_STRING = 0;
-    int TYPE_NUMBER = 1;
-    int TYPE_BOOL = 2;
-    int TYPE_FUNCTION = 3;
-    int TYPE_OBJECT = 4;
-    int TYPE_ARRAY = 5;
+    int TYPE_UNDEFINE = 0;
+    int TYPE_STRING = 1;
+    int TYPE_NUMBER = 2;
+    int TYPE_BOOL = 3;
+    int TYPE_FUNCTION = 4;
+    int TYPE_OBJECT = 5;
+    int TYPE_ARRAY = 6;
 
-    @IntDef({TYPE_STRING, TYPE_NUMBER, TYPE_BOOL, TYPE_FUNCTION, TYPE_OBJECT, TYPE_ARRAY})
+    @IntDef({TYPE_UNDEFINE, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL, TYPE_FUNCTION, TYPE_OBJECT, TYPE_ARRAY})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
     }

@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -32,7 +33,7 @@ public class MainActivity extends ActionBarActivity {
     private String locationProvider;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -57,7 +58,7 @@ public class MainActivity extends ActionBarActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                JSBridge.callJsPrompt(MainActivity.this, webView, message, result);
+                JSBridge.callJsPrompt(message, result);
                 return true;
             }
 

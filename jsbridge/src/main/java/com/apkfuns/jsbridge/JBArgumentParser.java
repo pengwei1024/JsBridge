@@ -7,17 +7,18 @@ import java.util.List;
  */
 
 final class JBArgumentParser {
-    private int token;
+    private int id;
     private String module;
     private String method;
     private List<Parameter> parameters;
+    private List<String> callback;
 
-    public int getToken() {
-        return token;
+    public int getId() {
+        return id;
     }
 
-    public void setToken(int token) {
-        this.token = token;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getModule() {
@@ -44,9 +45,18 @@ final class JBArgumentParser {
         this.parameters = parameters;
     }
 
+    public List<String> getCallback() {
+        return callback;
+    }
+
+    public void setCallback(List<String> callback) {
+        this.callback = callback;
+    }
+
     public static class Parameter {
         @JSArgumentType.Type
         private int type;
+        private String name;
         private String value;
 
         public int getType() {
@@ -55,6 +65,14 @@ final class JBArgumentParser {
 
         public void setType(int type) {
             this.type = type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public String getValue() {

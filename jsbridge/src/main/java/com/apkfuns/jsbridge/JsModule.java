@@ -3,12 +3,14 @@ package com.apkfuns.jsbridge;
 import android.content.Context;
 import android.webkit.WebView;
 
+import com.apkfuns.jsbridge.util.IWebView;
+
 /**
  * Created by pengwei on 16/5/6.
  */
 public abstract class JsModule {
     private Context mContext;
-    private WebView mWebView;
+    private Object mWebView;
 
     protected final Context getContext() {
         return mContext;
@@ -18,11 +20,15 @@ public abstract class JsModule {
         this.mContext = context;
     }
 
-    public WebView getWebView() {
-        return mWebView;
+    public IWebView getIWebView() {
+        return (IWebView) mWebView;
     }
 
-    private void setWebView(WebView mWebView) {
+    public WebView getWebView() {
+        return (WebView) mWebView;
+    }
+
+    private void setWebView(Object mWebView) {
         this.mWebView = mWebView;
     }
 
