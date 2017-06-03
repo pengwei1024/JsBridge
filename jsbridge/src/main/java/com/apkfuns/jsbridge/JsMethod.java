@@ -89,7 +89,7 @@ class JsMethod {
         builder.append(getCallback() + "[key]=listeners[key];");
         builder.append("callbacks.push(key);");
         builder.append("};");
-        builder.append("argumentList.push({type: _getType(item), name: name, value: JSON.stringify(item)})");
+        builder.append("argumentList.push({type: _getType(item), name: name, value: item})");
         builder.append("}");
         builder.append("req['parameters'] = argumentList;");
         builder.append("req['callback'] = callbacks;");
@@ -109,7 +109,7 @@ class JsMethod {
     public Object invoke(Object... args) throws Exception {
         if (javaMethod != null) {
             javaMethod.setAccessible(true);
-            return javaMethod.invoke(null, args);
+            return javaMethod.invoke(getModule(), args);
         }
         return null;
     }

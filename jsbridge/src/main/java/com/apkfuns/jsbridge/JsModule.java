@@ -16,7 +16,7 @@ public abstract class JsModule {
         return mContext;
     }
 
-    private void setContext(Context context) {
+    public void setContext(Context context) {
         this.mContext = context;
     }
 
@@ -28,7 +28,11 @@ public abstract class JsModule {
         return (WebView) mWebView;
     }
 
-    private void setWebView(Object mWebView) {
+    protected Object getWebViewObject() {
+        return mWebView;
+    }
+
+    public void setWebView(Object mWebView) {
         this.mWebView = mWebView;
     }
 

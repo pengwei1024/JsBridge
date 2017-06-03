@@ -4,6 +4,7 @@ package com.apkfuns.jsbridge;
 import android.text.TextUtils;
 
 import com.apkfuns.jsbridge.annotation.JSBridgeMethod;
+import com.apkfuns.jsbridge.util.JBArgumentErrorException;
 import com.apkfuns.jsbridge.util.JBArray;
 import com.apkfuns.jsbridge.util.JBMap;
 
@@ -21,7 +22,7 @@ final class Utils {
 
     private static List<Class> validParameterList =
             Arrays.<Class>asList(Integer.class, Float.class, Double.class, String.class,
-                    Boolean.class, JSCallback.class, JBMap.class, JBArray.class,
+                    Boolean.class, JBCallback.class, JBMap.class, JBArray.class,
                     int.class, float.class, double.class, boolean.class);
 
     /**
@@ -106,6 +107,7 @@ final class Utils {
 
     /**
      * native 注册方法参数是否符合要求
+     *
      * @param cls
      * @return
      */
@@ -115,23 +117,65 @@ final class Utils {
 
     /**
      * 将native参数映射到js
+     *
      * @param cls
      * @return
      */
     public static int transformType(Class cls) {
-        if (cls.equals(Integer.class) || cls.equals(Float.class) || cls.equals(Double.class)) {
-            return JSArgumentType.TYPE_NUMBER;
-        } else if (cls.equals(Boolean.class)) {
+        if (cls.equals(Integer.class) || cls.equals(int.class)) {
+            return JSArgumentType.TYPE_INT;
+        } else if (cls.equals(Float.class) || cls.equals(float.class)) {
+            return JSArgumentType.TYPE_FLOAT;
+        } else if (cls.equals(Double.class) || cls.equals(double.class)) {
+            return JSArgumentType.TYPE_DOUBLE;
+        } else if (cls.equals(Boolean.class) || cls.equals(boolean.class)) {
             return JSArgumentType.TYPE_BOOL;
         } else if (cls.equals(String.class)) {
             return JSArgumentType.TYPE_STRING;
         } else if (cls.equals(JBArray.class)) {
             return JSArgumentType.TYPE_ARRAY;
-        }else if (cls.equals(JBMap.class)) {
+        } else if (cls.equals(JBMap.class)) {
             return JSArgumentType.TYPE_OBJECT;
-        }else if (cls.equals(JSCallback.class)) {
+        } else if (cls.equals(JBCallback.class)) {
             return JSArgumentType.TYPE_FUNCTION;
         }
         return JSArgumentType.TYPE_UNDEFINE;
+    }
+
+    /**
+     * 转换参数
+     *
+     * @param type
+     * @param parameter
+     * @return
+     */
+    public static Object parseToObject(@JSArgumentType.Type int type, JBArgumentParser.Parameter parameter,
+                                       String callback, Object webView) {
+        if (type == JSArgumentType.TYPE_INT || type == JSArgumentType.TYPE_FLOAT
+                || type == JSArgumentType.TYPE_DOUBLE) {
+            if (parameter.getType() != JSArgumentType.TYPE_NUMBER) {
+                return new JBArgumentErrorException("parameter error,need number");
+            }
+            try {
+                switch (type) {
+                    case JSArgumentType.TYPE_INT:
+                        return Integer.parseInt(parameter.getValue());
+                    case JSArgumentType.TYPE_FLOAT:
+                        return Float.parseFloat(parameter.getValue());
+                    case JSArgumentType.TYPE_DOUBLE:
+                        return Double.parseDouble(parameter.getValue());
+                }
+            } catch (NumberFormatException e) {
+                return new JBArgumentErrorException(e.getMessage());
+            }
+        } else if (type == JSArgumentType.TYPE_STRING) {
+            return parameter.getValue();
+        } else if (type == JSArgumentType.TYPE_FUNCTION) {
+            if (parameter.getType() != JSArgumentType.TYPE_FUNCTION) {
+                return new JBArgumentErrorException("parameter error,need function");
+            }
+            return new JBCallback(webView, callback, parameter.getName());
+        }
+        return null;
     }
 }

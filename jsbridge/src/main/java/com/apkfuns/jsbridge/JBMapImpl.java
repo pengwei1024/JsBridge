@@ -59,9 +59,9 @@ class JBMapImpl implements JBMap {
     }
 
     @Override
-    public JSCallback getJsCallback(String name) {
-        if (get(name) != null && get(name) instanceof JSCallback) {
-            return ((JSCallback) get(name));
+    public JBCallback getJsCallback(String name) {
+        if (get(name) != null && get(name) instanceof JBCallback) {
+            return ((JBCallback) get(name));
         }
         return null;
     }

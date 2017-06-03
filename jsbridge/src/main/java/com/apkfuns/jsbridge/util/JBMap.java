@@ -1,6 +1,6 @@
 package com.apkfuns.jsbridge.util;
 
-import com.apkfuns.jsbridge.JSCallback;
+import com.apkfuns.jsbridge.JBCallback;
 
 import java.util.Set;
 
@@ -25,7 +25,7 @@ public interface JBMap {
 
     String getString(String name);
 
-    JSCallback getJsCallback(String name);
+    JBCallback getJsCallback(String name);
 
     JBMap getJBMap(String name);
 

@@ -9,7 +9,7 @@
 <script type="text/javascript">
     window.onMyBridgeReady = function () {
         console.log('onMyBridgeReady ready');
-        MyBridge.share.hiShare(1.2, '123');
+        MyBridge.share.hiShare(2.5, 'hello world', function(x,y){console.log('receiver callback!!' + x + y)});
         document.getElementById('btn_add_menu').onclick = function () {
             MyBridge.native.setNavMenu({
                 data: '我是来自网页的按钮',

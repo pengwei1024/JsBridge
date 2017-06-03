@@ -17,6 +17,9 @@ public interface JSArgumentType {
     int TYPE_FUNCTION = 4;
     int TYPE_OBJECT = 5;
     int TYPE_ARRAY = 6;
+    int TYPE_INT = 7;
+    int TYPE_FLOAT = 8;
+    int TYPE_DOUBLE = 9;
 
     @IntDef({TYPE_UNDEFINE, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL, TYPE_FUNCTION, TYPE_OBJECT, TYPE_ARRAY})
     @Retention(RetentionPolicy.SOURCE)

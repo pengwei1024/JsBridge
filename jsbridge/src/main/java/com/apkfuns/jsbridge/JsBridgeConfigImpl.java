@@ -7,7 +7,7 @@ import android.webkit.JsPromptResult;
 
 import com.alibaba.fastjson.JSON;
 import com.apkfuns.jsbridge.util.IPromptResult;
-import com.apkfuns.jsbridge.util.IWebView;
+import com.apkfuns.jsbridge.util.JBArgumentErrorException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -117,8 +117,9 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
      * @return
      */
     public final String getInjectJsString(Context context, Object webView) {
+        String className = "JsBridgeClass_" + System.currentTimeMillis();
         StringBuilder builder = new StringBuilder();
-        builder.append("var JsBridgeClass_ABABABA = function () {");
+        builder.append("var " + className + " = function () {");
         // 注入通用方法
         builder.append(JBUtilMethodFactory.getUtilMethods());
         // 注入默认方法
@@ -129,19 +130,17 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
             // 为JsModule设置context 和 WebView
             try {
                 Method setContextMethod = module.getClass().getMethod("setContext", Context.class);
-                setContextMethod.setAccessible(true);
                 if (setContextMethod != null) {
-                    setContextMethod.invoke(null, context);
+                    setContextMethod.invoke(module, context);
                 }
-                Method setWebViewMethod = module.getClass().getMethod("setWebView", IWebView.class);
-                setWebViewMethod.setAccessible(true);
+                Method setWebViewMethod = module.getClass().getMethod("setWebView", Object.class);
                 if (setWebViewMethod != null) {
-                    setWebViewMethod.invoke(null, webView);
+                    setWebViewMethod.invoke(module, webView);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            builder.append("JsBridgeClass_ABABABA.prototype." + module.getModuleName() + " = {");
+            builder.append(className + ".prototype." + module.getModuleName() + " = {");
             HashMap<String, JsMethod> methods = getExposedMethods().get(module);
             for (String method : methods.keySet()) {
                 JsMethod jsMethod = methods.get(method);
@@ -150,7 +149,7 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
             builder.append("};");
         }
         builder.append("};");
-        builder.append("window." + getProtocol() + " = new JsBridgeClass_ABABABA();");
+        builder.append("window." + getProtocol() + " = new " + className + "();");
         builder.append(getProtocol() + ".OnJsBridgeReady();");
         Log.e("****", builder.toString());
         return builder.toString();
@@ -175,19 +174,41 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
                 if (methodHashMap != null && !methodHashMap.isEmpty() && methodHashMap.containsKey(
                         argumentParser.getMethod())) {
                     JsMethod method = methodHashMap.get(argumentParser.getMethod());
-                    argumentParser.getParameters();
-                    try {
-                        Object ret = method.invoke("");
-                        setJsPromptResult(result, true, ret.toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    List<JBArgumentParser.Parameter> parameters = argumentParser.getParameters();
+                    int length = method.getParameterType().size();
+                    Object[] invokeArgs = new Object[length];
+                    for (int i = 0; i < length; ++i) {
+                        int type = method.getParameterType().get(i);
+                        if (parameters != null && parameters.size() >= i + 1) {
+                            JBArgumentParser.Parameter param = parameters.get(i);
+                            Object parseObject = Utils.parseToObject(type, param,
+                                    method.getCallback(), findModule.getWebViewObject());
+                            if (parseObject != null && parseObject instanceof JBArgumentErrorException) {
+                                setJsPromptResult(result, false, parseObject.toString());
+                                return;
+                            }
+                            invokeArgs[i] = parseObject;
+                        }
+                        if (invokeArgs[i] == null) {
+                            switch (type) {
+                                case JSArgumentType.TYPE_NUMBER:
+                                    invokeArgs[i] = 0;
+                                    break;
+                                case JSArgumentType.TYPE_BOOL:
+                                    invokeArgs[i] = false;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
-                }
-            }
-            List<JBArgumentParser.Parameter> parameters = argumentParser.getParameters();
-            if (parameters != null) {
-                for (JBArgumentParser.Parameter param : parameters) {
-
+                    try {
+                        Object ret = method.invoke(invokeArgs);
+                        setJsPromptResult(result, true, ret == null ? "" : ret.toString());
+                        return;
+                    } catch (Exception e) {
+                        setJsPromptResult(result, false, e.getMessage());
+                    }
                 }
             }
         }
