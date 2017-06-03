@@ -1,5 +1,11 @@
 package com.apkfuns.jsbridge;
 
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apkfuns.jsbridge.util.JBArray;
 import com.apkfuns.jsbridge.util.JBMap;
 
@@ -83,5 +89,33 @@ class JBMapImpl implements JBMap {
 
     public void put(String name, Object value) {
         dataSource.put(name, value);
+    }
+
+    public static JBMap create(String map, String callback, Object webView) {
+        JSONObject jsonObject = JSON.parseObject(map);
+        JBMapImpl jbMap = new JBMapImpl();
+        if (jsonObject != null && !jsonObject.isEmpty()) {
+            for (String key : jsonObject.keySet()) {
+                Object child = jsonObject.get(key);
+                if (child instanceof JSONObject) {
+
+                } else if (child instanceof JSONArray) {
+
+                } else if (child instanceof String) {
+                    String stringParam = (String) child;
+                    if (stringParam.startsWith("[Function]::")) {
+                        String[] function = stringParam.split("::");
+                        if (function.length == 2 && !TextUtils.isEmpty(function[1])) {
+                            jbMap.put(key, new JBCallback(webView, callback, function[1]));
+                        }
+                    } else {
+                        jbMap.put(key, stringParam);
+                    }
+                } else {
+                    jbMap.put(key, child);
+                }
+            }
+        }
+        return jbMap;
     }
 }

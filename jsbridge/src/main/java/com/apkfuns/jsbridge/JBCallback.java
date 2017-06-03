@@ -42,7 +42,7 @@ public class JBCallback {
             for (int i = 0; i < args.length; i++) {
                 int type = Utils.transformType(args[i].getClass());
                 if (type == JSArgumentType.TYPE_INT || type == JSArgumentType.TYPE_FLOAT
-                        || type == JSArgumentType.TYPE_DOUBLE) {
+                        || type == JSArgumentType.TYPE_DOUBLE || type == JSArgumentType.TYPE_BOOL) {
                     builder.append(args[i]);
                 } else {
                     builder.append("'" + args[i] + "'");
@@ -53,7 +53,7 @@ public class JBCallback {
             }
         }
         builder.append(")}}");
-        Log.d("****", builder.toString());
+//        Log.d("****", builder.toString());
         mHandler.post(new Runnable() {
             @Override
             public void run() {

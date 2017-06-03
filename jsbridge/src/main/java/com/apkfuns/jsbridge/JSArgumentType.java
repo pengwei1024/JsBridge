@@ -21,7 +21,8 @@ public interface JSArgumentType {
     int TYPE_FLOAT = 8;
     int TYPE_DOUBLE = 9;
 
-    @IntDef({TYPE_UNDEFINE, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL, TYPE_FUNCTION, TYPE_OBJECT, TYPE_ARRAY})
+    @IntDef({TYPE_UNDEFINE, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL, TYPE_FUNCTION, TYPE_OBJECT, TYPE_ARRAY,
+            TYPE_INT, TYPE_FLOAT, TYPE_DOUBLE})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
     }

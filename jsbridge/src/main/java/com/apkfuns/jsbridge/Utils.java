@@ -2,6 +2,7 @@ package com.apkfuns.jsbridge;
 
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.apkfuns.jsbridge.annotation.JSBridgeMethod;
 import com.apkfuns.jsbridge.util.JBArgumentErrorException;
@@ -154,7 +155,7 @@ final class Utils {
         if (type == JSArgumentType.TYPE_INT || type == JSArgumentType.TYPE_FLOAT
                 || type == JSArgumentType.TYPE_DOUBLE) {
             if (parameter.getType() != JSArgumentType.TYPE_NUMBER) {
-                return new JBArgumentErrorException("parameter error,need number");
+                return new JBArgumentErrorException("parameter error, except number");
             }
             try {
                 switch (type) {
@@ -172,9 +173,15 @@ final class Utils {
             return parameter.getValue();
         } else if (type == JSArgumentType.TYPE_FUNCTION) {
             if (parameter.getType() != JSArgumentType.TYPE_FUNCTION) {
-                return new JBArgumentErrorException("parameter error,need function");
+                return new JBArgumentErrorException("parameter error, except function");
             }
             return new JBCallback(webView, callback, parameter.getName());
+        } else if (type == JSArgumentType.TYPE_OBJECT) {
+            if (parameter.getType() != JSArgumentType.TYPE_OBJECT) {
+                return new JBArgumentErrorException("parameter error, except object");
+            }
+            Log.d("****", parameter.getValue());
+            return JBMapImpl.create(parameter.getValue(), callback, webView);
         }
         return null;
     }
