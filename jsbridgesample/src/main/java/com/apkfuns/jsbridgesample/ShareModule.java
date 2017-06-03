@@ -2,7 +2,7 @@ package com.apkfuns.jsbridgesample;
 
 import android.widget.Toast;
 
-import com.apkfuns.jsbridge.JSBridgeMethod;
+import com.apkfuns.jsbridge.annotation.JSBridgeMethod;
 import com.apkfuns.jsbridge.JSCallback;
 import com.apkfuns.jsbridge.JsModule;
 import com.apkfuns.jsbridge.util.JBMap;
@@ -17,18 +17,18 @@ public class ShareModule extends JsModule {
         return "share";
     }
 
-    @JSBridgeMethod
+    @JSBridgeMethod(methodName = "hiShare")
     public void share(int platform, String msg, JSCallback success, JSCallback failure) {
         Toast.makeText(getContext(), "abc", Toast.LENGTH_SHORT).show();
     }
 
-    @JSBridgeMethod
-    public void test(JBMap map) {
-        map.getJsCallback("a").apply("");
-    }
-
-    @JSBridgeMethod
-    public int version() {
-        return 10;
-    }
+//    @JSBridgeMethod
+//    public void test(JBMap map) {
+//        map.getJsCallback("a").apply("");
+//    }
+//
+//    @JSBridgeMethod
+//    public int version() {
+//        return 10;
+//    }
 }

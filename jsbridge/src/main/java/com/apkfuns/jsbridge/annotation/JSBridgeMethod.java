@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridge;
+package com.apkfuns.jsbridge.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

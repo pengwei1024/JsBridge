@@ -3,16 +3,26 @@ package com.apkfuns.jsbridge;
 
 import android.text.TextUtils;
 
+import com.apkfuns.jsbridge.annotation.JSBridgeMethod;
+import com.apkfuns.jsbridge.util.JBArray;
 import com.apkfuns.jsbridge.util.JBMap;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by pengwei on 16/5/13.
  */
 final class Utils {
+
+    private static List<Class> validParameterList =
+            Arrays.<Class>asList(Integer.class, Float.class, Double.class, String.class,
+                    Boolean.class, JSCallback.class, JBMap.class, JBArray.class,
+                    int.class, float.class, double.class, boolean.class);
 
     /**
      * 获取类的静态公开方法
@@ -21,41 +31,38 @@ final class Utils {
      * @return
      * @throws Exception
      */
-    public static HashMap<String, JsMethod> getAllMethod(String module, Class injectedCls) throws Exception {
+    public static HashMap<String, JsMethod> getAllMethod(JsModule module, Class injectedCls) throws Exception {
         HashMap<String, JsMethod> mMethodsMap = new HashMap<>();
         Method[] methods = injectedCls.getDeclaredMethods();
-        for (Method method : methods) {
-            String name = method.getName();
-            if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || name == null) {
+        if (methods == null || methods.length == 0) {
+            return mMethodsMap;
+        }
+        for (Method javaMethod : methods) {
+            String name = javaMethod.getName();
+            int modifiers = javaMethod.getModifiers();
+            if (TextUtils.isEmpty(name) || Modifier.isAbstract(modifiers) || Modifier.isStatic(modifiers)) {
                 continue;
             }
-            JSBridgeMethod annotation = method.getAnnotation(JSBridgeMethod.class);
+            JSBridgeMethod annotation = javaMethod.getAnnotation(JSBridgeMethod.class);
             if (annotation == null) {
                 continue;
             }
             if (!TextUtils.isEmpty(annotation.methodName())) {
                 name = annotation.methodName();
             }
-            Class[] parameters = method.getParameterTypes();
-            JsMethod createMethod = JsMethod.create(false, module, method, 0);
-            int parameterType = ParameterType.getParameterType(parameters);
-            switch (parameterType) {
-                case ParameterType.TYPE_O:
-                case ParameterType.TYPE_AO:
-                case ParameterType.TYPE_WO:
-                case ParameterType.TYPE_AWO:
-                    mMethodsMap.put(name, JsMethod.create(false, module, method, parameterType));
-                    break;
-                case ParameterType.TYPE_AOJ:
-                case ParameterType.TYPE_OJ:
-                case ParameterType.TYPE_WOJ:
-                case ParameterType.TYPE_AWOJ:
-                case ParameterType.TYPE_AWOJR:
-                    mMethodsMap.put(name, JsMethod.create(true, module, method, parameterType));
-                    break;
-                default:
-                    break;
+            boolean hasReturn = !Void.class.equals(javaMethod.getReturnType());
+            Class[] parameters = javaMethod.getParameterTypes();
+            List<Integer> parameterTypeList = new ArrayList<>();
+            // TODO: 2017/5/30 获取 method 参数名称 javassist
+            for (Class cls : parameters) {
+                if (!parameterIsValid(cls)) {
+                    throw new IllegalArgumentException("Method " + javaMethod.getName() + " parameter is not Valid");
+                }
+                parameterTypeList.add(transformType(cls));
             }
+            JsMethod createMethod = JsMethod.create(module, javaMethod, name,
+                    parameterTypeList, hasReturn);
+            mMethodsMap.put(name, createMethod);
         }
         return mMethodsMap;
     }
@@ -76,6 +83,7 @@ final class Utils {
 
     /**
      * 参数是否匹配
+     *
      * @param jsType
      * @param nativeObject
      * @return
@@ -94,5 +102,36 @@ final class Utils {
         }
         // Parameter don't match, expect JBMap, actual string
         return false;
+    }
+
+    /**
+     * native 注册方法参数是否符合要求
+     * @param cls
+     * @return
+     */
+    public static boolean parameterIsValid(Class cls) {
+        return validParameterList.contains(cls);
+    }
+
+    /**
+     * 将native参数映射到js
+     * @param cls
+     * @return
+     */
+    public static int transformType(Class cls) {
+        if (cls.equals(Integer.class) || cls.equals(Float.class) || cls.equals(Double.class)) {
+            return JSArgumentType.TYPE_NUMBER;
+        } else if (cls.equals(Boolean.class)) {
+            return JSArgumentType.TYPE_BOOL;
+        } else if (cls.equals(String.class)) {
+            return JSArgumentType.TYPE_STRING;
+        } else if (cls.equals(JBArray.class)) {
+            return JSArgumentType.TYPE_ARRAY;
+        }else if (cls.equals(JBMap.class)) {
+            return JSArgumentType.TYPE_OBJECT;
+        }else if (cls.equals(JSCallback.class)) {
+            return JSArgumentType.TYPE_FUNCTION;
+        }
+        return JSArgumentType.TYPE_UNDEFINE;
     }
 }

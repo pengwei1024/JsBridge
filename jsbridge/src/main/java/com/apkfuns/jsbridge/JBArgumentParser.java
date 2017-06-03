@@ -7,17 +7,17 @@ import java.util.List;
  */
 
 final class JBArgumentParser {
-    private int id;
+    private long id;
     private String module;
     private String method;
     private List<Parameter> parameters;
     private List<String> callback;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -2,6 +2,7 @@ package com.apkfuns.jsbridge;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.JsPromptResult;
 
 import com.alibaba.fastjson.JSON;
@@ -24,7 +25,7 @@ import java.util.Set;
 class JsBridgeConfigImpl implements JsBridgeConfig {
 
     private Map<JsModule, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
-    private Set<Class<? extends JsMethodRun>> methodRuns = new HashSet<>();
+    private Set<Class<? extends JsRunMethod>> methodRuns = new HashSet<>();
     private String protocol;
     private String readyFuncName;
 
@@ -44,7 +45,7 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
         return singleton;
     }
 
-    public Set<Class<? extends JsMethodRun>> getMethodRuns() {
+    public Set<Class<? extends JsRunMethod>> getMethodRuns() {
         return methodRuns;
     }
 
@@ -56,7 +57,7 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
                     JsModule module = moduleCls.newInstance();
                     if (module != null) {
                         HashMap<String, JsMethod> methodsMap = Utils.getAllMethod(
-                                module.getModuleName(), moduleCls);
+                                module, moduleCls);
                         if (!methodsMap.isEmpty()) {
                             exposedMethods.put(module, methodsMap);
                         }
@@ -117,8 +118,10 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
      */
     public final String getInjectJsString(Context context, Object webView) {
         StringBuilder builder = new StringBuilder();
+        builder.append("var JsBridgeClass_ABABABA = function () {");
+        // 注入通用方法
+        builder.append(JBUtilMethodFactory.getUtilMethods());
         // 注入默认方法
-        builder.append("window." + getProtocol() + " = {");
         for (JsModule module : getExposedMethods().keySet()) {
             if (module == null || TextUtils.isEmpty(module.getModuleName())) {
                 continue;
@@ -138,23 +141,18 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            builder.append(module.getModuleName() + ":{");
+            builder.append("JsBridgeClass_ABABABA.prototype." + module.getModuleName() + " = {");
             HashMap<String, JsMethod> methods = getExposedMethods().get(module);
             for (String method : methods.keySet()) {
                 JsMethod jsMethod = methods.get(method);
                 builder.append(jsMethod.getInjectJs());
             }
-            builder.append("},");
+            builder.append("};");
         }
         builder.append("};");
-        // 注入可执行方法
-        for (Class<? extends JsMethodRun> run : getMethodRuns()) {
-            try {
-                builder.append(run.newInstance().execJs());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        builder.append("window." + getProtocol() + " = new JsBridgeClass_ABABABA();");
+        builder.append(getProtocol() + ".OnJsBridgeReady();");
+        Log.e("****", builder.toString());
         return builder.toString();
     }
 

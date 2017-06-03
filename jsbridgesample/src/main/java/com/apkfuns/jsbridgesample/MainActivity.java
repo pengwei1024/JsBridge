@@ -1,10 +1,14 @@
 package com.apkfuns.jsbridgesample;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.ConsoleMessage;
 import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -12,23 +16,32 @@ import android.webkit.WebViewClient;
 
 import com.apkfuns.jsbridge.JSBridge;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private Menu menu;
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        JSBridge.getConfig().setProtocol("MyBridge").registerModule(NativeModule.class);
+        JSBridge.getConfig().setProtocol("MyBridge").registerModule(ShareModule.class);
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
+        WebView.setWebContentsDebuggingEnabled(true);
         webView.loadUrl("file:///android_asset/index.html");
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
                 JSBridge.callJsPrompt(message, result);
+                return true;
+            }
+
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                Log.d("****", consoleMessage.message());
                 return true;
             }
         });
@@ -45,6 +58,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
+        addMenu("刷新", new Runnable() {
+            @Override
+            public void run() {
+                JSBridge.getConfig().setProtocol("MyBridge").registerModule(ShareModule.class);
+                webView.loadUrl("file:///android_asset/index.html");
+            }
+        });
         return true;
     }
 

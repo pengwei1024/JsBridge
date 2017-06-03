@@ -29,23 +29,22 @@ public class JSCallback {
         this.port = port;
         mWebViewRef = new WeakReference<>(view);
         this.method = method;
-        execJs = String.format(CALLBACK_JS_FORMAT, method.getCallbackFunction(), port);
+//        execJs = String.format(CALLBACK_JS_FORMAT, method.getCallbackFunction(), port);
     }
 
     public void apply(String callbackValue) {
-        if (!TextUtils.isEmpty(callbackValue)) {
-            execJs = String.format(CALLBACK_JS_FORMAT_VALUE, method.getCallbackFunction(), port, callbackValue);
-        }
-        if (mWebViewRef != null && mWebViewRef.get() != null) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // TODO: 16/5/16 删除导致按钮点击无法回调
-//                    execJs += String.format(CLEAR_CALLBACK, method.getCallbackFunction(), port);
-                    mWebViewRef.get().loadUrl(execJs);
-                }
-            });
-        }
+//        if (!TextUtils.isEmpty(callbackValue)) {
+//            execJs = String.format(CALLBACK_JS_FORMAT_VALUE, method.getCallbackFunction(), port, callbackValue);
+//        }
+//        if (mWebViewRef != null && mWebViewRef.get() != null) {
+//            mHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+////                    execJs += String.format(CLEAR_CALLBACK, method.getCallbackFunction(), port);
+//                    mWebViewRef.get().loadUrl(execJs);
+//                }
+//            });
+//        }
     }
 
     public void apply() {

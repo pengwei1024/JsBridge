@@ -8,6 +8,8 @@
 <button id="btn_add_menu">点击添加菜单</button>
 <script type="text/javascript">
     window.onMyBridgeReady = function () {
+        console.log('onMyBridgeReady ready');
+        MyBridge.share.hiShare(1.2, '123');
         document.getElementById('btn_add_menu').onclick = function () {
             MyBridge.native.setNavMenu({
                 data: '我是来自网页的按钮',
