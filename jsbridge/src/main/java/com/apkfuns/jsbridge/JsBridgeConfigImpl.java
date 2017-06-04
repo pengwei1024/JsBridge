@@ -85,7 +85,7 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
     }
 
     @Override
-    public JsBridgeConfig setLoadReadyFuncName(String readyName) {
+    public JsBridgeConfig setLoadReadyMethod(String readyName) {
         this.readyFuncName = readyName;
         return this;
     }

@@ -1,7 +1,6 @@
 package com.apkfuns.jsbridgesample;
 
 import android.content.Context;
-import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 

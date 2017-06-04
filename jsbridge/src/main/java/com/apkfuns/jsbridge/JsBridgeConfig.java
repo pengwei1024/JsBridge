@@ -15,5 +15,5 @@ public interface JsBridgeConfig {
     JsBridgeConfig setProtocol(String protocol);
 
     // 加载结束函数名
-    JsBridgeConfig setLoadReadyFuncName(String readyName);
+    JsBridgeConfig setLoadReadyMethod(String readyName);
 }

@@ -3,12 +3,9 @@ package com.apkfuns.jsbridge;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.util.IWebView;
-
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 

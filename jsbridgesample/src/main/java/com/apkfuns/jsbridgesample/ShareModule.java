@@ -8,7 +8,6 @@ import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.JsModule;
 import com.apkfuns.jsbridge.util.JBMap;
 import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.Callback;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import okhttp3.Call;
