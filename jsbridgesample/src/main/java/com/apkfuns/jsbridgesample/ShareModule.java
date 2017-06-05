@@ -24,10 +24,15 @@ public class ShareModule extends JsModule {
 
     @JSBridgeMethod(methodName = "hiShare")
     public void share(float platform, String msg, final JBCallback success, final JBCallback failure) {
-        Log.d("****", platform + "#" + msg + "#" + success + "#" + failure);
-        Log.d("****", "context=" + getContext());
+//        Log.d("****", platform + "#" + msg + "#" + success + "#" + failure);
+//        Log.d("****", "context=" + getContext());
         Toast.makeText(getContext(), "abc", Toast.LENGTH_SHORT).show();
-        success.apply("12345", true);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        success.apply("ret = " + msg, true);
     }
 
     @JSBridgeMethod

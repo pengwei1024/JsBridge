@@ -1,8 +1,5 @@
 package com.apkfuns.jsbridge;
 
-import android.net.Uri;
-import android.text.TextUtils;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,13 +73,13 @@ class JsMethod {
     public String getInjectJs() {
         StringBuilder builder = new StringBuilder(getMethodName() + ":function(){");
         builder.append("try{");
-        builder.append("var id = Math.floor(Math.random() * (1 << 30));");
+        builder.append("var id = Math.floor(Math.random() * (1 << 10));");
         builder.append("var req = {id: id, module: '" + getModule().getModuleName()
                 + "', method: '" + getMethodName() + "'};");
         builder.append("var argumentList = [], callbacks = [];");
-        builder.append(getCallback() + "={};");
+        builder.append("if(!" + getCallback() + ")" + getCallback() + "={};");
         builder.append("for (var i in arguments) {");
-        builder.append("var name = 'a' + i; var item = arguments[i];");
+        builder.append("var name = id + '_a' + i; var item = arguments[i];");
         builder.append("var listeners = {};");
         builder.append("_parseFunction(item, name, listeners);");
         builder.append("for (var key in listeners) {");

@@ -2,7 +2,6 @@ package com.apkfuns.jsbridge;
 
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.apkfuns.jsbridge.annotation.JSBridgeMethod;
 import com.apkfuns.jsbridge.util.JBArgumentErrorException;

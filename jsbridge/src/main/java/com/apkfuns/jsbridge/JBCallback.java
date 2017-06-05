@@ -50,7 +50,6 @@ public class JBCallback {
             }
         }
         builder.append(")}}");
-//        Log.d("****", builder.toString());
         mHandler.post(new Runnable() {
             @Override
             public void run() {

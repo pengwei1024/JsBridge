@@ -9,8 +9,11 @@
 <script type="text/javascript">
     window.onMyBridgeReady = function () {
         console.log('onMyBridgeReady ready');
-        //MyBridge.share.hiShare(2.5, 'hello world', function(x,y){console.log('receiver callback!!' + x + y)},
-        //function(){console.log('second call')});
+        MyBridge.share.hiShare(2.5, 'hello world', function(x,y){console.log('receiver callback!!' + x + y)},
+        function(){console.log('second call')});
+
+        MyBridge.share.hiShare(2.5, 'good', function(x,y){console.log('receiver callback!!' + x + y)},
+        function(){console.log('second call')});
 
         MyBridge.share.ajax({
             url:'http://api.map.baidu.com/geocoder',
@@ -23,18 +26,6 @@
                 console.error('error => ' + error);
             }
         });
-
-        document.getElementById('btn_add_menu').onclick = function () {
-            MyBridge.native.setNavMenu({
-                data: '我是来自网页的按钮',
-                onListener: function (res) {
-                    alert('点击按钮了，按钮名称是:' + res)
-                },
-                onSuccess: function(msg){
-                    alert(msg)
-                }
-            });
-        }
     }
 </script>
 </body>
