@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.apkfuns.jsbridge.JSBridge;
+import com.apkfuns.jsbridge.JsBridgeConfig;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        JSBridge.getConfig().setProtocol("MyBridge").registerModule(ShareModule.class);
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         WebView.setWebContentsDebuggingEnabled(true);
@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         addMenu("刷新", new Runnable() {
             @Override
             public void run() {
-                JSBridge.getConfig().setProtocol("MyBridge").registerModule(ShareModule.class);
                 webView.loadUrl("file:///android_asset/index.html");
             }
         });

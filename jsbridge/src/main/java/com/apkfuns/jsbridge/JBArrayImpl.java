@@ -1,7 +1,7 @@
 package com.apkfuns.jsbridge;
 
-import com.apkfuns.jsbridge.util.JBArray;
-import com.apkfuns.jsbridge.util.JBMap;
+import com.apkfuns.jsbridge.common.JBArray;
+import com.apkfuns.jsbridge.common.JBMap;
 
 import java.util.ArrayList;
 import java.util.List;

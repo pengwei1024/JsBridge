@@ -3,10 +3,10 @@ package com.apkfuns.jsbridge;
 
 import android.text.TextUtils;
 
-import com.apkfuns.jsbridge.annotation.JSBridgeMethod;
-import com.apkfuns.jsbridge.util.JBArgumentErrorException;
-import com.apkfuns.jsbridge.util.JBArray;
-import com.apkfuns.jsbridge.util.JBMap;
+import com.apkfuns.jsbridge.common.JSBridgeMethod;
+import com.apkfuns.jsbridge.common.JBArgumentErrorException;
+import com.apkfuns.jsbridge.common.JBArray;
+import com.apkfuns.jsbridge.common.JBMap;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -121,7 +121,7 @@ final class Utils {
      * @param cls
      * @return
      */
-    public static int transformType(Class cls) {
+    public static @JSArgumentType.Type int transformType(Class cls) {
         if (cls.equals(Integer.class) || cls.equals(int.class)) {
             return JSArgumentType.TYPE_INT;
         } else if (cls.equals(Float.class) || cls.equals(float.class)) {

@@ -9,22 +9,22 @@
 <script type="text/javascript">
     window.onMyBridgeReady = function () {
         console.log('onMyBridgeReady ready');
-        MyBridge.share.hiShare(2.5, 'hello world', function(x,y){console.log('receiver callback!!' + x + y)},
-        function(){console.log('second call')});
-
-        MyBridge.share.hiShare(2.5, 'good', function(x,y){console.log('receiver callback!!' + x + y)},
-        function(){console.log('second call')});
+        //MyBridge.share.hiShare(2.5, 'hello world', function(x,y){console.log('receiver callback!!' + x + y)},
+        //function(){console.log('second call')});
 
         MyBridge.share.ajax({
-            url:'http://api.map.baidu.com/geocoder',
+            url:'https://m.kuaidi100.com/sysapi.do',
             type:'GET',
-            data:'location=30.990998,103.645966&output=json&key=28bcdd84fae25699606ffad27f8da77b',
+            data:'method=findxzqbyip',
             success:function(data){
                 console.log('success => ' + data);
             },
             error:function(error){
                 console.error('error => ' + error);
             }
+        });
+        MyBridge.alert('支持静态方法!!!!', function(data){
+            console.log('reply = ' + data)
         });
     }
 </script>

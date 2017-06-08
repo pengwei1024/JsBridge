@@ -1,12 +1,11 @@
 package com.apkfuns.jsbridgesample;
 
-import android.util.Log;
 import android.widget.Toast;
 
-import com.apkfuns.jsbridge.annotation.JSBridgeMethod;
+import com.apkfuns.jsbridge.common.JSBridgeMethod;
 import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.JsModule;
-import com.apkfuns.jsbridge.util.JBMap;
+import com.apkfuns.jsbridge.common.JBMap;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 

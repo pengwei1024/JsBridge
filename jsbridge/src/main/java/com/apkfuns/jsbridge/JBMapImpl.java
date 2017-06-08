@@ -5,8 +5,8 @@ import android.text.TextUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apkfuns.jsbridge.util.JBArray;
-import com.apkfuns.jsbridge.util.JBMap;
+import com.apkfuns.jsbridge.common.JBArray;
+import com.apkfuns.jsbridge.common.JBMap;
 
 import java.util.HashMap;
 import java.util.Set;

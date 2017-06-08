@@ -3,7 +3,7 @@ package com.apkfuns.jsbridge;
 import android.content.Context;
 import android.webkit.WebView;
 
-import com.apkfuns.jsbridge.util.IWebView;
+import com.apkfuns.jsbridge.common.IWebView;
 
 /**
  * Created by pengwei on 16/5/6.

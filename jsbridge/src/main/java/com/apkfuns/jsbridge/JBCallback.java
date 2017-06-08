@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.webkit.WebView;
 
-import com.apkfuns.jsbridge.util.IWebView;
+import com.apkfuns.jsbridge.common.IWebView;
 
 import java.lang.ref.WeakReference;
 

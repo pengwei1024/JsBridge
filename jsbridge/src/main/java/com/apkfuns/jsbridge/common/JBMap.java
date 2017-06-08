@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridge.util;
+package com.apkfuns.jsbridge.common;
 
 import com.apkfuns.jsbridge.JBCallback;
 

@@ -13,6 +13,7 @@ class JsMethod {
     private String methodName;
     private boolean hasReturn;
     private List<Integer> parameterType = new ArrayList<>();
+    private boolean isStatic;
 
     protected JsMethod() {
     }
@@ -34,6 +35,7 @@ class JsMethod {
 
     public void setModule(JsModule module) {
         this.module = module;
+        this.isStatic = module instanceof JsStaticModule;
     }
 
     public String getMethodName() {
@@ -61,6 +63,10 @@ class JsMethod {
     }
 
     public String getCallback() {
+        if (isStatic) {
+            return String.format("%s.%sCallback", JsBridgeConfigImpl.getInstance().getProtocol(),
+                    getMethodName());
+        }
         return String.format("%s.%s.%sCallback", JsBridgeConfigImpl.getInstance().getProtocol(),
                 getModule().getModuleName(), getMethodName());
     }
@@ -71,7 +77,12 @@ class JsMethod {
      * @return
      */
     public String getInjectJs() {
-        StringBuilder builder = new StringBuilder(getMethodName() + ":function(){");
+        StringBuilder builder = new StringBuilder();
+        if (isStatic) {
+            builder.append("this." + getMethodName() + " = function(){");
+        } else {
+            builder.append(getMethodName() + ":function(){");
+        }
         builder.append("try{");
         builder.append("var id = Math.floor(Math.random() * (1 << 10));");
         builder.append("var req = {id: id, module: '" + getModule().getModuleName()
@@ -99,7 +110,10 @@ class JsMethod {
         builder.append("}else{");
         builder.append("console.error(ret.msg)}");
         builder.append("}catch(e){console.error(e);};");
-        builder.append("},");
+        builder.append("}");
+        if (!isStatic) {
+            builder.append(",");
+        }
         return builder.toString();
     }
 

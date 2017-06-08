@@ -6,8 +6,8 @@ import android.util.Log;
 import android.webkit.JsPromptResult;
 
 import com.alibaba.fastjson.JSON;
-import com.apkfuns.jsbridge.util.IPromptResult;
-import com.apkfuns.jsbridge.util.JBArgumentErrorException;
+import com.apkfuns.jsbridge.common.IPromptResult;
+import com.apkfuns.jsbridge.common.JBArgumentErrorException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,10 +22,11 @@ import java.util.Set;
 /**
  * Created by pengwei on 16/5/13.
  */
-class JsBridgeConfigImpl implements JsBridgeConfig {
+class JsBridgeConfigImpl extends JsBridgeConfig {
 
+    // 默认协议
+    public  static String DEFAULT_PROTOCOL = "JsBridge";
     private Map<JsModule, HashMap<String, JsMethod>> exposedMethods = new HashMap<>();
-    private Set<Class<? extends JsRunMethod>> methodRuns = new HashSet<>();
     private String protocol;
     private String readyFuncName;
 
@@ -45,12 +46,8 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
         return singleton;
     }
 
-    public Set<Class<? extends JsRunMethod>> getMethodRuns() {
-        return methodRuns;
-    }
-
     @Override
-    public JsBridgeConfig registerModule(Class<? extends JsModule>... modules) {
+    public JsBridgeConfig registerDefaultModule(Class<? extends JsModule>... modules) {
         if (modules != null && modules.length > 0) {
             for (Class<? extends JsModule> moduleCls : modules) {
                 try {
@@ -140,13 +137,20 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            builder.append(className + ".prototype." + module.getModuleName() + " = {");
             HashMap<String, JsMethod> methods = getExposedMethods().get(module);
-            for (String method : methods.keySet()) {
-                JsMethod jsMethod = methods.get(method);
-                builder.append(jsMethod.getInjectJs());
+            if (module instanceof JsStaticModule) {
+                for (String method : methods.keySet()) {
+                    JsMethod jsMethod = methods.get(method);
+                    builder.append(jsMethod.getInjectJs());
+                }
+            } else {
+                builder.append(className + ".prototype." + module.getModuleName() + " = {");
+                for (String method : methods.keySet()) {
+                    JsMethod jsMethod = methods.get(method);
+                    builder.append(jsMethod.getInjectJs());
+                }
+                builder.append("};");
             }
-            builder.append("};");
         }
         builder.append("};");
         builder.append("window." + getProtocol() + " = new " + className + "();");
@@ -178,7 +182,7 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
                     int length = method.getParameterType().size();
                     Object[] invokeArgs = new Object[length];
                     for (int i = 0; i < length; ++i) {
-                        int type = method.getParameterType().get(i);
+                        @JSArgumentType.Type int type = method.getParameterType().get(i);
                         if (parameters != null && parameters.size() >= i + 1) {
                             JBArgumentParser.Parameter param = parameters.get(i);
                             Object parseObject = Utils.parseToObject(type, param,
@@ -205,10 +209,10 @@ class JsBridgeConfigImpl implements JsBridgeConfig {
                     try {
                         Object ret = method.invoke(invokeArgs);
                         setJsPromptResult(result, true, ret == null ? "" : ret.toString());
-                        return;
                     } catch (Exception e) {
                         setJsPromptResult(result, false, e.getMessage());
                     }
+                    return;
                 }
             }
         }
