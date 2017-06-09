@@ -14,19 +14,19 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.apkfuns.jsbridge.JSBridge;
-import com.apkfuns.jsbridge.JsBridgeConfig;
-
+import com.apkfuns.jsbridge.JsBridge;
 
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private Menu menu;
+    private JsBridge jsBridge;
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        jsBridge = JsBridge.loadModule();
         setContentView(R.layout.activity_main);
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                JSBridge.callJsPrompt(message, result);
+                jsBridge.callJsPrompt(message, result);
                 return true;
             }
 
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                JSBridge.injectJs(view);
+                jsBridge.injectJs(view);
             }
         });
     }
@@ -86,5 +86,11 @@ public class MainActivity extends AppCompatActivity {
             });
             MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        jsBridge.release();
+        super.onDestroy();
     }
 }

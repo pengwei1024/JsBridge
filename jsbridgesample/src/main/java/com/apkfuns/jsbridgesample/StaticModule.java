@@ -3,8 +3,8 @@ package com.apkfuns.jsbridgesample;
 import android.widget.Toast;
 
 import com.apkfuns.jsbridge.JBCallback;
-import com.apkfuns.jsbridge.JsStaticModule;
-import com.apkfuns.jsbridge.common.JSBridgeMethod;
+import com.apkfuns.jsbridge.module.JsStaticModule;
+import com.apkfuns.jsbridge.module.JSBridgeMethod;
 
 /**
  * Created by pengwei on 2017/6/8.

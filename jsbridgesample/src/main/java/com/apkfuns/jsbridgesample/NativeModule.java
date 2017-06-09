@@ -1,6 +1,6 @@
 package com.apkfuns.jsbridgesample;
 
-import com.apkfuns.jsbridge.JsModule;
+import com.apkfuns.jsbridge.module.JsModule;
 
 /**
  * Created by pengwei on 16/5/15.

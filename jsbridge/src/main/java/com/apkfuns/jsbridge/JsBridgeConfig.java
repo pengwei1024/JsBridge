@@ -1,5 +1,7 @@
 package com.apkfuns.jsbridge;
 
+import com.apkfuns.jsbridge.module.JsModule;
+
 /**
  * Created by pengwei on 16/5/13.
  */
@@ -13,6 +15,9 @@ public abstract class JsBridgeConfig {
 
     // 加载结束函数名
     public abstract JsBridgeConfig setLoadReadyMethod(String readyName);
+
+    // 调试模式
+    public abstract JsBridgeConfig debugMode(boolean debug);
 
     public static JsBridgeConfig getSetting() {
         return JsBridgeConfigImpl.getInstance();

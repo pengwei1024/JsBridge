@@ -3,10 +3,11 @@ package com.apkfuns.jsbridge;
 
 import android.text.TextUtils;
 
-import com.apkfuns.jsbridge.common.JSBridgeMethod;
+import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.common.JBArgumentErrorException;
-import com.apkfuns.jsbridge.common.JBArray;
-import com.apkfuns.jsbridge.common.JBMap;
+import com.apkfuns.jsbridge.module.JBArray;
+import com.apkfuns.jsbridge.module.JBMap;
+import com.apkfuns.jsbridge.module.JsModule;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * Created by pengwei on 16/5/13.
  */
-final class Utils {
+public final class Utils {
 
     private static List<Class> validParameterList =
             Arrays.<Class>asList(Integer.class, Float.class, Double.class, String.class,
@@ -54,7 +55,6 @@ final class Utils {
             boolean hasReturn = !Void.class.equals(javaMethod.getReturnType());
             Class[] parameters = javaMethod.getParameterTypes();
             List<Integer> parameterTypeList = new ArrayList<>();
-            // TODO: 2017/5/30 获取 method 参数名称 javassist
             for (Class cls : parameters) {
                 if (!parameterIsValid(cls)) {
                     throw new IllegalArgumentException("Method " + javaMethod.getName() + " parameter is not Valid");
@@ -79,29 +79,6 @@ final class Utils {
         if (cla1 != null && cla2 != null) {
             return cla2.isAssignableFrom(cla1) || cla2.equals(cla1);
         }
-        return false;
-    }
-
-    /**
-     * 参数是否匹配
-     *
-     * @param jsType
-     * @param nativeObject
-     * @return
-     */
-    public static boolean isParameterMatch(@JSArgumentType.Type int jsType, Object nativeObject) {
-        if (nativeObject != null) {
-            switch (jsType) {
-                case JSArgumentType.TYPE_OBJECT:
-                    return nativeObject instanceof JBMap;
-                case JSArgumentType.TYPE_BOOL:
-                    return nativeObject instanceof Boolean;
-                case JSArgumentType.TYPE_NUMBER:
-                    return nativeObject instanceof Integer || nativeObject instanceof Float
-                            || nativeObject instanceof Double;
-            }
-        }
-        // Parameter don't match, expect JBMap, actual string
         return false;
     }
 

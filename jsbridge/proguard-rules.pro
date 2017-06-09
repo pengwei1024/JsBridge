@@ -16,8 +16,7 @@
 #   public *;
 #}
 
--keep public class com.apkfuns.jsbridge.JSBridge{*;}
 -keep public class com.apkfuns.jsbridge.JBCallback{*;}
 -keep public class com.apkfuns.jsbridge.JsRunMethod{*;}
--keep public class com.apkfuns.jsbridge.JsModule{*;}
+-keep public class com.apkfuns.jsbridge.module.JsModule{*;}
 -keep public class com.apkfuns.jsbridge.JsReturn{*;}

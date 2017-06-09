@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridge;
+package com.apkfuns.jsbridge.module;
 
 /**
  * Created by pengwei on 2017/6/8.
@@ -6,7 +6,7 @@ package com.apkfuns.jsbridge;
 
 public abstract class JsStaticModule extends JsModule {
 
-    public static final String STATIC_METHOD_NAME = "@static";
+    private static final String STATIC_METHOD_NAME = "@static";
 
     @Override
     public final String getModuleName() {

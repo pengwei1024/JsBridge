@@ -1,5 +1,8 @@
 package com.apkfuns.jsbridge;
 
+import com.apkfuns.jsbridge.module.JsModule;
+import com.apkfuns.jsbridge.module.JsStaticModule;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +116,8 @@ class JsMethod {
         builder.append("}");
         if (!isStatic) {
             builder.append(",");
+        } else {
+            builder.append(";");
         }
         return builder.toString();
     }

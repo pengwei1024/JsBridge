@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridge.common;
+package com.apkfuns.jsbridge.module;
 
 /**
  * Created by pengwei on 2017/5/28.

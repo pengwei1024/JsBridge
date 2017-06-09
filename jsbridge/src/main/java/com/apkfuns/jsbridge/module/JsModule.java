@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridge;
+package com.apkfuns.jsbridge.module;
 
 import android.content.Context;
 import android.webkit.WebView;
@@ -28,7 +28,7 @@ public abstract class JsModule {
         return (WebView) mWebView;
     }
 
-    protected Object getWebViewObject() {
+    public Object getWebViewObject() {
         return mWebView;
     }
 
