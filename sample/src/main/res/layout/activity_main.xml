@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="System WebView"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false"
+        android:layout_marginTop="20dp"/>
 
     <Button
         android:id="@+id/btn_custom_webView"
