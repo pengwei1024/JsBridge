@@ -14,6 +14,8 @@ import com.apkfuns.jsbridge.module.JsModule;
 
 public abstract class JsBridge {
 
+    public static final String TAG = "JsBridgeDebug";
+
     public abstract void injectJs(@NonNull WebView webView);
 
     public abstract void injectJs(@NonNull IWebView webView);

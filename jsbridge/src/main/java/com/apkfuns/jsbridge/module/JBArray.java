@@ -1,5 +1,7 @@
 package com.apkfuns.jsbridge.module;
 
+import com.apkfuns.jsbridge.JBCallback;
+
 /**
  * Created by pengwei on 2017/5/28.
  */
@@ -17,11 +19,15 @@ public interface JBArray {
 
     int getInt(int index);
 
+    long getLong(int index);
+
     String getString(int index);
 
     JBMap getMap(int index);
 
     JBArray getArray(int index);
+
+    JBCallback getCallback(int index);
 
     int getType(int index);
 

@@ -2,15 +2,22 @@ package com.apkfuns.jsbridge;
 
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.common.JBArgumentErrorException;
 import com.apkfuns.jsbridge.module.JBArray;
 import com.apkfuns.jsbridge.module.JBMap;
 import com.apkfuns.jsbridge.module.JsModule;
+import com.apkfuns.jsbridge.module.WritableJBArray;
+import com.apkfuns.jsbridge.module.WritableJBMap;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -98,13 +105,17 @@ public final class Utils {
      * @param cls
      * @return
      */
-    public static @JSArgumentType.Type int transformType(Class cls) {
+    public static
+    @JSArgumentType.Type
+    int transformType(Class cls) {
         if (cls.equals(Integer.class) || cls.equals(int.class)) {
             return JSArgumentType.TYPE_INT;
         } else if (cls.equals(Float.class) || cls.equals(float.class)) {
             return JSArgumentType.TYPE_FLOAT;
         } else if (cls.equals(Double.class) || cls.equals(double.class)) {
             return JSArgumentType.TYPE_DOUBLE;
+        } else if (cls.equals(Long.class) || cls.equals(long.class)) {
+            return JSArgumentType.TYPE_LONG;
         } else if (cls.equals(Boolean.class) || cls.equals(boolean.class)) {
             return JSArgumentType.TYPE_BOOL;
         } else if (cls.equals(String.class)) {
@@ -131,7 +142,7 @@ public final class Utils {
         if (type == JSArgumentType.TYPE_INT || type == JSArgumentType.TYPE_FLOAT
                 || type == JSArgumentType.TYPE_DOUBLE) {
             if (parameter.getType() != JSArgumentType.TYPE_NUMBER) {
-                return new JBArgumentErrorException("parameter error, except <number>");
+                return new JBArgumentErrorException("parameter error, expect <number>");
             }
             try {
                 switch (type) {
@@ -141,6 +152,8 @@ public final class Utils {
                         return Float.parseFloat(parameter.getValue());
                     case JSArgumentType.TYPE_DOUBLE:
                         return Double.parseDouble(parameter.getValue());
+                    case JSArgumentType.TYPE_LONG:
+                        return Long.parseLong(parameter.getValue());
                 }
             } catch (NumberFormatException e) {
                 return new JBArgumentErrorException(e.getMessage());
@@ -149,19 +162,107 @@ public final class Utils {
             return parameter.getValue();
         } else if (type == JSArgumentType.TYPE_FUNCTION) {
             if (parameter.getType() != JSArgumentType.TYPE_FUNCTION) {
-                return new JBArgumentErrorException("parameter error, except <function>");
+                return new JBArgumentErrorException("parameter error, expect <function>");
             }
             return new JBCallback(webView, callback, parameter.getName());
         } else if (type == JSArgumentType.TYPE_OBJECT) {
             if (parameter.getType() != JSArgumentType.TYPE_OBJECT) {
-                return new JBArgumentErrorException("parameter error, except <object>");
+                return new JBArgumentErrorException("parameter error, expect <object>");
             }
-            return JBMapImpl.create(parameter.getValue(), callback, webView);
+            JSONObject jsonObject = JSON.parseObject(parameter.getValue());
+            return parseObjectLoop(jsonObject, callback, webView);
         } else if (type == JSArgumentType.TYPE_ARRAY) {
             if (parameter.getType() != JSArgumentType.TYPE_ARRAY) {
-                return new JBArgumentErrorException("parameter error, except <array>");
+                return new JBArgumentErrorException("parameter error, expect <array>");
             }
+            JSONArray jsonArray = JSON.parseArray(parameter.getValue());
+            return parseObjectLoop(jsonArray, callback, webView);
         }
         return null;
+    }
+
+    /**
+     * parse object loop
+     *
+     * @param parser
+     * @param callback
+     * @param webView
+     * @return
+     */
+    private static Object parseObjectLoop(Object parser, String callback, Object webView) {
+        if (parser != null) {
+            if (parser instanceof BigDecimal) {
+                return ((BigDecimal) parser).doubleValue();
+            } else if (parser instanceof String) {
+                String str = (String) parser;
+                if (str.startsWith("[Function]::")) {
+                    String[] function = str.split("::");
+                    if (function.length == 2 && !TextUtils.isEmpty(function[1])) {
+                        return new JBCallback(webView, callback, function[1]);
+                    }
+                }
+            } else if (parser instanceof JSONObject) {
+                WritableJBMap writableJBMap = WritableJBMap.create();
+                JSONObject jsonObject = (JSONObject) parser;
+                for (String key : jsonObject.keySet()) {
+                    Object ret = parseObjectLoop(jsonObject.get(key), callback, webView);
+                    if (ret == null) {
+                        writableJBMap.putNull(key);
+                        continue;
+                    }
+                    if (ret instanceof Integer) {
+                        writableJBMap.putInt(key, (Integer) ret);
+                    } else if (ret instanceof Double) {
+                        writableJBMap.putDouble(key, (Double) ret);
+                    } else if (ret instanceof Long) {
+                        writableJBMap.putLong(key, (Long) ret);
+                    } else if (ret instanceof String) {
+                        writableJBMap.putString(key, (String) ret);
+                    } else if (ret instanceof Boolean) {
+                        writableJBMap.putBoolean(key, (Boolean) ret);
+                    } else if (ret instanceof WritableJBArray) {
+                        writableJBMap.putArray(key, (WritableJBArray) ret);
+                    } else if (ret instanceof WritableJBMap) {
+                        writableJBMap.putMap(key, (WritableJBMap) ret);
+                    } else if (ret instanceof JBCallback) {
+                        writableJBMap.putCallback(key, (JBCallback) ret);
+                    } else {
+                        writableJBMap.putNull(key);
+                    }
+                }
+                return writableJBMap;
+            } else if (parser instanceof JSONArray) {
+                JSONArray jsonArray = (JSONArray) parser;
+                WritableJBArray writableJBArray = WritableJBArray.create();
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    Object ret = parseObjectLoop(jsonArray.get(i), callback, webView);
+                    if (ret == null) {
+                        writableJBArray.pushNull();
+                        continue;
+                    }
+                    if (ret instanceof Integer) {
+                        writableJBArray.pushInt((Integer) ret);
+                    } else if (ret instanceof Double) {
+                        writableJBArray.pushDouble((Double) ret);
+                    } else if (ret instanceof Long) {
+                        writableJBArray.pushLong((Long) ret);
+                    } else if (ret instanceof String) {
+                        writableJBArray.pushString((String) ret);
+                    } else if (ret instanceof Boolean) {
+                        writableJBArray.pushBoolean((Boolean) ret);
+                    } else if (ret instanceof WritableJBArray) {
+                        writableJBArray.pushArray((WritableJBArray) ret);
+                    } else if (ret instanceof WritableJBMap) {
+                        writableJBArray.pushMap((WritableJBMap) ret);
+                    } else if (ret instanceof JBCallback) {
+                        writableJBArray.pushCallback((JBCallback) ret);
+                    } else {
+                        writableJBArray.pushNull();
+                    }
+                }
+                return writableJBArray;
+            }
+        }
+        return parser;
     }
 }

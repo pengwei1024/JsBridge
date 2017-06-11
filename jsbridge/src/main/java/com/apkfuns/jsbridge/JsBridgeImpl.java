@@ -95,7 +95,7 @@ class JsBridgeImpl extends JsBridge {
 
     @Override
     public final void clean() {
-
+        evaluateJavascript(config.getProtocol() + "=undefined;");
     }
 
     @Override
@@ -174,7 +174,7 @@ class JsBridgeImpl extends JsBridge {
         builder.append("};");
         builder.append("window." + config.getProtocol() + " = new " + className + "();");
         builder.append(config.getProtocol() + ".OnJsBridgeReady();");
-        Log.e("****", builder.toString());
+        Log.e(JsBridge.TAG, builder.toString());
         return builder.toString();
     }
 

@@ -14,6 +14,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.JsBridge;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d("****", consoleMessage.message());
+                Log.d(JsBridge.TAG, consoleMessage.message());
                 return true;
             }
         });

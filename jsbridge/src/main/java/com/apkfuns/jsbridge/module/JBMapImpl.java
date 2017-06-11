@@ -1,12 +1,11 @@
-package com.apkfuns.jsbridge;
+package com.apkfuns.jsbridge.module;
 
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apkfuns.jsbridge.module.JBArray;
-import com.apkfuns.jsbridge.module.JBMap;
+import com.apkfuns.jsbridge.JBCallback;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -15,7 +14,7 @@ import java.util.Set;
  * Created by pengwei on 2017/5/30.
  */
 
-class JBMapImpl implements JBMap {
+class JBMapImpl extends WritableJBMap {
 
     private HashMap<String, Object> dataSource;
 
@@ -59,12 +58,17 @@ class JBMapImpl implements JBMap {
     }
 
     @Override
+    public long getLong(String name) {
+        return (long) get(name);
+    }
+
+    @Override
     public String getString(String name) {
         return (String) get(name);
     }
 
     @Override
-    public JBCallback getJsCallback(String name) {
+    public JBCallback getCallback(String name) {
         if (get(name) != null && get(name) instanceof JBCallback) {
             return ((JBCallback) get(name));
         }
@@ -86,35 +90,52 @@ class JBMapImpl implements JBMap {
         return dataSource.keySet();
     }
 
-    public void put(String name, Object value) {
+    private void put(String name, Object value) {
         dataSource.put(name, value);
     }
 
-    public static JBMap create(String map, String callback, Object webView) {
-        JSONObject jsonObject = JSON.parseObject(map);
-        JBMapImpl jbMap = new JBMapImpl();
-        if (jsonObject != null && !jsonObject.isEmpty()) {
-            for (String key : jsonObject.keySet()) {
-                Object child = jsonObject.get(key);
-                if (child instanceof JSONObject) {
+    @Override
+    public void putNull(String key) {
+        dataSource.put(key, null);
+    }
 
-                } else if (child instanceof JSONArray) {
+    @Override
+    public void putBoolean(String key, boolean value) {
+        put(key, value);
+    }
 
-                } else if (child instanceof String) {
-                    String stringParam = (String) child;
-                    if (stringParam.startsWith("[Function]::")) {
-                        String[] function = stringParam.split("::");
-                        if (function.length == 2 && !TextUtils.isEmpty(function[1])) {
-                            jbMap.put(key, new JBCallback(webView, callback, function[1]));
-                        }
-                    } else {
-                        jbMap.put(key, stringParam);
-                    }
-                } else {
-                    jbMap.put(key, child);
-                }
-            }
-        }
-        return jbMap;
+    @Override
+    public void putDouble(String key, double value) {
+        put(key, value);
+    }
+
+    @Override
+    public void putInt(String key, int value) {
+        put(key, value);
+    }
+
+    @Override
+    public void putLong(String key, long value) {
+        put(key, value);
+    }
+
+    @Override
+    public void putString(String key, String value) {
+        put(key, value);
+    }
+
+    @Override
+    public void putArray(String key, WritableJBArray value) {
+        put(key, value);
+    }
+
+    @Override
+    public void putMap(String key, WritableJBMap value) {
+        put(key, value);
+    }
+
+    @Override
+    public void putCallback(String key, JBCallback value) {
+        put(key, value);
     }
 }

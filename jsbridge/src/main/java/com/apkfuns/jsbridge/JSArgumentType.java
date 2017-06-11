@@ -22,9 +22,10 @@ public interface JSArgumentType {
     int TYPE_INT = 7;
     int TYPE_FLOAT = 8;
     int TYPE_DOUBLE = 9;
+    int TYPE_LONG = 10;
 
     @IntDef({TYPE_UNDEFINE, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL, TYPE_FUNCTION, TYPE_OBJECT, TYPE_ARRAY,
-            TYPE_INT, TYPE_FLOAT, TYPE_DOUBLE})
+            TYPE_INT, TYPE_FLOAT, TYPE_DOUBLE, TYPE_LONG})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
     }

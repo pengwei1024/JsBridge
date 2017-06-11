@@ -2,6 +2,7 @@ package com.apkfuns.jsbridge;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.WebView;
 
@@ -12,7 +13,7 @@ import java.lang.ref.WeakReference;
 /**
  * Created by pengwei on 16/5/6.
  */
-public class JBCallback {
+public final class JBCallback {
 
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -20,10 +21,18 @@ public class JBCallback {
     private WeakReference<Object> mWebViewRef;
     private String name;
 
-    public JBCallback(Object webView, String callback, String name) {
+    JBCallback(Object webView, String callback, @NonNull String name) {
         this.callback = callback;
         this.name = name;
         mWebViewRef = new WeakReference<>(webView);
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
+    public void setWebViewRef(Object webView) {
+        this.mWebViewRef = new WeakReference<Object>(webView);
     }
 
     public void apply(Object... args) {
@@ -39,7 +48,8 @@ public class JBCallback {
             for (int i = 0; i < args.length; i++) {
                 int type = Utils.transformType(args[i].getClass());
                 if (type == JSArgumentType.TYPE_INT || type == JSArgumentType.TYPE_FLOAT
-                        || type == JSArgumentType.TYPE_DOUBLE || type == JSArgumentType.TYPE_BOOL) {
+                        || type == JSArgumentType.TYPE_DOUBLE || type == JSArgumentType.TYPE_BOOL
+                        || type == JSArgumentType.TYPE_LONG) {
                     builder.append(args[i]);
                 } else {
                     builder.append("'" + args[i] + "'");

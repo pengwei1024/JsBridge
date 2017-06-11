@@ -1,7 +1,10 @@
 package com.apkfuns.jsbridgesample;
 
+import android.util.Log;
 import android.widget.Toast;
 
+import com.apkfuns.jsbridge.JsBridge;
+import com.apkfuns.jsbridge.module.JBArray;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.module.JsModule;
@@ -23,8 +26,6 @@ public class ShareModule extends JsModule {
 
     @JSBridgeMethod(methodName = "hiShare")
     public void share(float platform, String msg, final JBCallback success, final JBCallback failure) {
-//        Log.d("****", platform + "#" + msg + "#" + success + "#" + failure);
-//        Log.d("****", "context=" + getContext());
         Toast.makeText(getContext(), "abc", Toast.LENGTH_SHORT).show();
         try {
             Thread.sleep(2000);
@@ -42,15 +43,29 @@ public class ShareModule extends JsModule {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        dataMap.getJsCallback("error").apply(e.getMessage());
+                        dataMap.getCallback("error").apply(e.getMessage());
                     }
 
                     @Override
                     public void onResponse(String response, int id) {
-                        dataMap.getJsCallback("success").apply(response);
+                        dataMap.getCallback("success").apply(response);
                     }
                 });
         // String url, String type, String data, JBCallback success, JBCallback error
+    }
+
+    @JSBridgeMethod
+    public void test(JBArray array) {
+        for (int i=0;i<array.size();i++) {
+            String output = "" + array.get(i);
+            if (array.get(i) != null) {
+                output += "##" + array.get(i).getClass();
+            }
+            Log.d(JsBridge.TAG, output);
+        }
+        array.getCallback(4).apply("xxx");
+        Log.d(JsBridge.TAG, "ret=" + array.getMap(5).getInt("a"));
+        array.getMap(5).getCallback("b").apply();
     }
 
 //    @JSBridgeMethod

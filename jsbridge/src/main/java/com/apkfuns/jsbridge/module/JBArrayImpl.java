@@ -1,5 +1,8 @@
-package com.apkfuns.jsbridge;
+package com.apkfuns.jsbridge.module;
 
+import com.apkfuns.jsbridge.JBCallback;
+import com.apkfuns.jsbridge.JSArgumentType;
+import com.apkfuns.jsbridge.Utils;
 import com.apkfuns.jsbridge.module.JBArray;
 import com.apkfuns.jsbridge.module.JBMap;
 
@@ -10,7 +13,7 @@ import java.util.List;
  * Created by pengwei on 2017/6/3.
  */
 
-public class JBArrayImpl implements JBArray {
+class JBArrayImpl extends WritableJBArray {
 
     private List<Object> dataSource;
 
@@ -49,6 +52,11 @@ public class JBArrayImpl implements JBArray {
     }
 
     @Override
+    public long getLong(int index) {
+        return (long) get(index);
+    }
+
+    @Override
     public String getString(int index) {
         return (String) get(index);
     }
@@ -61,6 +69,11 @@ public class JBArrayImpl implements JBArray {
     @Override
     public JBArray getArray(int index) {
         return (JBArray) get(index);
+    }
+
+    @Override
+    public JBCallback getCallback(int index) {
+        return (JBCallback) get(index);
     }
 
     @Override
@@ -78,7 +91,53 @@ public class JBArrayImpl implements JBArray {
         return dataSource.get(index);
     }
 
-    public void add(Object data) {
+    private void add(Object data) {
         dataSource.add(data);
     }
+
+    @Override
+    public void pushNull() {
+        dataSource.add(null);
+    }
+
+    @Override
+    public void pushBoolean(boolean value) {
+        add(value);
+    }
+
+    @Override
+    public void pushDouble(double value) {
+        add(value);
+    }
+
+    @Override
+    public void pushInt(int value) {
+        add(value);
+    }
+
+    @Override
+    public void pushLong(long value) {
+        add(value);
+    }
+
+    @Override
+    public void pushString(String value) {
+        add(value);
+    }
+
+    @Override
+    public void pushArray(WritableJBArray value) {
+        add(value);
+    }
+
+    @Override
+    public void pushMap(WritableJBMap value) {
+        add(value);
+    }
+
+    @Override
+    public void pushCallback(JBCallback value) {
+        add(value);
+    }
+
 }

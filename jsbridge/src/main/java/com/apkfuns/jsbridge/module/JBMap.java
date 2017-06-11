@@ -23,9 +23,11 @@ public interface JBMap {
 
     int getInt(String name);
 
+    long getLong(String name);
+
     String getString(String name);
 
-    JBCallback getJsCallback(String name);
+    JBCallback getCallback(String name);
 
     JBMap getJBMap(String name);
 
