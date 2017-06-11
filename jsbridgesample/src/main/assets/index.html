@@ -27,9 +27,14 @@
             <!--console.log('reply = ' + data)-->
         <!--});-->
 
-        MyBridge.share.test([-1111111111111111111, 1.235, 'hello world', true,
-        function(args){alert(args)}, {a:100101, b:function(){alert('执行复杂回调函数')}},
-        [1,2,3,4]]);
+        <!--MyBridge.share.test([-1111111111111111111, 1.235, 'hello world', true,-->
+        <!--function(args){alert(args)}, {a:100101, b:function(){alert('执行复杂回调函数')}},-->
+        <!--[1,2,3,4]]);-->
+
+        MyBridge.share.testReturn(function(array, map){
+            console.log(array);
+            console.log(map);
+        });
     }
 </script>
 </body>

@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.common.IWebView;
+import com.apkfuns.jsbridge.module.JBArray;
+import com.apkfuns.jsbridge.module.JBMap;
 
 import java.lang.ref.WeakReference;
 
@@ -46,20 +48,13 @@ public final class JBCallback {
         builder.append("if (typeof callback === 'function'){callback(");
         if (args != null && args.length > 0) {
             for (int i = 0; i < args.length; i++) {
-                int type = Utils.transformType(args[i].getClass());
-                if (type == JSArgumentType.TYPE_INT || type == JSArgumentType.TYPE_FLOAT
-                        || type == JSArgumentType.TYPE_DOUBLE || type == JSArgumentType.TYPE_BOOL
-                        || type == JSArgumentType.TYPE_LONG) {
-                    builder.append(args[i]);
-                } else {
-                    builder.append("'" + args[i] + "'");
-                }
+                builder.append(Utils.toJsObject(args[i]));
                 if (i != args.length - 1) {
                     builder.append(",");
                 }
             }
         }
-        builder.append(")}}");
+        builder.append(")}else{console.error(callback + ' is not a function')}}");
         mHandler.post(new Runnable() {
             @Override
             public void run() {

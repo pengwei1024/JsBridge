@@ -2,11 +2,11 @@ package com.apkfuns.jsbridge;
 
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apkfuns.jsbridge.module.JSArgumentType;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.common.JBArgumentErrorException;
 import com.apkfuns.jsbridge.module.JBArray;
@@ -264,5 +264,22 @@ public final class Utils {
             }
         }
         return parser;
+    }
+
+    /**
+     * 转化为 JS 对象
+     * @param javaObject
+     * @return
+     */
+    public static String toJsObject(Object javaObject) {
+        if (javaObject == null || javaObject instanceof Integer || javaObject instanceof Float
+                || javaObject instanceof Double || javaObject instanceof Long
+                || javaObject instanceof Boolean) {
+            return "" + javaObject;
+        } else if (javaObject instanceof JBArray || javaObject instanceof JBMap) {
+            return javaObject.toString();
+        } else {
+            return "'" + javaObject + "'";
+        }
     }
 }

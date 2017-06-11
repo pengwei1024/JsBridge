@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridge;
+package com.apkfuns.jsbridge.module;
 
 
 

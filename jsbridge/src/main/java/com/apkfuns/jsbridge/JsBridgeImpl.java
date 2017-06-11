@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.apkfuns.jsbridge.common.IPromptResult;
 import com.apkfuns.jsbridge.common.IWebView;
 import com.apkfuns.jsbridge.common.JBArgumentErrorException;
+import com.apkfuns.jsbridge.module.JSArgumentType;
 import com.apkfuns.jsbridge.module.JsModule;
 import com.apkfuns.jsbridge.module.JsStaticModule;
 

@@ -9,6 +9,8 @@ import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.module.JsModule;
 import com.apkfuns.jsbridge.module.JBMap;
+import com.apkfuns.jsbridge.module.WritableJBArray;
+import com.apkfuns.jsbridge.module.WritableJBMap;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -66,6 +68,19 @@ public class ShareModule extends JsModule {
         array.getCallback(4).apply("xxx");
         Log.d(JsBridge.TAG, "ret=" + array.getMap(5).getInt("a"));
         array.getMap(5).getCallback("b").apply();
+    }
+
+    @JSBridgeMethod
+    public void testReturn(JBCallback callback) {
+        WritableJBArray jbArray = WritableJBArray.create();
+        jbArray.pushInt(1);
+        jbArray.pushInt(2);
+        jbArray.pushInt(3);
+        WritableJBMap jbMap = WritableJBMap.create();
+        jbMap.putString("a","hello");
+        jbMap.putString("b","world");
+        callback.apply(jbArray, jbMap);
+        Log.d(JsBridge.TAG, jbMap.toString() + "\n" + jbArray.toString());
     }
 
 //    @JSBridgeMethod

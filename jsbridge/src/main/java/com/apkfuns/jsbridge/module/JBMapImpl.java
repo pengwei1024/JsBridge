@@ -1,11 +1,7 @@
 package com.apkfuns.jsbridge.module;
 
-import android.text.TextUtils;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.apkfuns.jsbridge.JBCallback;
+import com.apkfuns.jsbridge.Utils;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -137,5 +133,18 @@ class JBMapImpl extends WritableJBMap {
     @Override
     public void putCallback(String key, JBCallback value) {
         put(key, value);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("{");
+        int i = 0;
+        for (String key : dataSource.keySet()) {
+            builder.append(key + ":" + Utils.toJsObject(get(key)));
+            if (++i != dataSource.size()) {
+                builder.append(",");
+            }
+        }
+        return builder.append("}").toString();
     }
 }

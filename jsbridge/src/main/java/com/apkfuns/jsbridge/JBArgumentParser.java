@@ -1,5 +1,7 @@
 package com.apkfuns.jsbridge;
 
+import com.apkfuns.jsbridge.module.JSArgumentType;
+
 import java.util.List;
 
 /**

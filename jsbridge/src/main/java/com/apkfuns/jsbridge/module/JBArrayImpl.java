@@ -1,10 +1,7 @@
 package com.apkfuns.jsbridge.module;
 
 import com.apkfuns.jsbridge.JBCallback;
-import com.apkfuns.jsbridge.JSArgumentType;
 import com.apkfuns.jsbridge.Utils;
-import com.apkfuns.jsbridge.module.JBArray;
-import com.apkfuns.jsbridge.module.JBMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,4 +137,15 @@ class JBArrayImpl extends WritableJBArray {
         add(value);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("[");
+        for (int i = 0; i < dataSource.size(); i++) {
+            builder.append(Utils.toJsObject(dataSource.get(i)));
+            if (i != dataSource.size() - 1) {
+                builder.append(",");
+            }
+        }
+        return builder.append("]").toString();
+    }
 }
