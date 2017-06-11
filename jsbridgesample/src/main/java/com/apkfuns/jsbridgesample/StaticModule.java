@@ -2,7 +2,7 @@ package com.apkfuns.jsbridgesample;
 
 import android.widget.Toast;
 
-import com.apkfuns.jsbridge.JBCallback;
+import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JsStaticModule;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 

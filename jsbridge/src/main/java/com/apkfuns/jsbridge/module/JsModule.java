@@ -9,31 +9,23 @@ import com.apkfuns.jsbridge.common.IWebView;
  * Created by pengwei on 16/5/6.
  */
 public abstract class JsModule {
-    private Context mContext;
-    private Object mWebView;
+    public Context mContext;
+    public Object mWebView;
 
     protected final Context getContext() {
         return mContext;
     }
 
-    public void setContext(Context context) {
-        this.mContext = context;
-    }
-
-    public IWebView getIWebView() {
+    protected IWebView getIWebView() {
         return (IWebView) mWebView;
     }
 
-    public WebView getWebView() {
+    protected WebView getWebView() {
         return (WebView) mWebView;
     }
 
-    public Object getWebViewObject() {
+    protected Object getWebViewObject() {
         return mWebView;
-    }
-
-    public void setWebView(Object mWebView) {
-        this.mWebView = mWebView;
     }
 
     public abstract String getModuleName();

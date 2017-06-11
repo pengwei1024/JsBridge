@@ -7,48 +7,37 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 
 import com.apkfuns.jsbridge.common.IWebView;
-import com.apkfuns.jsbridge.module.JBArray;
-import com.apkfuns.jsbridge.module.JBMap;
-
-import java.lang.ref.WeakReference;
+import com.apkfuns.jsbridge.module.JBCallback;
 
 /**
  * Created by pengwei on 16/5/6.
  */
-public final class JBCallback {
+final class JBCallbackImpl implements JBCallback {
 
-    private static Handler mHandler = new Handler(Looper.getMainLooper());
-
-    private String callback;
-    private WeakReference<Object> mWebViewRef;
     private String name;
+    private JsMethod method;
+    private Handler mHandler;
 
-    JBCallback(Object webView, String callback, @NonNull String name) {
-        this.callback = callback;
+    JBCallbackImpl(@NonNull JsMethod method, @NonNull String name) {
+        this.method = method;
         this.name = name;
-        mWebViewRef = new WeakReference<>(webView);
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
-    public void setCallback(String callback) {
-        this.callback = callback;
-    }
-
-    public void setWebViewRef(Object webView) {
-        this.mWebViewRef = new WeakReference<Object>(webView);
-    }
-
+    @Override
     public void apply(Object... args) {
-        if (mWebViewRef == null || mWebViewRef.get() == null || TextUtils.isEmpty(callback)
+        if (method == null || method.getModule() == null || method.getModule().mWebView == null
                 || TextUtils.isEmpty(name)) {
             return;
         }
+        String callback = method.getCallback();
         final StringBuilder builder = new StringBuilder("javascript:");
         builder.append("if(" + callback + " && " + callback + "['" + name + "']){");
         builder.append("var callback = " + callback + "['" + name + "'];");
         builder.append("if (typeof callback === 'function'){callback(");
         if (args != null && args.length > 0) {
             for (int i = 0; i < args.length; i++) {
-                builder.append(Utils.toJsObject(args[i]));
+                builder.append(JBUtils.toJsObject(args[i]));
                 if (i != args.length - 1) {
                     builder.append(",");
                 }
@@ -58,10 +47,10 @@ public final class JBCallback {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mWebViewRef.get() instanceof WebView) {
-                    ((WebView) mWebViewRef.get()).loadUrl(builder.toString());
-                } else if (mWebViewRef.get() instanceof IWebView) {
-                    ((IWebView) mWebViewRef.get()).loadUrl(builder.toString());
+                if (method.getModule().mWebView instanceof WebView) {
+                    ((WebView) method.getModule().mWebView).loadUrl(builder.toString());
+                } else if (method.getModule().mWebView instanceof IWebView) {
+                    ((IWebView) method.getModule().mWebView).loadUrl(builder.toString());
                 }
             }
         });

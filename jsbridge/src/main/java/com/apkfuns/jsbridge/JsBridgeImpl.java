@@ -1,6 +1,8 @@
 package com.apkfuns.jsbridge;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,7 +20,7 @@ import com.apkfuns.jsbridge.module.JsStaticModule;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +37,14 @@ class JsBridgeImpl extends JsBridge {
     private final List<Class<? extends JsModule>> loadModule;
     private final Map<JsModule, HashMap<String, JsMethod>> exposedMethods;
     private final String className;
+    private String preLoad;
+    private Handler handler;
 
     JsBridgeImpl(Class<? extends JsModule>... modules) {
         className = "JsBridgeClass_" + System.currentTimeMillis();
         loadModule = new ArrayList<>();
         exposedMethods = new HashMap<>();
+        handler = new Handler(Looper.getMainLooper());
         config = JsBridgeConfigImpl.getInstance();
         loadModule.addAll(config.getDefaultModule());
         if (modules != null) {
@@ -48,6 +53,7 @@ class JsBridgeImpl extends JsBridge {
             }
         }
         loadModule();
+        preLoad = getInjectJsString();
     }
 
     /**
@@ -59,7 +65,7 @@ class JsBridgeImpl extends JsBridge {
                 try {
                     JsModule module = moduleCls.newInstance();
                     if (module != null) {
-                        HashMap<String, JsMethod> methodsMap = Utils.getAllMethod(
+                        HashMap<String, JsMethod> methodsMap = JBUtils.getAllMethod(
                                 module, moduleCls);
                         if (!methodsMap.isEmpty()) {
                             exposedMethods.put(module, methodsMap);
@@ -74,14 +80,40 @@ class JsBridgeImpl extends JsBridge {
 
     @Override
     public final void injectJs(@NonNull WebView webView) {
-        this.mWebView = webView;
-        evaluateJavascript(getInjectJsString(webView.getContext(), webView));
+        onInjectJs(webView.getContext(), webView);
     }
 
     @Override
     public final void injectJs(@NonNull IWebView webView) {
+        onInjectJs(webView.getContext(), webView);
+    }
+
+    private void onInjectJs(final Context context, final Object webView) {
         this.mWebView = webView;
-        evaluateJavascript(getInjectJsString(webView.getContext(), webView));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (JsModule module : exposedMethods.keySet()) {
+                    // 为JsModule设置context 和 WebView
+                    if (module.mContext != null && module.mContext.getClass().equals(context.getClass())) {
+                        break;
+                    }
+                    try {
+                        Field contextField = module.getClass().getField("mContext");
+                        if (contextField != null) {
+                            contextField.set(module, context);
+                        }
+                        Field webViewField = module.getClass().getField("mWebView");
+                        if (webViewField != null) {
+                            webViewField.set(module, webView);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                evaluateJavascript(preLoad);
+            }
+        }, "JsBridgeThread").start();
     }
 
     @Override
@@ -108,18 +140,23 @@ class JsBridgeImpl extends JsBridge {
      * evaluate javascript
      * @param jsCode
      */
-    private void evaluateJavascript(String jsCode) {
+    private void evaluateJavascript(final String jsCode) {
         if (mWebView == null) {
             return;
         }
-        if (mWebView instanceof WebView) {
-            ((WebView) mWebView).loadUrl("javascript:" + jsCode);
-        } else if (mWebView instanceof IWebView) {
-            ((IWebView) mWebView).loadUrl("javascript:" + jsCode);
-        } else {
-            throw new JBArgumentErrorException("Can not cast " + mWebView.getClass().getSimpleName()
-                    + " to WebView");
-        }
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mWebView instanceof WebView) {
+                    ((WebView) mWebView).loadUrl("javascript:" + jsCode);
+                } else if (mWebView instanceof IWebView) {
+                    ((IWebView) mWebView).loadUrl("javascript:" + jsCode);
+                } else {
+                    throw new JBArgumentErrorException("Can not cast " + mWebView.getClass().getSimpleName()
+                            + " to WebView");
+                }
+            }
+        });
     }
 
     private JsModule getModule(String moduleName) {
@@ -134,7 +171,7 @@ class JsBridgeImpl extends JsBridge {
         return null;
     }
 
-    private String getInjectJsString(Context context, Object webView) {
+    private String getInjectJsString() {
         StringBuilder builder = new StringBuilder();
         builder.append("var " + className + " = function () {");
         // 注入通用方法
@@ -143,19 +180,6 @@ class JsBridgeImpl extends JsBridge {
         for (JsModule module : exposedMethods.keySet()) {
             if (module == null || TextUtils.isEmpty(module.getModuleName())) {
                 continue;
-            }
-            // 为JsModule设置context 和 WebView
-            try {
-                Method setContextMethod = module.getClass().getMethod("setContext", Context.class);
-                if (setContextMethod != null) {
-                    setContextMethod.invoke(module, context);
-                }
-                Method setWebViewMethod = module.getClass().getMethod("setWebView", Object.class);
-                if (setWebViewMethod != null) {
-                    setWebViewMethod.invoke(module, webView);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             HashMap<String, JsMethod> methods = exposedMethods.get(module);
             if (module instanceof JsStaticModule) {
@@ -205,8 +229,7 @@ class JsBridgeImpl extends JsBridge {
                         @JSArgumentType.Type int type = method.getParameterType().get(i);
                         if (parameters != null && parameters.size() >= i + 1) {
                             JBArgumentParser.Parameter param = parameters.get(i);
-                            Object parseObject = Utils.parseToObject(type, param,
-                                    method.getCallback(), findModule.getWebViewObject());
+                            Object parseObject = JBUtils.parseToObject(type, param, method);
                             if (parseObject != null && parseObject instanceof JBArgumentErrorException) {
                                 setJsPromptResult(result, false, parseObject.toString());
                                 return;

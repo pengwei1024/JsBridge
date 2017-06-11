@@ -5,8 +5,8 @@ import android.widget.Toast;
 
 import com.apkfuns.jsbridge.JsBridge;
 import com.apkfuns.jsbridge.module.JBArray;
+import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
-import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.module.JsModule;
 import com.apkfuns.jsbridge.module.JBMap;
 import com.apkfuns.jsbridge.module.WritableJBArray;
@@ -53,7 +53,6 @@ public class ShareModule extends JsModule {
                         dataMap.getCallback("success").apply(response);
                     }
                 });
-        // String url, String type, String data, JBCallback success, JBCallback error
     }
 
     @JSBridgeMethod
@@ -81,15 +80,11 @@ public class ShareModule extends JsModule {
         jbMap.putString("b","world");
         callback.apply(jbArray, jbMap);
         Log.d(JsBridge.TAG, jbMap.toString() + "\n" + jbArray.toString());
+        Log.d(JsBridge.TAG, getContext() + "#" + getWebViewObject());
     }
 
-//    @JSBridgeMethod
-//    public void test(JBMap map) {
-//        map.getJsCallback("a").apply("");
-//    }
-//
-//    @JSBridgeMethod
-//    public int version() {
-//        return 10;
-//    }
+    @JSBridgeMethod
+    public int version() {
+        return 10;
+    }
 }

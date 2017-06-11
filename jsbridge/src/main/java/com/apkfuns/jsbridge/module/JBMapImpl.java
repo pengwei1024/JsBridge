@@ -1,7 +1,6 @@
 package com.apkfuns.jsbridge.module;
 
-import com.apkfuns.jsbridge.JBCallback;
-import com.apkfuns.jsbridge.Utils;
+import com.apkfuns.jsbridge.JBUtils;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -140,7 +139,7 @@ class JBMapImpl extends WritableJBMap {
         StringBuilder builder = new StringBuilder("{");
         int i = 0;
         for (String key : dataSource.keySet()) {
-            builder.append(key + ":" + Utils.toJsObject(get(key)));
+            builder.append(key + ":" + JBUtils.toJsObject(get(key)));
             if (++i != dataSource.size()) {
                 builder.append(",");
             }

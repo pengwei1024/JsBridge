@@ -1,6 +1,5 @@
 package com.apkfuns.jsbridge.module;
 
-import com.apkfuns.jsbridge.JBCallback;
 
 /**
  * Created by pengwei on 2017/6/10.

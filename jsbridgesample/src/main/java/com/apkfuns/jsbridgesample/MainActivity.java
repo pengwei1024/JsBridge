@@ -14,7 +14,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.apkfuns.jsbridge.JBCallback;
 import com.apkfuns.jsbridge.JsBridge;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                Log.d(JsBridge.TAG, "start load JsBridge");
                 jsBridge.injectJs(view);
             }
         });

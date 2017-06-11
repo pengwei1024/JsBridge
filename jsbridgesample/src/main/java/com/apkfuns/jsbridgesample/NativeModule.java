@@ -17,13 +17,13 @@ public class NativeModule extends JsModule {
 //    }
 //
 //    @JSBridgeMethod(methodName = "show")
-//    private void showToast(int a, Map<String, String> maps, JBCallback success, JBCallback failure) {
+//    private void showToast(int a, Map<String, String> maps, JBCallbackImpl success, JBCallbackImpl failure) {
 //
 //    }
 //
 //    @JSBridgeMethod
 //    public static void setNavMenu(MainActivity activity, WebView webView, final String options,
-//                                  final JBCallback callback, JsReturn jsReturn) {
+//                                  final JBCallbackImpl callback, JsReturn jsReturn) {
 //        // 调用MainActivity的addMenu方法设置菜单，并将点击事件回调给JS
 //        activity.addMenu(options, new Runnable() {
 //            @Override

@@ -1,7 +1,5 @@
 package com.apkfuns.jsbridge.module;
 
-import com.apkfuns.jsbridge.JBCallback;
-
 import java.util.Set;
 
 /**

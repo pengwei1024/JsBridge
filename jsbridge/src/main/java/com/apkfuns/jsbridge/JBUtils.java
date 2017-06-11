@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSArgumentType;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.common.JBArgumentErrorException;
@@ -26,7 +27,7 @@ import java.util.List;
 /**
  * Created by pengwei on 16/5/13.
  */
-public final class Utils {
+public final class JBUtils {
 
     private static List<Class> validParameterList =
             Arrays.<Class>asList(Integer.class, Float.class, Double.class, String.class,
@@ -73,20 +74,6 @@ public final class Utils {
             mMethodsMap.put(name, createMethod);
         }
         return mMethodsMap;
-    }
-
-    /**
-     * 是否是派生类
-     *
-     * @param cla1
-     * @param cla2
-     * @return
-     */
-    public static boolean classIsRelative(Class cla1, Class cla2) {
-        if (cla1 != null && cla2 != null) {
-            return cla2.isAssignableFrom(cla1) || cla2.equals(cla1);
-        }
-        return false;
     }
 
     /**
@@ -138,7 +125,7 @@ public final class Utils {
      * @return
      */
     public static Object parseToObject(@JSArgumentType.Type int type, JBArgumentParser.Parameter parameter,
-                                       String callback, Object webView) {
+                                       JsMethod method) {
         if (type == JSArgumentType.TYPE_INT || type == JSArgumentType.TYPE_FLOAT
                 || type == JSArgumentType.TYPE_DOUBLE) {
             if (parameter.getType() != JSArgumentType.TYPE_NUMBER) {
@@ -164,32 +151,30 @@ public final class Utils {
             if (parameter.getType() != JSArgumentType.TYPE_FUNCTION) {
                 return new JBArgumentErrorException("parameter error, expect <function>");
             }
-            return new JBCallback(webView, callback, parameter.getName());
+            return new JBCallbackImpl(method, parameter.getName());
         } else if (type == JSArgumentType.TYPE_OBJECT) {
             if (parameter.getType() != JSArgumentType.TYPE_OBJECT) {
                 return new JBArgumentErrorException("parameter error, expect <object>");
             }
             JSONObject jsonObject = JSON.parseObject(parameter.getValue());
-            return parseObjectLoop(jsonObject, callback, webView);
+            return parseObjectLoop(jsonObject, method);
         } else if (type == JSArgumentType.TYPE_ARRAY) {
             if (parameter.getType() != JSArgumentType.TYPE_ARRAY) {
                 return new JBArgumentErrorException("parameter error, expect <array>");
             }
             JSONArray jsonArray = JSON.parseArray(parameter.getValue());
-            return parseObjectLoop(jsonArray, callback, webView);
+            return parseObjectLoop(jsonArray, method);
         }
         return null;
     }
 
     /**
      * parse object loop
-     *
      * @param parser
-     * @param callback
-     * @param webView
+     * @param method
      * @return
      */
-    private static Object parseObjectLoop(Object parser, String callback, Object webView) {
+    private static Object parseObjectLoop(Object parser, JsMethod method) {
         if (parser != null) {
             if (parser instanceof BigDecimal) {
                 return ((BigDecimal) parser).doubleValue();
@@ -198,14 +183,14 @@ public final class Utils {
                 if (str.startsWith("[Function]::")) {
                     String[] function = str.split("::");
                     if (function.length == 2 && !TextUtils.isEmpty(function[1])) {
-                        return new JBCallback(webView, callback, function[1]);
+                        return new JBCallbackImpl(method, function[1]);
                     }
                 }
             } else if (parser instanceof JSONObject) {
                 WritableJBMap writableJBMap = WritableJBMap.create();
                 JSONObject jsonObject = (JSONObject) parser;
                 for (String key : jsonObject.keySet()) {
-                    Object ret = parseObjectLoop(jsonObject.get(key), callback, webView);
+                    Object ret = parseObjectLoop(jsonObject.get(key), method);
                     if (ret == null) {
                         writableJBMap.putNull(key);
                         continue;
@@ -235,7 +220,7 @@ public final class Utils {
                 JSONArray jsonArray = (JSONArray) parser;
                 WritableJBArray writableJBArray = WritableJBArray.create();
                 for (int i = 0; i < jsonArray.size(); i++) {
-                    Object ret = parseObjectLoop(jsonArray.get(i), callback, webView);
+                    Object ret = parseObjectLoop(jsonArray.get(i), method);
                     if (ret == null) {
                         writableJBArray.pushNull();
                         continue;
