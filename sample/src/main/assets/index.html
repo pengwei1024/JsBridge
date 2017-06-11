@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JsBridge Demo</title>
+</head>
+<body>
+<style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul > li {
+        display: block;
+        text-align: center;
+        list-style: none;
+        background: #ccc;
+        margin: 10px;
+        padding: 8px;
+    }
+</style>
+<ul id="ul">
+    <li>Set Menu</li>
+    <li>Pop Dialog</li>
+    <li>Location</li>
+    <li>Async request</li>
+    <li>Share</li>
+</ul>
+<script type="text/javascript">
+    var ul = document.getElementById("ul");
+    var li = ul.getElementsByTagName("li");
+    for (var i = 0; i < li.length; i++) {
+        li[i].index = i;
+        li[i].onclick = function () {
+            switch (this.index) {
+                case 0:
+                    MyBridge.native.setMenu('test', function(ret){
+                        alert('menu click，return data is ' + ret)
+                    });
+                    break;
+                case 1:
+                    MyBridge.native.alertDialog(
+                        'Title',
+                        'it\'s a native dialog',
+                        function(){
+                            alert('sure button click');
+                        },
+                        function(){
+                            alert('cancel button click');
+                        }
+                    );
+                    break;
+                case 2:
+                    MyBridge.native.getLocation(function(latitude, longitude){
+                        console.log('location: ' +latitude + ',' + longitude)
+                    },function(latitude, longitude){
+                        alert('Location change: ' + latitude + ',' + longitude)
+                    });
+                    break;
+                case 3:
+                    MyBridge.service.ajax({
+                        url:'https://m.kuaidi100.com/sysapi.do',
+                        type:'GET',
+                        data:'method=findxzqbyip',
+                        success:function(data){
+                            alert('success => ' + data);
+                        },
+                        error:function(error){
+                            alert('error => ' + error);
+                        }
+                    });
+                    break;
+                case 4:
+                    MyBridge.service.hiShare('share text', function(){}, function(){});
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+     window.onMyBridgeReady = function () {
+        console.log("JsBridge load finish");
+     }
+
+</script>
+</body>
+</html>

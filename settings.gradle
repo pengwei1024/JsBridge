@@ -1,2 +1,2 @@
-include  ':jsbridge', ':jsbridgesample'
+include  ':jsbridge', ':sample'
 // ':app',

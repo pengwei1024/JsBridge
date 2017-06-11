@@ -104,7 +104,6 @@ class JsMethod {
         builder.append("}");
         builder.append("req['parameters'] = argumentList;");
         builder.append("req['callback'] = callbacks;");
-        builder.append("console.log(JSON.stringify(req));");
         builder.append("var ret = JSON.parse(prompt(JSON.stringify(req)));");
         builder.append("if(ret && ret.success) {");
         if (hasReturn) {

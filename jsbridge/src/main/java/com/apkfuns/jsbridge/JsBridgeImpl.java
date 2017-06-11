@@ -54,6 +54,9 @@ class JsBridgeImpl extends JsBridge {
         }
         loadModule();
         preLoad = getInjectJsString();
+        if (config.isDebug()) {
+            Log.d(TAG, "init JsBridge");
+        }
     }
 
     /**
@@ -112,6 +115,9 @@ class JsBridgeImpl extends JsBridge {
                     }
                 }
                 evaluateJavascript(preLoad);
+                if (config.isDebug()) {
+                    Log.d(TAG, "onInjectJs finish");
+                }
             }
         }, "JsBridgeThread").start();
     }
@@ -134,6 +140,9 @@ class JsBridgeImpl extends JsBridge {
     @Override
     public final void release() {
         exposedMethods.clear();
+        if (config.isDebug()) {
+            Log.d(TAG, "JsBridge destroy");
+        }
     }
 
     /**
@@ -199,7 +208,6 @@ class JsBridgeImpl extends JsBridge {
         builder.append("};");
         builder.append("window." + config.getProtocol() + " = new " + className + "();");
         builder.append(config.getProtocol() + ".OnJsBridgeReady();");
-        Log.e(JsBridge.TAG, builder.toString());
         return builder.toString();
     }
 
