@@ -2,7 +2,6 @@ package com.apkfuns.jsbridgesample.module;
 
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.apkfuns.jsbridge.JsBridge;
 import com.apkfuns.jsbridge.module.JBArray;
@@ -12,10 +11,15 @@ import com.apkfuns.jsbridge.module.JsModule;
 import com.apkfuns.jsbridge.module.JBMap;
 import com.apkfuns.jsbridge.module.WritableJBArray;
 import com.apkfuns.jsbridge.module.WritableJBMap;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
 
-import okhttp3.Call;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 
 /**
  * Created by pengwei on 2017/5/27.
@@ -41,26 +45,50 @@ public class ServiceModule extends JsModule {
     }
 
     @JSBridgeMethod
-    public void ajax(final JBMap dataMap) {
-        OkHttpUtils.get()
-                .url(dataMap.getString("url") + "?" + dataMap.getString("data"))
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        dataMap.getCallback("error").apply(e.getMessage());
+    public void ajax(JBMap dataMap) {
+        final String type = dataMap.getString("type");
+        final String url = dataMap.getString("url");
+        JBMap data = dataMap.getJBMap("data");
+        final StringBuilder params = new StringBuilder();
+        for (String key : data.keySet()) {
+            params.append(key + "=" + data.get(key) + "&") ;
+        }
+        final JBCallback successCallback = dataMap.getCallback("success");
+        final JBCallback errorCallback = dataMap.getCallback("error");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                    conn.setRequestMethod(type);
+                    conn.setDoOutput(true);
+                    DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
+                    dos.writeBytes(params.toString());
+                    dos.flush();
+                    dos.close();
+                    int resultCode = conn.getResponseCode();
+                    if (HttpURLConnection.HTTP_OK == resultCode) {
+                        StringBuffer sb = new StringBuffer();
+                        String readLine;
+                        BufferedReader responseReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                        while ((readLine = responseReader.readLine()) != null) {
+                            sb.append(readLine).append("\n");
+                        }
+                        responseReader.close();
+                        successCallback.apply(sb.toString());
+                    } else {
+                        errorCallback.apply("server response error:" + resultCode);
                     }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        dataMap.getCallback("success").apply(response);
-                    }
-                });
+                } catch (IOException e) {
+                    errorCallback.apply(e.getMessage());
+                }
+            }
+        }).start();
     }
 
     @JSBridgeMethod
     public void test(JBArray array) {
-        for (int i=0;i<array.size();i++) {
+        for (int i = 0; i < array.size(); i++) {
             String output = "" + array.get(i);
             if (array.get(i) != null) {
                 output += "##" + array.get(i).getClass();
@@ -79,8 +107,8 @@ public class ServiceModule extends JsModule {
         jbArray.pushInt(2);
         jbArray.pushInt(3);
         WritableJBMap jbMap = WritableJBMap.create();
-        jbMap.putString("a","hello");
-        jbMap.putString("b","world");
+        jbMap.putString("a", "hello");
+        jbMap.putString("b", "world");
         callback.apply(jbArray, jbMap);
         Log.d(JsBridge.TAG, jbMap.toString() + "\n" + jbArray.toString());
         Log.d(JsBridge.TAG, getContext() + "#" + getWebViewObject());

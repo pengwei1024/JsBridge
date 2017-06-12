@@ -1,0 +1,9 @@
+JsBridge Changelog
+==================
+
+Version History
+---------------
+
+v2.0.0
++ support x
++

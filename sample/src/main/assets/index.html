@@ -60,9 +60,9 @@
                     break;
                 case 3:
                     MyBridge.service.ajax({
-                        url:'https://m.kuaidi100.com/sysapi.do',
+                        url:'http://m.kuaidi100.com/sysapi.do',
                         type:'GET',
-                        data:'method=findxzqbyip',
+                        data:{method:'findxzqbyip'},
                         success:function(data){
                             alert('success => ' + data);
                         },

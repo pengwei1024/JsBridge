@@ -262,6 +262,9 @@ class JsBridgeImpl extends JsBridge {
                         setJsPromptResult(result, true, ret == null ? "" : ret.toString());
                     } catch (Exception e) {
                         setJsPromptResult(result, false, e.getMessage());
+                        if (config.isDebug()) {
+                            Log.e(TAG, e.getMessage(), e);
+                        }
                     }
                     return;
                 }

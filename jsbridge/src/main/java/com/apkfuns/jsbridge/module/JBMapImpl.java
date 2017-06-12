@@ -72,12 +72,12 @@ class JBMapImpl extends WritableJBMap {
 
     @Override
     public JBMap getJBMap(String name) {
-        return null;
+        return (JBMap) get(name);
     }
 
     @Override
     public JBArray getJBArray(String name) {
-        return null;
+        return (JBArray) get(name);
     }
 
     @Override
