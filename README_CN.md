@@ -12,7 +12,7 @@
 - 兼容 iOS [WebViewJavascriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge) 库
 
 ### Getting Started
-下载 [the latest JAR](#) 或 Gradle依赖:
+下载 [the latest JAR](./jars) 或 Gradle依赖:
 
 ```
 compile 'com.apkfuns.jsbridge:jsbridge:2.0.0'
@@ -99,10 +99,10 @@ JsBridge.loadModule(NativeModule.class)
  
 方法 | 类型 | 描述 | 默认
 ----|------ |------|------
-setProtocol|string|使用的协议，也是JS调用的对象名| JsBridge
-setLoadReadyMethod|string|加载完成回调| onJsBridgeReady
-registerDefaultModule|JsModule|公用模块|无
-debugMode| bool | 是否调试,输入 TAG 为JsBridgeDebug 日志| false 
+setProtocol|string|JS调用的对象名| JsBridge
+setLoadReadyMethod|string|加载完成回调函数| onJsBridgeReady
+registerDefaultModule|JsModule|公用模块, 默认加载|无
+debugMode| bool | 调试模式下输出TAG 为JsBridgeDebug 的日志| false 
  
 ##### 4.WebView 注入方法 & 设置回调
  ```java
@@ -165,19 +165,19 @@ window.onJsBridgeReady = function () {
     JsBridge.native.ajax({...});
 }
 
-或者
+// 或者
 document.addEventListener('onJsBridgeReady', function(){
     JsBridge.native.ajax({...});
 })
 
-或者
+// 或者
 if (JsBridge) {
 	JsBridge.native.ajax({...});
 }
 
 ```
 
-更多的文档和示例请参考 [wiki](#) 和 [sample](./sample)
+更多的文档和示例请参考 [wiki](https://github.com/pengwei1024/JsBridge/wiki) 和 [sample](./sample)
 
 ### License
 <pre>
