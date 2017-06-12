@@ -16,7 +16,25 @@
 #   public *;
 #}
 
--keep public class com.apkfuns.jsbridge.JBCallbackImpl{*;}
--keep public class com.apkfuns.jsbridge.JsRunMethod{*;}
+-keep public class com.apkfuns.jsbridge.JBUtils{*;}
+-keep public class com.apkfuns.jsbridge.JsBridge{*;}
+-keep public class com.apkfuns.jsbridge.JsBridgeConfig{*;}
+-keep public class com.apkfuns.jsbridge.module.JBArray{*;}
+-keep public class com.apkfuns.jsbridge.module.JBMap{*;}
+-keep public class com.apkfuns.jsbridge.module.JBCallback{*;}
+-keep public class com.apkfuns.jsbridge.module.JSArgumentType{*;}
+-keep public class com.apkfuns.jsbridge.module.JSBridgeMethod{*;}
 -keep public class com.apkfuns.jsbridge.module.JsModule{*;}
--keep public class com.apkfuns.jsbridge.JsReturn{*;}
+-keep public class com.apkfuns.jsbridge.module.JsStaticModule{*;}
+-keep public class com.apkfuns.jsbridge.module.WritableJBArray{*;}
+-keep public class com.apkfuns.jsbridge.module.WritableJBMap{*;}
+-keep public class com.apkfuns.jsbridge.common.**{*;}
+
+-keep public class com.apkfuns.jsbridge.**{*;}
+-keep class * extends com.apkfuns.jsbridge.module.JsStaticModule
+-keep class * extends com.apkfuns.jsbridge.module.JsModule
+
+
+
+
+

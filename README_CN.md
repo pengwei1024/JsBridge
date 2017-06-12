@@ -179,6 +179,14 @@ if (JsBridge) {
 
 更多的文档和示例请参考 [wiki](https://github.com/pengwei1024/JsBridge/wiki) 和 [sample](./sample)
 
+### Proguard
+```
+-keep public class com.apkfuns.jsbridge.**{*;}
+-keep class * extends com.apkfuns.jsbridge.module.JsStaticModule
+-keep class * extends com.apkfuns.jsbridge.module.JsModule
+```
+
+
 ### License
 <pre>
 Copyright pengwei1024

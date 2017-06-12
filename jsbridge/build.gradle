@@ -25,4 +25,14 @@ dependencies {
     compile 'com.android.support:support-annotations:23.1.0'
 }
 
+build << {
+    def jarName = "JsBridge-$android.defaultConfig.versionName\\.jar"
+    copy {
+        from('build/intermediates/bundles/release/')
+        into("$rootDir/jars/")
+        include('classes.jar')
+        rename('classes.jar', jarName)
+    }
+}
+
 apply from: "./bintrayUpload.gradle"
