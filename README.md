@@ -3,7 +3,7 @@ English | [简体中文](./README_CN.md)
 # JsBridge
 A simpler, extendable bidirectional communication Frame between Android WebView and Javascript
 
-### Features
+## Features
 - supports parsing and callback for JS primitive types
 - Modular management
 - support System WebView and Custom WebView
@@ -11,17 +11,25 @@ A simpler, extendable bidirectional communication Frame between Android WebView 
 - support Android API 8+, avoid addJavascriptInterface Vulnerability
 - compatible with iOS [WebViewJavascriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge)
 
-### Getting Started
+## Getting Started
 Download [the latest JAR](./jars) or Gradle:
 
 ```
 compile 'com.apkfuns.jsbridge:jsbridge:2.0.0'
 ```
+The library dependen on `support-annotations` and` fastjson`, if your project already exists, please exclude
 
-### Examples
+```
+compile('com.apkfuns.jsbridge:jsbridge:2.0.0') {
+    exclude module: 'support-annotations'
+    exclude module: 'fastjson'
+}
+```
+
+## Examples
 We use JS to call the original module to achieve `ajax cross-domain request` to briefly introduce the use of the library
 
-##### 1.Create Module
+#### 1.Create Module
 Create a module that needs to inherit `JsModule` and implement the` getModuleName `method, the module naming request is the same as the java variable naming, must not be empty, only allow `underline(_)` `Letters` 和`Number`, if is `static Module` (not contain module name)，need to inherit `JsStaticModule`, the following creates a Native module
 
  ```java
@@ -33,7 +41,7 @@ Create a module that needs to inherit `JsModule` and implement the` getModuleNam
  }
  ```
  
-##### 2.Create Native Method
+#### 2.Create Native Method
 Module inside the creation method requires the use of annotations `@ JSBridgeMethod`, by default Java method name is JS call method name, also specify the name of the calling method by `@JSBridgeMethod (methodName = "xx")`。Method can not be `static` or` abstract`, method can contain the return type, if the return type is the object, default return string to JS, the method parameters for the following types, you can directly map to their corresponding JS type
 
 Java Types | Mapping the JS type
@@ -84,7 +92,7 @@ public void ajax(JBMap dataMap) {
  
  `JBCallback.apply` callback JS callback method，variable parameter，support for Java basic types，Array (WritableJBArray)，and Object(WritableJBMap), if for other objects, the default converted to string
      
-##### 3.Register Module
+#### 3.Register Module
 There are two ways to register a Module, `Default registration`, `Dynamic registration`
 
  ```java
@@ -103,7 +111,7 @@ setLoadReadyMethod|string|Load the completion of the callback function| onJsBrid
 registerDefaultModule|JsModule|Common module, default load| None
 debugMode| bool | In debug mode, the output TAG is the JsBridgeDebug log| false 
  
-##### 4.WebView inject method & listen callback
+#### 4.WebView inject method & listen callback
  ```java
  public class WebViewActivity extends BaseActivity {
     private JsBridge jsBridge;
@@ -178,14 +186,14 @@ if (JsBridge) {
 
 For documentation and additional information see [wiki](https://github.com/pengwei1024/JsBridge/wiki) and [sample](./sample)
 
-### Proguard
+## Proguard
 ```
 -keep public class com.apkfuns.jsbridge.**{*;}
 -keep class * extends com.apkfuns.jsbridge.module.JsStaticModule
 -keep class * extends com.apkfuns.jsbridge.module.JsModule
 ```
 
-### License
+## License
 <pre>
 Copyright pengwei1024
 

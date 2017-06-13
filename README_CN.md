@@ -3,7 +3,7 @@
 # JsBridge
 轻量可扩展 Android WebView 和 Javascript 双向交互框架
 
-### Features
+## Features
 - 支持 JS 基本类型的解析和回调
 - 模块化管理
 - 支持系统 WebView 和 自定义 WebView
@@ -11,17 +11,25 @@
 - 支持 Android API 8+, 避免 addJavascriptInterface 4.2以下漏洞
 - 兼容 iOS [WebViewJavascriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge) 库
 
-### Getting Started
+## Getting Started
 下载 [the latest JAR](./jars) 或 Gradle依赖:
 
 ```
 compile 'com.apkfuns.jsbridge:jsbridge:2.0.0'
 ```
+该库依赖了`support-annotations`和`fastjson`, 如果项目中已经存在,请排除
 
-### Examples
+```
+compile('com.apkfuns.jsbridge:jsbridge:2.0.0') {
+        exclude module: 'support-annotations'
+        exclude module: 'fastjson'
+}
+```
+
+## Examples
 我们以 JS 调用原生模块来实现 `ajax 跨域请求`来简单介绍下库的使用
 
-##### 1.创建模块
+#### 1.创建模块
 创建模块需要继承 `JsModule` 并实现`getModuleName `方法, 模块命名要求和 java 变量命名一致, 不允许为空, 只允许 `下划线(_)` `字母` 和`数字`, 如果是`静态模块`(不包含模块名)，需要继承`JsStaticModule`, 下面创建了一个 Native 模块
 
  ```java
@@ -33,7 +41,7 @@ compile 'com.apkfuns.jsbridge:jsbridge:2.0.0'
  }
  ```
  
-##### 2.创建调用方法
+#### 2.创建调用方法
 Module 里面创建方法需要使用注解`@JSBridgeMethod`, 默认情况下 Java 方法名就是 JS 调用的方法名, 也可以通过`@JSBridgeMethod(methodName = "xx")`来指定调用方法名。方法要求不能为 `static` 或者 `abstract`, 可以包含返回类型，如果返回类型是对象默认转为 String 后返回给 JS, 方法的参数要求为以下类型，可以直接映射到它们对应的JS类型
 
 Java 类型 | 映射的 JS 类型
@@ -85,7 +93,7 @@ public void ajax(JBMap dataMap) {
  `JBCallback.apply`用来回调 JS 的回调方法，不定参数，支持 Java 基本类型，数组(WritableJBArray)，和 对象(WritableJBMap), 如果为其他对象，默认转为 string转递给 JS
  
      
-##### 3.注册 Module
+#### 3.注册 Module
 有两种方式可以注册 module, `默认注册`, `动态注册`
 
  ```java
@@ -104,7 +112,7 @@ setLoadReadyMethod|string|加载完成回调函数| onJsBridgeReady
 registerDefaultModule|JsModule|公用模块, 默认加载|无
 debugMode| bool | 调试模式下输出TAG 为JsBridgeDebug 的日志| false 
  
-##### 4.WebView 注入方法 & 设置回调
+#### 4.WebView 注入方法 & 设置回调
  ```java
  public class WebViewActivity extends BaseActivity {
     private JsBridge jsBridge;
@@ -179,7 +187,7 @@ if (JsBridge) {
 
 更多的文档和示例请参考 [wiki](https://github.com/pengwei1024/JsBridge/wiki) 和 [sample](./sample)
 
-### Proguard
+## Proguard
 ```
 -keep public class com.apkfuns.jsbridge.**{*;}
 -keep class * extends com.apkfuns.jsbridge.module.JsStaticModule
@@ -187,7 +195,7 @@ if (JsBridge) {
 ```
 
 
-### License
+## License
 <pre>
 Copyright pengwei1024
 
