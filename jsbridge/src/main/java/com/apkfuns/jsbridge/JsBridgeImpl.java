@@ -5,8 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
 import android.webkit.JsPromptResult;
 import android.webkit.WebView;
 
@@ -27,11 +25,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Created by pengwei on 2017/6/9.
@@ -46,7 +42,7 @@ class JsBridgeImpl extends JsBridge {
     private final String className;
     private final String preLoad;
     private final Handler handler;
-    private Set<String> moduleLayers;
+    private final Set<String> moduleLayers;
 
     JsBridgeImpl(Class<? extends JsModule>... modules) {
         className = "JB_" + Integer.toHexString(hashCode());
@@ -55,6 +51,14 @@ class JsBridgeImpl extends JsBridge {
         handler = new Handler(Looper.getMainLooper());
         moduleLayers = new HashSet<>();
         config = JsBridgeConfigImpl.getInstance();
+        loadingModule(modules);
+        preLoad = getInjectJsString();
+    }
+
+    /**
+     * load module by class
+     */
+    private void loadingModule(Class<? extends JsModule>... modules) {
         try {
             for (Class<? extends JsModule> moduleCls : config.getDefaultModule()) {
                 loadModule.add(moduleCls.newInstance());
@@ -64,24 +68,9 @@ class JsBridgeImpl extends JsBridge {
                     loadModule.add(moduleCls.newInstance());
                 }
             }
-        } catch (Exception e) {
-
-        }
-        Collections.sort(loadModule, new ModuleComparator());
-        loadModule();
-        preLoad = getInjectJsString();
-        if (config.isDebug()) {
-            Log.d(TAG, "init JsBridge");
-        }
-    }
-
-    /**
-     * load module by class
-     */
-    private void loadModule() {
-        if (!loadModule.isEmpty()) {
-            for (JsModule module : loadModule) {
-                try {
+            if (!loadModule.isEmpty()) {
+                Collections.sort(loadModule, new ModuleComparator());
+                for (JsModule module : loadModule) {
                     if (module != null && !TextUtils.isEmpty(module.getModuleName())) {
                         HashMap<String, JsMethod> methodsMap = JBUtils.getAllMethod(
                                 module, module.getClass());
@@ -89,10 +78,10 @@ class JsBridgeImpl extends JsBridge {
                             exposedMethods.put(module, methodsMap);
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
+        } catch (Exception e) {
+            JBLog.e("loadingModule error", e);
         }
     }
 
@@ -130,9 +119,7 @@ class JsBridgeImpl extends JsBridge {
                     }
                 }
                 evaluateJavascript(preLoad);
-                if (config.isDebug()) {
-                    Log.d(TAG, "onInjectJs finish");
-                }
+                JBLog.d("onInjectJs finish");
             }
         }, "JsBridgeThread").start();
     }
@@ -154,10 +141,12 @@ class JsBridgeImpl extends JsBridge {
 
     @Override
     public final void release() {
-        exposedMethods.clear();
-        if (config.isDebug()) {
-            Log.d(TAG, "JsBridge destroy");
+        for (JsModule module : exposedMethods.keySet()) {
+            module.mWebView = null;
+            module.mContext = null;
         }
+        exposedMethods.clear();
+        JBLog.d("JsBridge destroy");
     }
 
     /**
@@ -202,7 +191,6 @@ class JsBridgeImpl extends JsBridge {
         // 注入通用方法
         builder.append(JBUtilMethodFactory.getUtilMethods());
         // 注入默认方法
-        Log.d(TAG, "size=" + exposedMethods.keySet().size());
         for (JsModule module : loadModule) {
             if (module == null || TextUtils.isEmpty(module.getModuleName())) {
                 continue;
@@ -294,9 +282,7 @@ class JsBridgeImpl extends JsBridge {
                         setJsPromptResult(result, true, ret == null ? "" : ret.toString());
                     } catch (Exception e) {
                         setJsPromptResult(result, false, e.getMessage());
-                        if (config.isDebug()) {
-                            Log.e(TAG, e.getMessage(), e);
-                        }
+                        JBLog.e("Call JsMethod Error", e);
                     }
                     return;
                 }

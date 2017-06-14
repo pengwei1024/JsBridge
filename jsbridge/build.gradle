@@ -16,7 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/'] } }
+    sourceSets { main { java.srcDirs = ['src/main/java'] } }
 }
 
 dependencies {
@@ -25,7 +25,7 @@ dependencies {
     compile 'com.android.support:support-annotations:23.1.0'
 }
 
-build << {
+task createJar {
     def jarName = "JsBridge-$android.defaultConfig.versionName\\.jar"
     copy {
         from('build/intermediates/bundles/release/')
@@ -33,6 +33,7 @@ build << {
         include('classes.jar')
         rename('classes.jar', jarName)
     }
+    println "**** copy classes.jar **** "
 }
 
 apply from: "./bintrayUpload.gradle"

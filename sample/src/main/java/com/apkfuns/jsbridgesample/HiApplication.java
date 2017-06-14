@@ -16,9 +16,13 @@ import com.squareup.leakcanary.LeakCanary;
  */
 
 public class HiApplication extends Application {
+
+    private static HiApplication instance;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
@@ -27,5 +31,9 @@ public class HiApplication extends Application {
                 ServiceModule.class, StaticModule.class, NativeModule.class,
                 MultiLayerModule.class, MultiLayerModule2.class, MultiLayerModule3.class
         ).debugMode(true);
+    }
+
+    public static HiApplication getInstance() {
+        return instance;
     }
 }

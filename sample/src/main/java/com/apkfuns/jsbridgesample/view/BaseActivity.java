@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.apkfuns.jsbridgesample.HiApplication;
+
 import java.util.List;
 
 /**
@@ -17,6 +19,8 @@ import java.util.List;
 
 public class BaseActivity extends AppCompatActivity {
 
+    private LocationManager mLocationManager;
+    private LocationListener locationListener;
     private Menu menu;
 
     @Override
@@ -41,7 +45,8 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public Location getLocation(LocationListener listener) {
-        LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationListener = listener;
+        mLocationManager = (LocationManager) HiApplication.getInstance().getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = mLocationManager.getProviders(true);
         String locationProvider = null;
         if (providers.contains(LocationManager.GPS_PROVIDER)) {
@@ -52,7 +57,15 @@ public class BaseActivity extends AppCompatActivity {
             locationProvider = LocationManager.NETWORK_PROVIDER;
         }
         Location location = mLocationManager.getLastKnownLocation(locationProvider);
-        mLocationManager.requestLocationUpdates(locationProvider, 3000, 1, listener);
+        mLocationManager.requestLocationUpdates(locationProvider, 3000, 1, locationListener);
         return location;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mLocationManager != null && locationListener != null) {
+            mLocationManager.removeUpdates(locationListener);
+        }
+        super.onDestroy();
     }
 }
