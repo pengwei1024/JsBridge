@@ -6,7 +6,7 @@ import java.util.Set;
  * Created by pengwei on 2017/5/28.
  */
 
-public interface JBMap {
+public interface JBMap extends JsObject {
     boolean isEmpty();
 
     boolean hasKey(String name);

@@ -18,6 +18,7 @@ class JBUtilMethodFactory {
             injectFunc.append(new GetType().getMethod());
             injectFunc.append(new ParseFunction().getMethod());
             injectFunc.append(new OnJsBridgeReady().getMethod());
+            injectFunc.append(new CreateID().getMethod());
         }
         return injectFunc.toString();
     }
@@ -70,6 +71,19 @@ class JBUtilMethodFactory {
         @Override
         public String methodName() {
             return "_parseFunction";
+        }
+    }
+
+    static class CreateID extends JsRunMethod {
+
+        @Override
+        protected String executeJS() {
+            return "(){return Math.floor(Math.random() * (1 << 10));}";
+        }
+
+        @Override
+        public String methodName() {
+            return "_getID";
         }
     }
 }

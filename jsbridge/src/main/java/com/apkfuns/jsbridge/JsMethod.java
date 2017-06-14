@@ -87,7 +87,7 @@ class JsMethod {
             builder.append(getMethodName() + ":function(){");
         }
         builder.append("try{");
-        builder.append("var id = Math.floor(Math.random() * (1 << 10));");
+        builder.append("var id=_getID();");
         builder.append("var req = {id: id, module: '" + getModule().getModuleName()
                 + "', method: '" + getMethodName() + "'};");
         builder.append("var argumentList = [], callbacks = [];");

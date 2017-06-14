@@ -4,7 +4,7 @@ package com.apkfuns.jsbridge.module;
  * Created by pengwei on 2017/5/28.
  */
 
-public interface JBArray {
+public interface JBArray extends JsObject {
     int size();
 
     boolean isEmpty();

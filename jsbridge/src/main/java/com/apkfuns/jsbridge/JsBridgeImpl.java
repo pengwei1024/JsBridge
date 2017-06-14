@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.webkit.JsPromptResult;
 import android.webkit.WebView;
 
@@ -22,9 +23,15 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Created by pengwei on 2017/6/9.
@@ -34,24 +41,33 @@ class JsBridgeImpl extends JsBridge {
 
     private Object mWebView;
     private final JsBridgeConfigImpl config;
-    private final List<Class<? extends JsModule>> loadModule;
+    private final List<JsModule> loadModule;
     private final Map<JsModule, HashMap<String, JsMethod>> exposedMethods;
     private final String className;
-    private String preLoad;
-    private Handler handler;
+    private final String preLoad;
+    private final Handler handler;
+    private Set<String> moduleLayers;
 
     JsBridgeImpl(Class<? extends JsModule>... modules) {
-        className = "JsBridgeClass_" + System.currentTimeMillis();
+        className = "JB_" + Integer.toHexString(hashCode());
         loadModule = new ArrayList<>();
         exposedMethods = new HashMap<>();
         handler = new Handler(Looper.getMainLooper());
+        moduleLayers = new HashSet<>();
         config = JsBridgeConfigImpl.getInstance();
-        loadModule.addAll(config.getDefaultModule());
-        if (modules != null) {
-            for (Class<? extends JsModule> moduleCls : modules) {
-                loadModule.add(moduleCls);
+        try {
+            for (Class<? extends JsModule> moduleCls : config.getDefaultModule()) {
+                loadModule.add(moduleCls.newInstance());
             }
+            if (modules != null) {
+                for (Class<? extends JsModule> moduleCls : modules) {
+                    loadModule.add(moduleCls.newInstance());
+                }
+            }
+        } catch (Exception e) {
+
         }
+        Collections.sort(loadModule, new ModuleComparator());
         loadModule();
         preLoad = getInjectJsString();
         if (config.isDebug()) {
@@ -64,12 +80,11 @@ class JsBridgeImpl extends JsBridge {
      */
     private void loadModule() {
         if (!loadModule.isEmpty()) {
-            for (Class<? extends JsModule> moduleCls : loadModule) {
+            for (JsModule module : loadModule) {
                 try {
-                    JsModule module = moduleCls.newInstance();
-                    if (module != null) {
+                    if (module != null && !TextUtils.isEmpty(module.getModuleName())) {
                         HashMap<String, JsMethod> methodsMap = JBUtils.getAllMethod(
-                                module, moduleCls);
+                                module, module.getClass());
                         if (!methodsMap.isEmpty()) {
                             exposedMethods.put(module, methodsMap);
                         }
@@ -96,7 +111,7 @@ class JsBridgeImpl extends JsBridge {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (JsModule module : exposedMethods.keySet()) {
+                for (JsModule module : loadModule) {
                     // 为JsModule设置context 和 WebView
                     if (module.mContext != null && module.mContext.getClass().equals(context.getClass())) {
                         break;
@@ -147,6 +162,7 @@ class JsBridgeImpl extends JsBridge {
 
     /**
      * evaluate javascript
+     *
      * @param jsCode
      */
     private void evaluateJavascript(final String jsCode) {
@@ -186,7 +202,8 @@ class JsBridgeImpl extends JsBridge {
         // 注入通用方法
         builder.append(JBUtilMethodFactory.getUtilMethods());
         // 注入默认方法
-        for (JsModule module : exposedMethods.keySet()) {
+        Log.d(TAG, "size=" + exposedMethods.keySet().size());
+        for (JsModule module : loadModule) {
             if (module == null || TextUtils.isEmpty(module.getModuleName())) {
                 continue;
             }
@@ -197,7 +214,22 @@ class JsBridgeImpl extends JsBridge {
                     builder.append(jsMethod.getInjectJs());
                 }
             } else {
-                builder.append(className + ".prototype." + module.getModuleName() + " = {");
+                List<String> moduleGroup = JBUtils.moduleSplit(module.getModuleName());
+                if (moduleGroup.isEmpty()) {
+                    continue;
+                } else {
+                    for (int i = 0; i < moduleGroup.size() - 1; ++i) {
+                        if (!moduleLayers.contains(moduleGroup.get(i))) {
+                            for (int k = i; k < moduleGroup.size() - 1; ++k) {
+                                builder.append(className + ".prototype." + moduleGroup.get(k) + " = {};");
+                                moduleLayers.add(moduleGroup.get(k));
+                            }
+                            break;
+                        }
+                    }
+                    builder.append(className + ".prototype." + module.getModuleName() + " = {");
+                    moduleLayers.add(module.getModuleName());
+                }
                 for (String method : methods.keySet()) {
                     JsMethod jsMethod = methods.get(method);
                     builder.append(jsMethod.getInjectJs());
@@ -287,6 +319,17 @@ class JsBridgeImpl extends JsBridge {
             ((IPromptResult) promptResult).confirm(ret.toString());
         } else {
             throw new IllegalArgumentException("JsPromptResult Error");
+        }
+    }
+
+    /**
+     * sort by module
+     */
+    private static class ModuleComparator implements Comparator<JsModule> {
+
+        @Override
+        public int compare(JsModule lhs, JsModule rhs) {
+            return lhs.getModuleName().split("\\.").length - rhs.getModuleName().split("\\.").length;
         }
     }
 }

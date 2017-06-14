@@ -135,7 +135,7 @@ class JBMapImpl extends WritableJBMap {
     }
 
     @Override
-    public String toString() {
+    public String convertJS() {
         StringBuilder builder = new StringBuilder("{");
         int i = 0;
         for (String key : dataSource.keySet()) {

@@ -3,6 +3,9 @@ package com.apkfuns.jsbridgesample;
 import android.app.Application;
 
 import com.apkfuns.jsbridge.JsBridgeConfig;
+import com.apkfuns.jsbridgesample.module.MultiLayerModule;
+import com.apkfuns.jsbridgesample.module.MultiLayerModule2;
+import com.apkfuns.jsbridgesample.module.MultiLayerModule3;
 import com.apkfuns.jsbridgesample.module.NativeModule;
 import com.apkfuns.jsbridgesample.module.ServiceModule;
 import com.apkfuns.jsbridgesample.module.StaticModule;
@@ -21,6 +24,8 @@ public class HiApplication extends Application {
         }
         LeakCanary.install(this);
         JsBridgeConfig.getSetting().setProtocol("MyBridge").registerDefaultModule(
-                ServiceModule.class, StaticModule.class, NativeModule.class).debugMode(true);
+                ServiceModule.class, StaticModule.class, NativeModule.class,
+                MultiLayerModule.class, MultiLayerModule2.class, MultiLayerModule3.class
+        ).debugMode(true);
     }
 }

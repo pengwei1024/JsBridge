@@ -137,7 +137,7 @@ class JBArrayImpl extends WritableJBArray {
     }
 
     @Override
-    public String toString() {
+    public String convertJS() {
         StringBuilder builder = new StringBuilder("[");
         for (int i = 0; i < dataSource.size(); i++) {
             builder.append(JBUtils.toJsObject(dataSource.get(i)));

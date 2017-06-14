@@ -13,6 +13,7 @@ import com.apkfuns.jsbridge.common.JBArgumentErrorException;
 import com.apkfuns.jsbridge.module.JBArray;
 import com.apkfuns.jsbridge.module.JBMap;
 import com.apkfuns.jsbridge.module.JsModule;
+import com.apkfuns.jsbridge.module.JsObject;
 import com.apkfuns.jsbridge.module.WritableJBArray;
 import com.apkfuns.jsbridge.module.WritableJBMap;
 
@@ -261,10 +262,30 @@ public final class JBUtils {
                 || javaObject instanceof Double || javaObject instanceof Long
                 || javaObject instanceof Boolean) {
             return "" + javaObject;
-        } else if (javaObject instanceof JBArray || javaObject instanceof JBMap) {
-            return javaObject.toString();
+        } else if (javaObject instanceof JsObject) {
+            return ((JsObject) javaObject).convertJS();
         } else {
             return "'" + javaObject + "'";
         }
+    }
+
+    public static List<String> moduleSplit(String moduleName) {
+        List<String> moduleGroup = new ArrayList<>();
+        int index = -1;
+        do {
+            int temp = moduleName.indexOf(".", index + 1);
+            if (temp >= 0) {
+                index = temp;
+                moduleGroup.add(moduleName.substring(0, index));
+            } else {
+                if (index >= 0) {
+                    moduleGroup.add(moduleName.substring(index + 1, moduleName.length()));
+                } else {
+                    moduleGroup.add(moduleName);
+                }
+                index = -1;
+            }
+        } while (index >= 0);
+        return moduleGroup;
     }
 }
