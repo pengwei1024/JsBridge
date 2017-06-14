@@ -1,5 +1,6 @@
 package com.apkfuns.jsbridge.module;
 
+import com.alibaba.fastjson.JSON;
 import com.apkfuns.jsbridge.JBUtils;
 
 import java.util.HashMap;
@@ -59,7 +60,11 @@ class JBMapImpl extends WritableJBMap {
 
     @Override
     public String getString(String name) {
-        return (String) get(name);
+        Object obj = get(name);
+        if (obj == null || obj instanceof String) {
+            return (String) obj;
+        }
+        return obj.toString();
     }
 
     @Override
@@ -145,5 +150,10 @@ class JBMapImpl extends WritableJBMap {
             }
         }
         return builder.append("}").toString();
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(dataSource);
     }
 }

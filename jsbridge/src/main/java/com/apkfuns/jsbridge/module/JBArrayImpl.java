@@ -1,5 +1,6 @@
 package com.apkfuns.jsbridge.module;
 
+import com.alibaba.fastjson.JSON;
 import com.apkfuns.jsbridge.JBUtils;
 
 import java.util.ArrayList;
@@ -54,7 +55,11 @@ class JBArrayImpl extends WritableJBArray {
 
     @Override
     public String getString(int index) {
-        return (String) get(index);
+        Object obj = get(index);
+        if (obj == null || obj instanceof String) {
+            return (String) obj;
+        }
+        return obj.toString();
     }
 
     @Override
@@ -146,5 +151,10 @@ class JBArrayImpl extends WritableJBArray {
             }
         }
         return builder.append("]").toString();
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(dataSource);
     }
 }
