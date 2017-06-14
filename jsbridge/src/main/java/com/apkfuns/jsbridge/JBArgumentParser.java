@@ -13,7 +13,6 @@ final class JBArgumentParser {
     private String module;
     private String method;
     private List<Parameter> parameters;
-    private List<String> callback;
 
     public long getId() {
         return id;
@@ -45,14 +44,6 @@ final class JBArgumentParser {
 
     public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
-    }
-
-    public List<String> getCallback() {
-        return callback;
-    }
-
-    public void setCallback(List<String> callback) {
-        this.callback = callback;
     }
 
     public static class Parameter {

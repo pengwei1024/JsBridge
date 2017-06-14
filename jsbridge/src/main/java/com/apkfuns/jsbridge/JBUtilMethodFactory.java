@@ -14,11 +14,12 @@ class JBUtilMethodFactory {
      */
     public static String getUtilMethods() {
         if (injectFunc == null) {
+            JsRunMethod[] methods = new JsRunMethod[]{new GetType(), new ParseFunction(),
+                    new OnJsBridgeReady(), new CreateID(), new CallJava()};
             injectFunc = new StringBuffer();
-            injectFunc.append(new GetType().getMethod());
-            injectFunc.append(new ParseFunction().getMethod());
-            injectFunc.append(new OnJsBridgeReady().getMethod());
-            injectFunc.append(new CreateID().getMethod());
+            for (JsRunMethod method : methods) {
+                injectFunc.append(method.getMethod());
+            }
         }
         return injectFunc.toString();
     }
@@ -84,6 +85,18 @@ class JBUtilMethodFactory {
         @Override
         public String methodName() {
             return "_getID";
+        }
+    }
+
+    static class CallJava extends JsRunMethod {
+        @Override
+        protected String executeJS() {
+            return "(id,module,method,args){var req={id:id,module:module,method:method,parameters:args};return JSON.parse(prompt(JSON.stringify(req)));};";
+        }
+
+        @Override
+        public String methodName() {
+            return "_callJava";
         }
     }
 }

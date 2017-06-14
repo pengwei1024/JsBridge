@@ -87,24 +87,19 @@ class JsMethod {
             builder.append(getMethodName() + ":function(){");
         }
         builder.append("try{");
-        builder.append("var id=_getID();");
-        builder.append("var req = {id: id, module: '" + getModule().getModuleName()
-                + "', method: '" + getMethodName() + "'};");
-        builder.append("var argumentList = [], callbacks = [];");
+        builder.append("var id=_getID(),args=[];");
         builder.append("if(!" + getCallback() + ")" + getCallback() + "={};");
-        builder.append("for (var i in arguments) {");
-        builder.append("var name = id + '_a' + i; var item = arguments[i];");
+        builder.append("for(var i in arguments){");
+        builder.append("var name=id+'_a'+i,item=arguments[i],listeners={};");
         builder.append("var listeners = {};");
         builder.append("_parseFunction(item, name, listeners);");
         builder.append("for (var key in listeners) {");
         builder.append(getCallback() + "[key]=listeners[key];");
-        builder.append("callbacks.push(key);");
         builder.append("};");
-        builder.append("argumentList.push({type: _getType(item), name: name, value: item})");
+        builder.append("args.push({type: _getType(item), name: name, value: item})");
         builder.append("}");
-        builder.append("req['parameters'] = argumentList;");
-        builder.append("req['callback'] = callbacks;");
-        builder.append("var ret = JSON.parse(prompt(JSON.stringify(req)));");
+        builder.append("var ret =_callJava(id,'" + getModule().getModuleName() + "','"
+                + getMethodName() + "', args);");
         builder.append("if(ret && ret.success) {");
         if (hasReturn) {
             builder.append("return ret.msg;");
