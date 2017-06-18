@@ -180,11 +180,11 @@ public boolean onJsPrompt(WebView view, String url, String message, String defau
 prompt("输入你的名字", "张三");
 ```
 ![](http://qiniu.apkfuns.com/qiniu-20170618151335-217.png)
-prompt 第一个参数是标题，对应`onJsPrompt`方法的 message, 第二个参数是需要输入的内容的默认值, 对应``onJsPrompt`的defaultValue, 那`JsPromptResult`是用来干啥的呢？我们实现同步回调就完全靠它了，用来设置 prompt 方法的返回值，加入我们端上执行`JsPromptResult.confirm("12")`, 那么 prompt(xx) 的返回值就是12
+prompt 第一个参数是标题，对应`onJsPrompt`方法的 message, 第二个参数是需要输入的内容的默认值, 对应``onJsPrompt`的defaultValue, 那`JsPromptResult`是用来干啥的呢？我们实现同步回调就完全靠它了，用来设置 prompt 方法的返回值，假如我们端上执行`JsPromptResult.confirm("12")`, 那么 prompt(xx) 的返回值就是12
 
 基本的知识点我们都了解了，怎么串联起来上面的两条来实现WebView 和 JS 的双向交互呢？首先我们需要给 JS 提供调用方法, 如最早的`JsBridge.service.share(...)`, 大概你已经知道了要用注入 JS 的方式。
 
-```
+```javasceipt
 var JsBridge = {
 	service: {
 		share: function(title, success, error) {
@@ -281,7 +281,7 @@ private void loadingModule(Class<? extends JsModule>... modules) {
         }
     }
 ```
-将 module.class 通过反射实例化对象，并获取这个类里面的所有有效注册方法存在 `Map<JsModule, Map<String, JsMethod>>` 对象里面，注册就完成了
+将 module.class 通过反射实例化对象，并获取这个类里面的所有有效注册方法存在 `Map<JsModule, Map<String, JsMethod>>` 对象里面，注册就完成了，下面是注入 JS 的代码
 
 ```java
 private String getInjectJsString() {
@@ -330,8 +330,107 @@ private String getInjectJsString() {
         return builder.toString();
     }
 ```
-从`Map<JsModule, Map<String, JsMethod>>`对象依次取出 Module, 并划分静态 module 和非静态， 原理就是把需要的 JS 对象和方法注入进去，这里复杂的问题是多级调用层级的实现，如前面提到的`JsBridge.a.b.c.d.e.f.g.xx(...);`, 这也是注册 module 时为什么要对 module 进行排序的原因，这里需要有一定 JS 基础才能看得明白些，就不细讲了，有兴趣的大家去看源码吧。
+从`Map<JsModule, Map<String, JsMethod>>`对象依次取出 Module, 并划分静态 module 和非静态， 原理就是把需要的 JS 对象和方法注入进去，这里复杂的问题是多级调用层级的实现，如前面提到的`JsBridge.a.b.c.d.e.f.g.xx(...);`, 这也是注册 module 时为什么要对 module 进行排序的原因，这里需要有一定 JS 面向对象基础才能看得明白些，就不细讲了，有兴趣的去分析下吧。
 
+再来就是获取 JS 的参数，并转化为 Java 的参数
 
+```java
+/**
+     * 执行js回调
+     *
+     * @param methodArgs
+     * @param result
+     */
+    private void onCallJsPrompt(String methodArgs, Object result) {
+        if (TextUtils.isEmpty(methodArgs) || result == null) {
+            throw new NullPointerException("JsPrompt Arguments Null");
+        }
+        JBArgumentParser argumentParser = JSON.parseObject(methodArgs, JBArgumentParser.class);
+        if (argumentParser != null && !TextUtils.isEmpty(argumentParser.getModule())
+                && !TextUtils.isEmpty(argumentParser.getMethod())) {
+            JsModule findModule = getModule(argumentParser.getModule());
+            if (findModule != null) {
+                HashMap<String, JsMethod> methodHashMap = exposedMethods.get(findModule);
+                if (methodHashMap != null && !methodHashMap.isEmpty() && methodHashMap.containsKey(
+                        argumentParser.getMethod())) {
+                    JsMethod method = methodHashMap.get(argumentParser.getMethod());
+                    List<JBArgumentParser.Parameter> parameters = argumentParser.getParameters();
+                    int length = method.getParameterType().size();
+                    Object[] invokeArgs = new Object[length];
+                    for (int i = 0; i < length; ++i) {
+                        @JSArgumentType.Type int type = method.getParameterType().get(i);
+                        if (parameters != null && parameters.size() >= i + 1) {
+                            JBArgumentParser.Parameter param = parameters.get(i);
+                            Object parseObject = JBUtils.parseToObject(type, param, method);
+                            if (parseObject != null && parseObject instanceof JBArgumentErrorException) {
+                                setJsPromptResult(result, false, parseObject.toString());
+                                return;
+                            }
+                            invokeArgs[i] = parseObject;
+                        }
+                        if (invokeArgs[i] == null) {
+                            switch (type) {
+                                case JSArgumentType.TYPE_NUMBER:
+                                    invokeArgs[i] = 0;
+                                    break;
+                                case JSArgumentType.TYPE_BOOL:
+                                    invokeArgs[i] = false;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    try {
+                        Object ret = method.invoke(invokeArgs);
+                        setJsPromptResult(result, true, ret == null ? "" : ret.toString());
+                    } catch (Exception e) {
+                        setJsPromptResult(result, false, e.getMessage());
+                        JBLog.e("Call JsMethod Error", e);
+                    }
+                    return;
+                }
+            }
+        }
+        setJsPromptResult(result, false, "JBArgument Parse error");
+    }
+```
+JsBridge 是将参数包装成`JBArgumentParser`对象，获取 module 名称 和 method 名称， 从之前保存的 `Map<JsModule, Map<String, JsMethod>>` 对象取出 JsMethod, JsMethod 里面包含了注解的 Java 反射的 Method 对象，通过反射调用 Method，并传递相应的参数 和 Context 对象，调用过程就完成了
 
-更多功能和介绍欢迎查看官方教程：[https://github.com/pengwei1024/JsBridge](https://github.com/pengwei1024/JsBridge)
+怎么回调呢？回调方法被包装成了 JBCallback 类，其实里面就是包含了一个 Webview 和 已知回调函数名称，在需要回调的地方调用 WebView 执行回调方法。里面设计到了对象的转换，把 Java 类型转换成JS 类型
+
+```java
+@Override
+    public void apply(Object... args) {
+        if (method == null || method.getModule() == null || method.getModule().mWebView == null
+                || TextUtils.isEmpty(name)) {
+            return;
+        }
+        String callback = method.getCallback();
+        final StringBuilder builder = new StringBuilder("javascript:");
+        builder.append("if(" + callback + " && " + callback + "['" + name + "']){");
+        builder.append("var callback = " + callback + "['" + name + "'];");
+        builder.append("if (typeof callback === 'function'){callback(");
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                builder.append(JBUtils.toJsObject(args[i]));
+                if (i != args.length - 1) {
+                    builder.append(",");
+                }
+            }
+        }
+        builder.append(")}else{console.error(callback + ' is not a function')}}");
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (method.getModule().mWebView instanceof WebView) {
+                    ((WebView) method.getModule().mWebView).loadUrl(builder.toString());
+                } else if (method.getModule().mWebView instanceof IWebView) {
+                    ((IWebView) method.getModule().mWebView).loadUrl(builder.toString());
+                }
+            }
+        });
+    }
+```
+
+代码讲解就到这里，更多功能和介绍欢迎查看官方教程：[https://github.com/pengwei1024/JsBridge](https://github.com/pengwei1024/JsBridge)
