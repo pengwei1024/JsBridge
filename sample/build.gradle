@@ -25,5 +25,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile project(':jsbridge')
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    compile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
 }

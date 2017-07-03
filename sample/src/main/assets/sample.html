@@ -7,6 +7,11 @@
 <body>
 <button id="btn_add_menu">点击添加菜单</button>
 <script type="text/javascript">
+
+    window.HiJsReady = function() {
+        HiJs.service.hiShare('hello', function(ret){alert(ret)}, function(ret){alert(ret)})
+    }
+
     window.onMyBridgeReady = function () {
         console.log('onMyBridgeReady ready');
         //MyBridge.share.hiShare(2.5, 'hello world', function(x,y){console.log('receiver callback!!' + x + y)},

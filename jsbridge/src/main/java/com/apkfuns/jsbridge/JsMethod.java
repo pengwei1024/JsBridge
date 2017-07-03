@@ -17,6 +17,7 @@ class JsMethod {
     private boolean hasReturn;
     private List<Integer> parameterType = new ArrayList<>();
     private boolean isStatic;
+    private String protocol;
 
     protected JsMethod() {
     }
@@ -65,12 +66,20 @@ class JsMethod {
         this.hasReturn = hasReturn;
     }
 
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
     public String getCallback() {
         if (isStatic) {
-            return String.format("%s.%sCallback", JsBridgeConfigImpl.getInstance().getProtocol(),
+            return String.format("%s.%sCallback", getProtocol(),
                     getMethodName());
         }
-        return String.format("%s.%s.%sCallback", JsBridgeConfigImpl.getInstance().getProtocol(),
+        return String.format("%s.%s.%sCallback", getProtocol(),
                 getModule().getModuleName(), getMethodName());
     }
 
@@ -134,13 +143,14 @@ class JsMethod {
      * @return
      */
     public static JsMethod create(JsModule jsModule, Method javaMethod, String methodName,
-                                  List<Integer> parameterTypeList, boolean hasReturn) {
+                                  List<Integer> parameterTypeList, boolean hasReturn, String protocol) {
         JsMethod method = new JsMethod();
         method.setModule(jsModule);
         method.setJavaMethod(javaMethod);
         method.setMethodName(methodName);
         method.setParameterType(parameterTypeList);
         method.setHasReturn(hasReturn);
+        method.setProtocol(protocol);
         return method;
     }
 }

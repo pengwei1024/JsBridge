@@ -42,7 +42,7 @@ public final class JBUtils {
      * @return
      * @throws Exception
      */
-    public static HashMap<String, JsMethod> getAllMethod(JsModule module, Class injectedCls) throws Exception {
+    public static HashMap<String, JsMethod> getAllMethod(JsModule module, Class injectedCls, String protocol) throws Exception {
         HashMap<String, JsMethod> mMethodsMap = new HashMap<>();
         Method[] methods = injectedCls.getDeclaredMethods();
         if (methods == null || methods.length == 0) {
@@ -71,7 +71,7 @@ public final class JBUtils {
                 parameterTypeList.add(transformType(cls));
             }
             JsMethod createMethod = JsMethod.create(module, javaMethod, name,
-                    parameterTypeList, hasReturn);
+                    parameterTypeList, hasReturn, protocol);
             mMethodsMap.put(name, createMethod);
         }
         return mMethodsMap;

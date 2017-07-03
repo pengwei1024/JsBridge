@@ -12,10 +12,10 @@ class JBUtilMethodFactory {
      *
      * @return
      */
-    public static String getUtilMethods() {
+    public static String getUtilMethods(String loadReadyMethod) {
         if (injectFunc == null) {
             JsRunMethod[] methods = new JsRunMethod[]{new GetType(), new ParseFunction(),
-                    new OnJsBridgeReady(), new CreateID(), new CallJava()};
+                    new OnJsBridgeReady(loadReadyMethod), new CreateID(), new CallJava()};
             injectFunc = new StringBuffer();
             for (JsRunMethod method : methods) {
                 injectFunc.append(method.getMethod());
@@ -25,15 +25,19 @@ class JBUtilMethodFactory {
     }
 
     static class OnJsBridgeReady extends JsRunMethod {
-        JsBridgeConfigImpl config = JsBridgeConfigImpl.getInstance();
+        private String loadReadyMethod;
+
+        public OnJsBridgeReady(String loadReadyMethod) {
+            this.loadReadyMethod = loadReadyMethod;
+        }
 
         @Override
         protected String executeJS() {
             StringBuilder builder = new StringBuilder("(){try{");
-            builder.append("var ready = window." + config.getReadyFuncName() + ";");
+            builder.append("var ready = window." + loadReadyMethod + ";");
             builder.append("if(ready && typeof(ready) === 'function'){ready()}");
             builder.append("else {var readyEvent = document.createEvent('Events');");
-            builder.append("readyEvent.initEvent('" + config.getReadyFuncName() + "');");
+            builder.append("readyEvent.initEvent('" + loadReadyMethod + "');");
             builder.append("document.dispatchEvent(readyEvent);");
             builder.append("}");
             builder.append("}catch(e){console.error(e)};}");

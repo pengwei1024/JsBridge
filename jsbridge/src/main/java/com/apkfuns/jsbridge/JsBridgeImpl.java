@@ -40,43 +40,61 @@ class JsBridgeImpl extends JsBridge {
     private final List<JsModule> loadModule;
     private final Map<JsModule, HashMap<String, JsMethod>> exposedMethods;
     private final String className;
-    private final String preLoad;
+    private String preLoad;
     private final Handler handler;
     private final Set<String> moduleLayers;
+    private String newProtocol;
+    private String newLoadReadyMethod;
 
-    JsBridgeImpl(Class<? extends JsModule>... modules) {
+    JsBridgeImpl(JsModule... modules) {
+        this(null, null, modules);
+    }
+
+    JsBridgeImpl(String protocol, String readyMethod, JsModule... modules) {
+        config = JsBridgeConfigImpl.getInstance();
         className = "JB_" + Integer.toHexString(hashCode());
         loadModule = new ArrayList<>();
         exposedMethods = new HashMap<>();
         handler = new Handler(Looper.getMainLooper());
         moduleLayers = new HashSet<>();
-        config = JsBridgeConfigImpl.getInstance();
+        this.newProtocol = protocol;
+        this.newLoadReadyMethod = readyMethod;
+        if (TextUtils.isEmpty(newProtocol)) {
+            newProtocol = config.getProtocol();
+        }
+        if (TextUtils.isEmpty(newLoadReadyMethod)) {
+            newLoadReadyMethod = config.getReadyFuncName();
+        }
         loadingModule(modules);
-        preLoad = getInjectJsString();
+        JBLog.d(String.format("Protocol:%s, LoadReadyMethod:%s, moduleSize:%s",
+                newProtocol, newLoadReadyMethod, loadModule.size()));
     }
 
     /**
-     * load module by class
+     * load module
      */
-    private void loadingModule(Class<? extends JsModule>... modules) {
+    private void loadingModule(JsModule... modules) {
         try {
             for (Class<? extends JsModule> moduleCls : config.getDefaultModule()) {
-                loadModule.add(moduleCls.newInstance());
+                JsModule module = moduleCls.newInstance();
+                if (module != null && !TextUtils.isEmpty(module.getModuleName())) {
+                    loadModule.add(module);
+                }
             }
             if (modules != null) {
-                for (Class<? extends JsModule> moduleCls : modules) {
-                    loadModule.add(moduleCls.newInstance());
+                for (JsModule module : modules) {
+                    if (module != null && !TextUtils.isEmpty(module.getModuleName())) {
+                        loadModule.add(module);
+                    }
                 }
             }
             if (!loadModule.isEmpty()) {
                 Collections.sort(loadModule, new ModuleComparator());
                 for (JsModule module : loadModule) {
-                    if (module != null && !TextUtils.isEmpty(module.getModuleName())) {
-                        HashMap<String, JsMethod> methodsMap = JBUtils.getAllMethod(
-                                module, module.getClass());
-                        if (!methodsMap.isEmpty()) {
-                            exposedMethods.put(module, methodsMap);
-                        }
+                    HashMap<String, JsMethod> methodsMap = JBUtils.getAllMethod(
+                            module, module.getClass(), newProtocol);
+                    if (!methodsMap.isEmpty()) {
+                        exposedMethods.put(module, methodsMap);
                     }
                 }
             }
@@ -100,6 +118,9 @@ class JsBridgeImpl extends JsBridge {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if (preLoad == null) {
+                    preLoad = getInjectJsString();
+                }
                 for (JsModule module : loadModule) {
                     // 为JsModule设置context 和 WebView
                     if (module.mContext != null && module.mContext.getClass().equals(context.getClass())) {
@@ -115,7 +136,7 @@ class JsBridgeImpl extends JsBridge {
                             webViewField.set(module, webView);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        JBLog.e("JsModule set Context Error", e);
                     }
                 }
                 evaluateJavascript(preLoad);
@@ -136,7 +157,7 @@ class JsBridgeImpl extends JsBridge {
 
     @Override
     public final void clean() {
-        evaluateJavascript(config.getProtocol() + "=undefined;");
+        evaluateJavascript(newProtocol + "=undefined;");
     }
 
     @Override
@@ -149,13 +170,10 @@ class JsBridgeImpl extends JsBridge {
         JBLog.d("JsBridge destroy");
     }
 
-    /**
-     * evaluate javascript
-     *
-     * @param jsCode
-     */
-    private void evaluateJavascript(final String jsCode) {
+    @Override
+    public void evaluateJavascript(final String jsCode) {
         if (mWebView == null) {
+            JBLog.d("Please call injectJs first");
             return;
         }
         handler.post(new Runnable() {
@@ -189,12 +207,9 @@ class JsBridgeImpl extends JsBridge {
         StringBuilder builder = new StringBuilder();
         builder.append("var " + className + " = function () {");
         // 注入通用方法
-        builder.append(JBUtilMethodFactory.getUtilMethods());
+        builder.append(JBUtilMethodFactory.getUtilMethods(newLoadReadyMethod));
         // 注入默认方法
         for (JsModule module : loadModule) {
-            if (module == null || TextUtils.isEmpty(module.getModuleName())) {
-                continue;
-            }
             HashMap<String, JsMethod> methods = exposedMethods.get(module);
             if (module instanceof JsStaticModule) {
                 for (String method : methods.keySet()) {
@@ -226,8 +241,8 @@ class JsBridgeImpl extends JsBridge {
             }
         }
         builder.append("};");
-        builder.append("window." + config.getProtocol() + " = new " + className + "();");
-        builder.append(config.getProtocol() + ".OnJsBridgeReady();");
+        builder.append("window." + newProtocol + " = new " + className + "();");
+        builder.append(newProtocol + ".OnJsBridgeReady();");
         return builder.toString();
     }
 
@@ -282,7 +297,7 @@ class JsBridgeImpl extends JsBridge {
                         setJsPromptResult(result, true, ret == null ? "" : ret.toString());
                     } catch (Exception e) {
                         setJsPromptResult(result, false, e.getMessage());
-                        JBLog.e("Call JsMethod Error", e);
+                        JBLog.e("Call JsMethod <" + method.getMethodName() + "> Error", e);
                     }
                     return;
                 }
