@@ -1,6 +1,8 @@
 package com.apkfuns.jsbridgesample.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,11 +24,13 @@ import com.apkfuns.jsbridge.common.IWebView;
 public class CustomWebViewActivity extends BaseActivity {
     private JsBridge jsBridge;
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Custom WebView");
         jsBridge = JsBridge.loadModule();
+        WebView.setWebContentsDebuggingEnabled(true);
         final CustomWebView customWebView = new CustomWebView(this);
         setContentView(customWebView);
         customWebView.setWebViewClient(new WebViewClient(){
@@ -42,7 +46,7 @@ public class CustomWebViewActivity extends BaseActivity {
                 jsBridge.callJsPrompt(args, promptResult);
             }
         });
-        customWebView.loadUrl("file:///android_asset/index.html");
+        customWebView.loadUrl("file:///android_asset/sample.html");
     }
 
     public static class CustomWebView extends FrameLayout implements IWebView {

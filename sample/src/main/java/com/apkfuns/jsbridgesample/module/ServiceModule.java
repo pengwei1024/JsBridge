@@ -102,15 +102,19 @@ public class ServiceModule extends JsModule {
 
     @JSBridgeMethod
     public void testReturn(JBCallback callback) {
-        WritableJBArray jbArray = WritableJBArray.create();
+        WritableJBArray jbArray = new WritableJBArray.Create();
         jbArray.pushInt(1);
-        jbArray.pushInt(2);
+        jbArray.pushString("34");
         jbArray.pushInt(3);
-        WritableJBMap jbMap = WritableJBMap.create();
+        WritableJBMap jbMap = new WritableJBMap.Create();
         jbMap.putString("a", "hello");
         jbMap.putString("b", "world");
         callback.apply(jbArray, jbMap);
         Log.d(JsBridge.TAG, jbMap.toString() + "\n" + jbArray.toString());
         Log.d(JsBridge.TAG, getContext() + "#" + getWebViewObject());
+    }
+
+    public void onResume(JBCallback callback) {
+        
     }
 }

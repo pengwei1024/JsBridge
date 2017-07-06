@@ -15,13 +15,13 @@ public interface JBMap extends JsObject {
 
     Object get(String name);
 
-    boolean getBoolean(String name);
+    Boolean getBoolean(String name);
 
-    double getDouble(String name);
+    Double getDouble(String name);
 
     int getInt(String name);
 
-    long getLong(String name);
+    Long getLong(String name);
 
     String getString(String name);
 

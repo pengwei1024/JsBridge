@@ -188,7 +188,7 @@ public final class JBUtils {
                     }
                 }
             } else if (parser instanceof JSONObject) {
-                WritableJBMap writableJBMap = WritableJBMap.create();
+                WritableJBMap writableJBMap = new WritableJBMap.Create();
                 JSONObject jsonObject = (JSONObject) parser;
                 for (String key : jsonObject.keySet()) {
                     Object ret = parseObjectLoop(jsonObject.get(key), method);
@@ -219,7 +219,7 @@ public final class JBUtils {
                 return writableJBMap;
             } else if (parser instanceof JSONArray) {
                 JSONArray jsonArray = (JSONArray) parser;
-                WritableJBArray writableJBArray = WritableJBArray.create();
+                WritableJBArray writableJBArray = new WritableJBArray.Create();
                 for (int i = 0; i < jsonArray.size(); i++) {
                     Object ret = parseObjectLoop(jsonArray.get(i), method);
                     if (ret == null) {

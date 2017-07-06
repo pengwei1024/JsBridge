@@ -11,8 +11,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.apkfuns.jsbridge.JsBridge;
-import com.apkfuns.jsbridge.module.JSBridgeMethod;
-import com.apkfuns.jsbridgesample.module.ServiceModule;
 
 /**
  * Created by pengwei on 2017/6/11.
@@ -26,12 +24,12 @@ public class WebViewActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("System WebView");
-        jsBridge = JsBridge.loadModule("HiJs", "HiJsReady", new ServiceModule());
+        jsBridge = JsBridge.loadModule();
         WebView webView = new WebView(this);
         setContentView(webView);
         webView.getSettings().setJavaScriptEnabled(true);
         WebView.setWebContentsDebuggingEnabled(true);
-        webView.loadUrl("file:///android_asset/sample.html");
+        webView.loadUrl("file:///android_asset/index.html");
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {

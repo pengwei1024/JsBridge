@@ -3,33 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>JsBridge测试Demo</title>
-</head>
-<body>
-<button id="btn_add_menu">点击添加菜单</button>
-<script type="text/javascript">
-
-    window.HiJsReady = function() {
-        HiJs.service.hiShare('hello', function(ret){alert(ret)}, function(ret){alert(ret)})
+    <style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
     }
 
-    window.onMyBridgeReady = function () {
-        console.log('onMyBridgeReady ready');
-        //MyBridge.share.hiShare(2.5, 'hello world', function(x,y){console.log('receiver callback!!' + x + y)},
-        //function(){console.log('second call')});
+    ul > li {
+        display: block;
+        text-align: center;
+        list-style: none;
+        background: #ccc;
+        margin: 10px;
+        padding: 8px;
+    }
 
-        <!--MyBridge.alert('支持静态方法!!!!', function(data){-->
-            <!--console.log('reply = ' + data)-->
-        <!--});-->
 
-        <!--MyBridge.share.test([-1111111111111111111, 1.235, 'hello world', true,-->
-        <!--function(args){alert(args)}, {a:100101, b:function(){alert('执行复杂回调函数')}},-->
-        <!--[1,2,3,4]]);-->
 
-        MyBridge.share.testReturn(function(array, map){
+    </style>
+    <script type="text/javascript"
+            src="https://res.wx.qq.com/mmbizwap/zh_CN/htmledition/js/vconsole/2.5.1/vconsole.min.js"></script>
+</head>
+<body>
+<ul id="ul">
+    <li>Map To String</li>
+    <li>Complex data</li>
+    <li>Test Return</li>
+</ul>
+<script type="text/javascript">
+
+    var ul = document.getElementById("ul");
+    var li = ul.getElementsByTagName("li");
+    for (var i = 0; i < li.length; i++) {
+        li[i].index = i;
+        li[i].onclick = function () {
+            switch (this.index) {
+                case 0:
+                 MyBridge.mapToString({data:{"count":2,"title":[{"name":"nnn","value":"nnnvalue","default_show":1}
+        ,{"name":"mmm","value":"mmmvalue\"aasdasd"}]}});
+                    break;
+                case 1:
+                MyBridge.service.test([-1111111111111111111, 1.235, 'hello world', true,
+        function(args){alert(args)}, {a:100101, b:function(){alert('执行复杂回调函数')}},
+        [1,2,3,4]]);
+                    break;
+                case 2:
+                MyBridge.service.testReturn(function(array, map){
             console.log(array);
             console.log(map);
         });
+                    break;
+            }
+        }
     }
+    window.onMyBridgeReady = function () {
+        console.log('onMyBridgeReady ready');
+    }
+
+
+
 </script>
 </body>
 </html>

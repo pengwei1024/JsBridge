@@ -1,50 +1,45 @@
 package com.apkfuns.jsbridge.module;
 
-import com.alibaba.fastjson.JSON;
-import com.apkfuns.jsbridge.JBUtils;
+import com.alibaba.fastjson.JSONObject;
 
-import java.util.HashMap;
+
 import java.util.Set;
 
 /**
  * Created by pengwei on 2017/5/30.
  */
 
-class JBMapImpl extends WritableJBMap {
+class JBMapImpl extends JSONObject implements WritableJBMap {
 
-    private HashMap<String, Object> dataSource;
-
-    JBMapImpl() {
-        this.dataSource = new HashMap<>();
-    }
+    JBMapImpl() {}
 
     @Override
     public boolean isEmpty() {
-        return dataSource.isEmpty();
+        return super.isEmpty();
     }
 
     @Override
     public boolean hasKey(String name) {
-        return dataSource.containsKey(name);
+        return super.containsKey(name);
     }
 
     @Override
     public boolean isNull(String name) {
-        return dataSource.get(name) == null;
+        return super.get(name) == null;
     }
 
     @Override
     public Object get(String name) {
-        return dataSource.get(name);
+        return super.get(name);
     }
 
     @Override
-    public boolean getBoolean(String name) {
+    public Boolean getBoolean(String name) {
         return (boolean) get(name);
     }
 
     @Override
-    public double getDouble(String name) {
+    public Double getDouble(String name) {
         return (double) get(name);
     }
 
@@ -54,7 +49,7 @@ class JBMapImpl extends WritableJBMap {
     }
 
     @Override
-    public long getLong(String name) {
+    public Long getLong(String name) {
         return (long) get(name);
     }
 
@@ -87,16 +82,12 @@ class JBMapImpl extends WritableJBMap {
 
     @Override
     public Set<String> keySet() {
-        return dataSource.keySet();
-    }
-
-    private void put(String name, Object value) {
-        dataSource.put(name, value);
+        return super.keySet();
     }
 
     @Override
     public void putNull(String key) {
-        dataSource.put(key, null);
+        super.put(key, null);
     }
 
     @Override
@@ -141,19 +132,6 @@ class JBMapImpl extends WritableJBMap {
 
     @Override
     public String convertJS() {
-        StringBuilder builder = new StringBuilder("{");
-        int i = 0;
-        for (String key : dataSource.keySet()) {
-            builder.append(key + ":" + JBUtils.toJsObject(get(key)));
-            if (++i != dataSource.size()) {
-                builder.append(",");
-            }
-        }
-        return builder.append("}").toString();
-    }
-
-    @Override
-    public String toString() {
-        return JSON.toJSONString(dataSource);
+        return toString();
     }
 }

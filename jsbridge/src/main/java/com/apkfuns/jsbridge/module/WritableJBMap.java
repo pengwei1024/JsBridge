@@ -5,27 +5,27 @@ package com.apkfuns.jsbridge.module;
  * Created by pengwei on 2017/6/10.
  */
 
-public abstract class WritableJBMap implements JBMap {
+public interface WritableJBMap extends JBMap {
 
-    public abstract void putNull(String key);
+    void putNull(String key);
 
-    public abstract void putBoolean(String key, boolean value);
+    void putBoolean(String key, boolean value);
 
-    public abstract void putDouble(String key, double value);
+    void putDouble(String key, double value);
 
-    public abstract void putInt(String key, int value);
+    void putInt(String key, int value);
 
-    public abstract void putLong(String key, long value);
+    void putLong(String key, long value);
 
-    public abstract void putString(String key, String value);
+    void putString(String key, String value);
 
-    public abstract void putArray(String key, WritableJBArray value);
+    void putArray(String key, WritableJBArray value);
 
-    public abstract void putMap(String key, WritableJBMap value);
+    void putMap(String key, WritableJBMap value);
 
-    public abstract void putCallback(String key, JBCallback value);
+    void putCallback(String key, JBCallback value);
 
-    public static WritableJBMap create() {
-        return new JBMapImpl();
+    class Create extends JBMapImpl {
+        public Create() {}
     }
 }

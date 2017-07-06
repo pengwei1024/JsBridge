@@ -1,31 +1,25 @@
 package com.apkfuns.jsbridge.module;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.apkfuns.jsbridge.JBUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pengwei on 2017/6/3.
  */
 
-class JBArrayImpl extends WritableJBArray {
+class JBArrayImpl extends JSONArray implements WritableJBArray {
 
-    private List<Object> dataSource;
-
-    JBArrayImpl() {
-        dataSource = new ArrayList<>();
-    }
+    JBArrayImpl() {}
 
     @Override
     public int size() {
-        return dataSource.size();
+        return super.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return dataSource.isEmpty();
+        return super.isEmpty();
     }
 
     @Override
@@ -34,12 +28,12 @@ class JBArrayImpl extends WritableJBArray {
     }
 
     @Override
-    public boolean getBoolean(int index) {
+    public Boolean getBoolean(int index) {
         return (boolean) get(index);
     }
 
     @Override
-    public double getDouble(int index) {
+    public Double getDouble(int index) {
         return (double) get(index);
     }
 
@@ -49,7 +43,7 @@ class JBArrayImpl extends WritableJBArray {
     }
 
     @Override
-    public long getLong(int index) {
+    public Long getLong(int index) {
         return (long) get(index);
     }
 
@@ -89,16 +83,12 @@ class JBArrayImpl extends WritableJBArray {
 
     @Override
     public Object get(int index) {
-        return dataSource.get(index);
-    }
-
-    private void add(Object data) {
-        dataSource.add(data);
+        return super.get(index);
     }
 
     @Override
     public void pushNull() {
-        dataSource.add(null);
+        super.add(null);
     }
 
     @Override
@@ -143,18 +133,6 @@ class JBArrayImpl extends WritableJBArray {
 
     @Override
     public String convertJS() {
-        StringBuilder builder = new StringBuilder("[");
-        for (int i = 0; i < dataSource.size(); i++) {
-            builder.append(JBUtils.toJsObject(dataSource.get(i)));
-            if (i != dataSource.size() - 1) {
-                builder.append(",");
-            }
-        }
-        return builder.append("]").toString();
-    }
-
-    @Override
-    public String toString() {
-        return JSON.toJSONString(dataSource);
+        return toString();
     }
 }
