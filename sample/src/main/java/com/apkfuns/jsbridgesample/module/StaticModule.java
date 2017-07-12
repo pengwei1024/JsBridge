@@ -25,4 +25,9 @@ public class StaticModule extends JsStaticModule {
     public void mapToString(JBMap map) {
         Log.e(JsBridge.TAG, map.getString("data"));
     }
+
+    @JSBridgeMethod
+    public int getVersion() {
+        return 10;
+    }
 }
