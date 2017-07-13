@@ -109,12 +109,8 @@ public class ServiceModule extends JsModule {
         WritableJBMap jbMap = new WritableJBMap.Create();
         jbMap.putString("a", "hello");
         jbMap.putString("b", "world");
-        callback.apply(jbArray, jbMap);
+        callback.apply("\"''haha'\"",jbArray, jbMap);
         Log.d(JsBridge.TAG, jbMap.toString() + "\n" + jbArray.toString());
         Log.d(JsBridge.TAG, getContext() + "#" + getWebViewObject());
-    }
-
-    public void onResume(JBCallback callback) {
-        
     }
 }

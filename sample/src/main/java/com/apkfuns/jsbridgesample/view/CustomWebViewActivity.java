@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import com.apkfuns.jsbridge.JsBridge;
 import com.apkfuns.jsbridge.common.IPromptResult;
 import com.apkfuns.jsbridge.common.IWebView;
+import com.apkfuns.jsbridgesample.module.ListenerModule;
 
 /**
  * Created by pengwei on 2017/6/11.
@@ -23,6 +24,7 @@ import com.apkfuns.jsbridge.common.IWebView;
 
 public class CustomWebViewActivity extends BaseActivity {
     private JsBridge jsBridge;
+    private CustomWebView customWebView;
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
@@ -31,9 +33,9 @@ public class CustomWebViewActivity extends BaseActivity {
         setTitle("Custom WebView");
         jsBridge = JsBridge.loadModule();
         WebView.setWebContentsDebuggingEnabled(true);
-        final CustomWebView customWebView = new CustomWebView(this);
+        customWebView = new CustomWebView(this);
         setContentView(customWebView);
-        customWebView.setWebViewClient(new WebViewClient(){
+        customWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
@@ -59,7 +61,7 @@ public class CustomWebViewActivity extends BaseActivity {
             this.webView = new WebView(context);
             this.webView.getSettings().setJavaScriptEnabled(true);
             addView(this.webView);
-            this.webView.setWebChromeClient(new WebChromeClient(){
+            this.webView.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public boolean onJsPrompt(WebView view, String url,
                                           String message, String defaultValue, JsPromptResult result) {
@@ -112,5 +114,17 @@ public class CustomWebViewActivity extends BaseActivity {
     protected void onDestroy() {
         jsBridge.release();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ListenerModule.onResume(customWebView, "hello");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ListenerModule.onPause(customWebView, 1.234);
     }
 }

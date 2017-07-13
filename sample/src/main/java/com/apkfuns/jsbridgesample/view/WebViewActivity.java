@@ -33,8 +33,10 @@ public class WebViewActivity extends BaseActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                jsBridge.callJsPrompt(message, result);
-                return true;
+                if (jsBridge.callJsPrompt(message, result)) {
+                    return true;
+                }
+                return super.onJsPrompt(view, url, message, defaultValue, result);
             }
 
             @Override

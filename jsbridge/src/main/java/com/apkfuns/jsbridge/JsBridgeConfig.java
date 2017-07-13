@@ -19,6 +19,8 @@ public abstract class JsBridgeConfig {
     // 调试模式
     public abstract JsBridgeConfig debugMode(boolean debug);
 
+    public abstract String getProtocol();
+
     public static JsBridgeConfig getSetting() {
         return JsBridgeConfigImpl.getInstance();
     }

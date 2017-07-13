@@ -52,6 +52,7 @@ class JsBridgeConfigImpl extends JsBridgeConfig {
         return this;
     }
 
+    @Override
     public String getProtocol() {
         return TextUtils.isEmpty(protocol) ? DEFAULT_PROTOCOL : protocol;
     }

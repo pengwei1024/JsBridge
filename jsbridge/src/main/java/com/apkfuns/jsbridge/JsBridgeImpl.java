@@ -93,9 +93,7 @@ class JsBridgeImpl extends JsBridge {
                 for (JsModule module : loadModule) {
                     HashMap<String, JsMethod> methodsMap = JBUtils.getAllMethod(
                             module, module.getClass(), newProtocol);
-                    if (!methodsMap.isEmpty()) {
-                        exposedMethods.put(module, methodsMap);
-                    }
+                    exposedMethods.put(module, methodsMap);
                 }
             }
         } catch (Exception e) {
@@ -122,6 +120,10 @@ class JsBridgeImpl extends JsBridge {
                     preLoad = getInjectJsString();
                 }
                 for (JsModule module : loadModule) {
+                    // 监听方法不需要注入 Context
+                    if (exposedMethods.get(module) == null || exposedMethods.get(module).isEmpty()) {
+                        continue;
+                    }
                     // 为JsModule设置context 和 WebView
                     if (module.mContext != null && module.mContext.getClass().equals(context.getClass())) {
                         break;
@@ -146,13 +148,13 @@ class JsBridgeImpl extends JsBridge {
     }
 
     @Override
-    public final void callJsPrompt(@NonNull String methodArgs, @NonNull JsPromptResult result) {
-        onCallJsPrompt(methodArgs, result);
+    public final boolean callJsPrompt(@NonNull String methodArgs, @NonNull JsPromptResult result) {
+        return onCallJsPrompt(methodArgs, result);
     }
 
     @Override
-    public final void callJsPrompt(@NonNull String methodArgs, @NonNull IPromptResult result) {
-        onCallJsPrompt(methodArgs, result);
+    public final boolean callJsPrompt(@NonNull String methodArgs, @NonNull IPromptResult result) {
+        return onCallJsPrompt(methodArgs, result);
     }
 
     @Override
@@ -252,11 +254,14 @@ class JsBridgeImpl extends JsBridge {
      * @param methodArgs
      * @param result
      */
-    private void onCallJsPrompt(String methodArgs, Object result) {
+    private boolean onCallJsPrompt(String methodArgs, Object result) {
         if (TextUtils.isEmpty(methodArgs) || result == null) {
-            throw new NullPointerException("JsPrompt Arguments Null");
+            return false;
         }
-        JBArgumentParser argumentParser = JSON.parseObject(methodArgs, JBArgumentParser.class);
+        JBArgumentParser argumentParser = null;
+        try {
+            argumentParser = JSON.parseObject(methodArgs, JBArgumentParser.class);
+        } catch (Throwable e) {}
         if (argumentParser != null && !TextUtils.isEmpty(argumentParser.getModule())
                 && !TextUtils.isEmpty(argumentParser.getMethod())) {
             JsModule findModule = getModule(argumentParser.getModule());
@@ -275,7 +280,7 @@ class JsBridgeImpl extends JsBridge {
                             Object parseObject = JBUtils.parseToObject(type, param, method);
                             if (parseObject != null && parseObject instanceof JBArgumentErrorException) {
                                 setJsPromptResult(result, false, parseObject.toString());
-                                return;
+                                return true;
                             }
                             invokeArgs[i] = parseObject;
                         }
@@ -294,19 +299,21 @@ class JsBridgeImpl extends JsBridge {
                     }
                     try {
                         Object ret = method.invoke(invokeArgs);
-                        setJsPromptResult(result, true, ret == null ? "" : ret.toString());
+                        setJsPromptResult(result, true, ret == null ? "" : ret);
                     } catch (Exception e) {
                         setJsPromptResult(result, false, e.getMessage());
                         JBLog.e("Call JsMethod <" + method.getMethodName() + "> Error", e);
                     }
-                    return;
+                    return true;
                 }
             }
+            setJsPromptResult(result, false, "JBArgument Parse error");
+            return true;
         }
-        setJsPromptResult(result, false, "JBArgument Parse error");
+        return false;
     }
 
-    private void setJsPromptResult(Object promptResult, boolean success, String msg) {
+    private void setJsPromptResult(Object promptResult, boolean success, Object msg) {
         JSONObject ret = new JSONObject();
         try {
             ret.put("success", success);

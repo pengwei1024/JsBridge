@@ -27,6 +27,7 @@
     <li>Location</li>
     <li>Async request</li>
     <li>Share</li>
+    <li>Test Prompt</li>
 </ul>
 <script type="text/javascript">
     var ul = document.getElementById("ul");
@@ -74,6 +75,9 @@
                     break;
                 case 4:
                     MyBridge.service.hiShare('share text', function(){}, function(){});
+                    break;
+                case 5:
+                    console.log(prompt("Are you OK?", "ok"));
                     break;
                 default:
                     break;

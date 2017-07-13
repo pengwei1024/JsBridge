@@ -20,9 +20,9 @@ public abstract class JsBridge {
 
     public abstract void injectJs(@NonNull IWebView webView);
 
-    public abstract void callJsPrompt(@NonNull String methodArgs, @NonNull JsPromptResult result);
+    public abstract boolean callJsPrompt(@NonNull String methodArgs, @NonNull JsPromptResult result);
 
-    public abstract void callJsPrompt(@NonNull String methodArgs, @NonNull IPromptResult result);
+    public abstract boolean callJsPrompt(@NonNull String methodArgs, @NonNull IPromptResult result);
 
     public abstract void evaluateJavascript(@NonNull String jsCode);
 

@@ -22,13 +22,14 @@
 
     </style>
     <script type="text/javascript"
-            src="https://res.wx.qq.com/mmbizwap/zh_CN/htmledition/js/vconsole/2.5.1/vconsole.min.js"></script>
+            src="http://res.wx.qq.com/mmbizwap/zh_CN/htmledition/js/vconsole/2.5.1/vconsole.min.js"></script>
 </head>
 <body>
 <ul id="ul">
     <li>Map To String</li>
     <li>Complex data</li>
     <li>Test Return</li>
+    <li>Get Version</li>
 </ul>
 <script type="text/javascript">
 
@@ -53,11 +54,17 @@
             console.log(map);
         });
                     break;
+                case 3:
+                    var version = MyBridge.getVersion();
+                    console.log(version, typeof version);
+                    break;
             }
         }
     }
     window.onMyBridgeReady = function () {
         console.log('onMyBridgeReady ready');
+        MyBridge.page.onResume = function(ret){console.log('onResume', ret)}
+        MyBridge.page.onPause = function(ret){console.log('onPause', ret)}
     }
 
 

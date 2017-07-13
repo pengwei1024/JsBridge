@@ -1,11 +1,17 @@
 package com.apkfuns.jsbridge;
 
 
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.webkit.WebView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apkfuns.jsbridge.common.IWebView;
 import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSArgumentType;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
@@ -171,6 +177,7 @@ public final class JBUtils {
 
     /**
      * parse object loop
+     *
      * @param parser
      * @param method
      * @return
@@ -254,6 +261,7 @@ public final class JBUtils {
 
     /**
      * 转化为 JS 对象
+     *
      * @param javaObject
      * @return
      */
@@ -265,10 +273,17 @@ public final class JBUtils {
         } else if (javaObject instanceof JsObject) {
             return ((JsObject) javaObject).convertJS();
         } else {
-            return "'" + javaObject + "'";
+            String format = javaObject.toString().replaceAll("'", "\\\\\'");
+            return "'" + format + "'";
         }
     }
 
+    /**
+     * 模块分类
+     *
+     * @param moduleName
+     * @return
+     */
     public static List<String> moduleSplit(String moduleName) {
         List<String> moduleGroup = new ArrayList<>();
         int index = -1;
@@ -287,5 +302,36 @@ public final class JBUtils {
             }
         } while (index >= 0);
         return moduleGroup;
+    }
+
+    public static void callJsMethod(@NonNull String methodName, @NonNull final Object mWebView,
+                                    @Nullable Object... args) {
+        if (TextUtils.isEmpty(methodName) || mWebView == null) {
+            return;
+        }
+        final StringBuilder builder = new StringBuilder("javascript:");
+        builder.append("try{");
+        builder.append("var callback=" + methodName + ";");
+        builder.append("if (callback && typeof callback === 'function'){callback(");
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                builder.append(JBUtils.toJsObject(args[i]));
+                if (i != args.length - 1) {
+                    builder.append(",");
+                }
+            }
+        }
+        builder.append(")}");
+        builder.append("}catch(e){}");
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if (mWebView instanceof WebView) {
+                    ((WebView) mWebView).loadUrl(builder.toString());
+                } else if (mWebView instanceof IWebView) {
+                    ((IWebView) mWebView).loadUrl(builder.toString());
+                }
+            }
+        });
     }
 }
