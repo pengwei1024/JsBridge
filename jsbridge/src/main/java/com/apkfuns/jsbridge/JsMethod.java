@@ -112,6 +112,8 @@ class JsMethod {
         builder.append("if(ret && ret.success) {");
         if (hasReturn) {
             builder.append("return ret.msg;");
+        } else {
+            builder.append("return undefined;");
         }
         builder.append("}else{");
         builder.append("console.error(ret.msg)}");

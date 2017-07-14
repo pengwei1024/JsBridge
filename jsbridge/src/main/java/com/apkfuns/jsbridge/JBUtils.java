@@ -67,7 +67,7 @@ public final class JBUtils {
             if (!TextUtils.isEmpty(annotation.methodName())) {
                 name = annotation.methodName();
             }
-            boolean hasReturn = !Void.class.equals(javaMethod.getReturnType());
+            boolean hasReturn = !"void".equals(javaMethod.getReturnType().getName());
             Class[] parameters = javaMethod.getParameterTypes();
             List<Integer> parameterTypeList = new ArrayList<>();
             for (Class cls : parameters) {

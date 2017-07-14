@@ -2,6 +2,7 @@ package com.apkfuns.jsbridgesample.module;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.module.JsModule;
 import com.apkfuns.jsbridgesample.view.BaseActivity;
+import com.apkfuns.jsbridgesample.view.WebViewActivity;
 
 /**
  * Created by pengwei on 16/5/15.
@@ -83,5 +85,12 @@ public class NativeModule extends JsModule {
                 callback.apply();
             }
         }
+    }
+
+    @JSBridgeMethod
+    public void loadNewPage(String url) {
+        Intent it = new Intent(getContext(), WebViewActivity.class);
+        it.putExtra("url", url);
+        getContext().startActivity(it);
     }
 }

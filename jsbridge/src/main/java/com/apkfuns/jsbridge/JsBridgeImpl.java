@@ -235,9 +235,11 @@ class JsBridgeImpl extends JsBridge {
                     builder.append(className + ".prototype." + module.getModuleName() + " = {");
                     moduleLayers.add(module.getModuleName());
                 }
-                for (String method : methods.keySet()) {
-                    JsMethod jsMethod = methods.get(method);
-                    builder.append(jsMethod.getInjectJs());
+                if (methods != null && methods.keySet() != null) {
+                    for (String method : methods.keySet()) {
+                        JsMethod jsMethod = methods.get(method);
+                        builder.append(jsMethod.getInjectJs());
+                    }
                 }
                 builder.append("};");
             }

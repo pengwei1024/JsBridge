@@ -3,6 +3,7 @@ package com.apkfuns.jsbridgesample.view;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsPromptResult;
@@ -29,7 +30,11 @@ public class WebViewActivity extends BaseActivity {
         setContentView(webView);
         webView.getSettings().setJavaScriptEnabled(true);
         WebView.setWebContentsDebuggingEnabled(true);
-        webView.loadUrl("file:///android_asset/index.html");
+        String url = getIntent().getStringExtra("url");
+        if (TextUtils.isEmpty(url)) {
+            url = "file:///android_asset/index.html";
+        }
+        webView.loadUrl(url);
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
