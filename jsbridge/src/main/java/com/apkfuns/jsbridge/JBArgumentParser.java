@@ -2,6 +2,10 @@ package com.apkfuns.jsbridge;
 
 import com.apkfuns.jsbridge.module.JSArgumentType;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,5 +79,45 @@ final class JBArgumentParser {
         public void setValue(String value) {
             this.value = value;
         }
+    }
+
+    /**
+     * 解析为对象
+     * @param jsonString
+     * @return
+     */
+    public static JBArgumentParser parse(String jsonString) {
+        JBArgumentParser parser = new JBArgumentParser();
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            parser.setId(jsonObject.getLong("id"));
+            parser.setMethod(jsonObject.getString("method"));
+            parser.setModule(jsonObject.getString("module"));
+            List<Parameter> parameterList = new ArrayList<>();
+            JSONArray jsonArray = jsonObject.getJSONArray("parameters");
+            if (jsonArray != null) {
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject item = jsonArray.getJSONObject(i);
+                    if (item == null) {
+                        continue;
+                    }
+                    Parameter parameter = new Parameter();
+                    if (item.has("name")) {
+                        parameter.setName(item.getString("name"));
+                    }
+                    if (item.has("type")) {
+                        parameter.setType(item.getInt("type"));
+                    }
+                    if (item.has("value")) {
+                        parameter.setValue(item.getString("value"));
+                    }
+                    parameterList.add(parameter);
+                }
+            }
+            parser.setParameters(parameterList);
+        } catch (Exception e) {
+            JBLog.e("JBArgumentParser::parse Exception", e);
+        }
+        return parser;
     }
 }

@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.webkit.JsPromptResult;
 import android.webkit.WebView;
 
-import com.alibaba.fastjson.JSON;
 import com.apkfuns.jsbridge.common.IPromptResult;
 import com.apkfuns.jsbridge.common.IWebView;
 import com.apkfuns.jsbridge.common.JBArgumentErrorException;
@@ -260,10 +259,7 @@ class JsBridgeImpl extends JsBridge {
         if (TextUtils.isEmpty(methodArgs) || result == null) {
             return false;
         }
-        JBArgumentParser argumentParser = null;
-        try {
-            argumentParser = JSON.parseObject(methodArgs, JBArgumentParser.class);
-        } catch (Throwable e) {}
+        JBArgumentParser argumentParser = JBArgumentParser.parse(methodArgs);
         if (argumentParser != null && !TextUtils.isEmpty(argumentParser.getModule())
                 && !TextUtils.isEmpty(argumentParser.getMethod())) {
             JsModule findModule = getModule(argumentParser.getModule());
