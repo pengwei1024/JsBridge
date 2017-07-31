@@ -55,7 +55,7 @@
                     break;
                 case 2:
                     MyBridge.native.getLocation(function(latitude, longitude){
-                        console.log('location: ' +latitude + ',' + longitude)
+                        alert('location: ' +latitude + ',' + longitude)
                     },function(latitude, longitude){
                         alert('Location change: ' + latitude + ',' + longitude)
                     });
@@ -85,8 +85,12 @@
         }
     }
 
+    window.onload = function() {
+        window.startTime = new Date().getTime();
+    }
+
      window.onMyBridgeReady = function () {
-        console.log("JsBridge load finish");
+        console.log("JsBridge load finish, cost:" + (new Date().getTime() - window.startTime) + "ms");
      }
 
 </script>

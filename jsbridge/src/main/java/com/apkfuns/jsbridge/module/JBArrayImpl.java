@@ -1,7 +1,9 @@
 package com.apkfuns.jsbridge.module;
 
-import com.alibaba.fastjson.JSONArray;
 import com.apkfuns.jsbridge.JBUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 
 /**
@@ -14,12 +16,12 @@ class JBArrayImpl extends JSONArray implements WritableJBArray {
 
     @Override
     public int size() {
-        return super.size();
+        return super.length();
     }
 
     @Override
     public boolean isEmpty() {
-        return super.isEmpty();
+        return size() == 0;
     }
 
     @Override
@@ -28,12 +30,12 @@ class JBArrayImpl extends JSONArray implements WritableJBArray {
     }
 
     @Override
-    public Boolean getBoolean(int index) {
+    public boolean getBoolean(int index) {
         return (boolean) get(index);
     }
 
     @Override
-    public Double getDouble(int index) {
+    public double getDouble(int index) {
         return (double) get(index);
     }
 
@@ -43,7 +45,7 @@ class JBArrayImpl extends JSONArray implements WritableJBArray {
     }
 
     @Override
-    public Long getLong(int index) {
+    public long getLong(int index) {
         return (long) get(index);
     }
 
@@ -83,52 +85,56 @@ class JBArrayImpl extends JSONArray implements WritableJBArray {
 
     @Override
     public Object get(int index) {
-        return super.get(index);
+        return super.opt(index);
     }
 
     @Override
     public void pushNull() {
-        super.add(null);
+        super.put(null);
     }
 
     @Override
     public void pushBoolean(boolean value) {
-        add(value);
+        put(value);
     }
 
     @Override
     public void pushDouble(double value) {
-        add(value);
+        try {
+            put(value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void pushInt(int value) {
-        add(value);
+        put(value);
     }
 
     @Override
     public void pushLong(long value) {
-        add(value);
+        put(value);
     }
 
     @Override
     public void pushString(String value) {
-        add(value);
+        put(value);
     }
 
     @Override
     public void pushArray(WritableJBArray value) {
-        add(value);
+        put(value);
     }
 
     @Override
     public void pushMap(WritableJBMap value) {
-        add(value);
+        put(value);
     }
 
     @Override
     public void pushCallback(JBCallback value) {
-        add(value);
+        put(value);
     }
 
     @Override

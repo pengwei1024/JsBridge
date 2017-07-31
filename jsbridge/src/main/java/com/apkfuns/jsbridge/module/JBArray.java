@@ -11,13 +11,13 @@ public interface JBArray extends JsObject {
 
     boolean isNull(int index);
 
-    Boolean getBoolean(int index);
+    boolean getBoolean(int index);
 
-    Double getDouble(int index);
+    double getDouble(int index);
 
     int getInt(int index);
 
-    Long getLong(int index);
+    long getLong(int index);
 
     String getString(int index);
 

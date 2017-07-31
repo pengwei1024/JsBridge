@@ -212,6 +212,9 @@ class JsBridgeImpl extends JsBridge {
         // 注入默认方法
         for (JsModule module : loadModule) {
             HashMap<String, JsMethod> methods = exposedMethods.get(module);
+            if (methods == null || methods.keySet() == null) {
+                continue;
+            }
             if (module instanceof JsStaticModule) {
                 for (String method : methods.keySet()) {
                     JsMethod jsMethod = methods.get(method);

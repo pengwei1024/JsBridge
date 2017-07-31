@@ -8,9 +8,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.WebView;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.apkfuns.jsbridge.common.IWebView;
 import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSArgumentType;
@@ -23,12 +20,17 @@ import com.apkfuns.jsbridge.module.JsObject;
 import com.apkfuns.jsbridge.module.WritableJBArray;
 import com.apkfuns.jsbridge.module.WritableJBMap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -163,14 +165,22 @@ public final class JBUtils {
             if (parameter.getType() != JSArgumentType.TYPE_OBJECT) {
                 return new JBArgumentErrorException("parameter error, expect <object>");
             }
-            JSONObject jsonObject = JSON.parseObject(parameter.getValue());
-            return parseObjectLoop(jsonObject, method);
+            try {
+                JSONObject jsonObject = new JSONObject(parameter.getValue());
+                return parseObjectLoop(jsonObject, method);
+            } catch (JSONException e) {
+               return null;
+            }
         } else if (type == JSArgumentType.TYPE_ARRAY) {
             if (parameter.getType() != JSArgumentType.TYPE_ARRAY) {
                 return new JBArgumentErrorException("parameter error, expect <array>");
             }
-            JSONArray jsonArray = JSON.parseArray(parameter.getValue());
-            return parseObjectLoop(jsonArray, method);
+            try {
+                JSONArray jsonArray = new JSONArray(parameter.getValue());
+                return parseObjectLoop(jsonArray, method);
+            } catch (JSONException e) {
+                return null;
+            }
         }
         return null;
     }
@@ -197,8 +207,9 @@ public final class JBUtils {
             } else if (parser instanceof JSONObject) {
                 WritableJBMap writableJBMap = new WritableJBMap.Create();
                 JSONObject jsonObject = (JSONObject) parser;
-                for (String key : jsonObject.keySet()) {
-                    Object ret = parseObjectLoop(jsonObject.get(key), method);
+                for (Iterator<String> iterator = jsonObject.keys(); iterator.hasNext(); ) {
+                    String key = iterator.next();
+                    Object ret = parseObjectLoop(jsonObject.opt(key), method);
                     if (ret == null) {
                         writableJBMap.putNull(key);
                         continue;
@@ -227,8 +238,8 @@ public final class JBUtils {
             } else if (parser instanceof JSONArray) {
                 JSONArray jsonArray = (JSONArray) parser;
                 WritableJBArray writableJBArray = new WritableJBArray.Create();
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    Object ret = parseObjectLoop(jsonArray.get(i), method);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    Object ret = parseObjectLoop(jsonArray.opt(i), method);
                     if (ret == null) {
                         writableJBArray.pushNull();
                         continue;

@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.apkfuns.jsbridge.JsBridge;
 import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.module.JsModule;
@@ -79,7 +81,7 @@ public class NativeModule extends JsModule {
 
                 }
             });
-            if (location == null) {
+            if (location != null) {
                 callback.apply(location.getLatitude(), location.getLongitude());
             } else {
                 callback.apply();

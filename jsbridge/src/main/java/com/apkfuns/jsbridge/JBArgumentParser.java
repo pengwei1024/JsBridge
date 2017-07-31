@@ -1,5 +1,7 @@
 package com.apkfuns.jsbridge;
 
+import android.text.TextUtils;
+
 import com.apkfuns.jsbridge.module.JSArgumentType;
 
 import org.json.JSONArray;
@@ -87,6 +89,10 @@ final class JBArgumentParser {
      * @return
      */
     public static JBArgumentParser parse(String jsonString) {
+        if(TextUtils.isEmpty(jsonString) || (!jsonString.startsWith("{") &&
+                !jsonString.startsWith("["))) {
+            return null;
+        }
         JBArgumentParser parser = new JBArgumentParser();
         try {
             JSONObject jsonObject = new JSONObject(jsonString);

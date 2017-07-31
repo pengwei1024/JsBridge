@@ -41,9 +41,10 @@
         li[i].onclick = function () {
             switch (this.index) {
                 case 0:
-                 MyBridge.mapToString({data:{"count":2,"title":[{"name":"nnn","value":"nnnvalue","default_show":1}
+                 var ret = MyBridge.mapToString({data:{"count":2,"title":[{"name":"nnn","value":"nnnvalue","default_show":1}
         ,{"name":"mmm","value":"mmmvalue\"aasdasd"}]}});
-                    break;
+                 alert(ret);
+                 break;
                 case 1:
                 MyBridge.service.test([-1111111111111111111, 1.235, 'hello world', true,
         function(args){alert(args)}, {a:100101, b:function(){alert('执行复杂回调函数')}},
@@ -51,8 +52,8 @@
                     break;
                 case 2:
                 MyBridge.service.testReturn(function(array, map){
-            console.log(array);
-            console.log(map);
+                console.log(array);
+                console.log(map);
         });
                     break;
                 case 3:
@@ -62,8 +63,13 @@
             }
         }
     }
+
+    window.onload = function() {
+        window.startTime = new Date().getTime();
+    }
+
     window.onMyBridgeReady = function () {
-        console.log('onMyBridgeReady ready');
+        console.log("onMyBridgeReady load finish, cost:" + (new Date().getTime() - window.startTime) + "ms");
         MyBridge.page.onResume = function(ret){console.log('onResume', ret)}
         MyBridge.page.onPause = function(ret){console.log('onPause', ret)}
     }
