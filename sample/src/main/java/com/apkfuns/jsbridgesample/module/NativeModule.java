@@ -3,17 +3,26 @@ package com.apkfuns.jsbridgesample.module;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.apkfuns.jsbridge.JsBridge;
 import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.module.JsModule;
 import com.apkfuns.jsbridgesample.view.BaseActivity;
+import com.apkfuns.jsbridgesample.view.TakePhotoResult;
+import com.apkfuns.jsbridgesample.view.WebEvent;
 import com.apkfuns.jsbridgesample.view.WebViewActivity;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Created by pengwei on 16/5/15.
@@ -94,5 +103,71 @@ public class NativeModule extends JsModule {
         Intent it = new Intent(getContext(), WebViewActivity.class);
         it.putExtra("url", url);
         getContext().startActivity(it);
+    }
+
+    @JSBridgeMethod
+    public void takePhoto(final JBCallback success, final JBCallback errorCallback) {
+        if (getContext() != null && getContext() instanceof WebEvent) {
+            ((WebEvent) getContext()).takePhoto(new TakePhotoResult() {
+                @Override
+                public void onSuccess(Bitmap bitmap) {
+                    if (bitmap != null) {
+                        if (success != null) {
+                            String base64 = bitmapToBase64(bitmap);
+                            base64 = "data:image/png;base64," + base64;
+                            Toast.makeText(mContext, "length=" + base64.length(), Toast.LENGTH_SHORT).show();
+                            success.apply(base64);
+                        }
+                    } else {
+                        if (errorCallback != null) {
+                            errorCallback.apply("data error");
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    if (errorCallback != null) {
+                        errorCallback.apply(error);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * 压缩并 转 base64
+     * @param bitmap
+     * @return
+     */
+    public static String bitmapToBase64(Bitmap bitmap) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int quality = 10;
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
+        byte[] bytes = bos.toByteArray();
+        bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        String result = null;
+        try {
+            if (bitmap != null) {
+                bos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                bos.flush();
+                bos.close();
+                byte[] bitmapBytes = bos.toByteArray();
+                result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bos != null) {
+                    bos.flush();
+                    bos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }

@@ -20,6 +20,10 @@
         margin: 10px;
         padding: 8px;
     }
+
+    #image-preview {
+        max-width: 200px;
+    }
 </style>
 <ul id="ul">
     <li>Set Menu</li>
@@ -27,8 +31,10 @@
     <li>Location</li>
     <li>Async request</li>
     <li>Share</li>
+    <li>Take Photo</li>
     <li>Test Prompt</li>
 </ul>
+<img id="image-preview"/>
 <script type="text/javascript">
     var ul = document.getElementById("ul");
     var li = ul.getElementsByTagName("li");
@@ -77,6 +83,15 @@
                     MyBridge.service.hiShare('share text', function(){}, function(){});
                     break;
                 case 5:
+                    MyBridge.native.takePhoto(function(data) {
+                        var image = document.getElementById("image-preview");
+                        image.src= data;
+                        MyBridge.alert("success");
+                    }, function(error){
+                        MyBridge.alert(error);
+                    });
+                    break;
+                case 6:
                     console.log(prompt("Are you OK?", "ok"));
                     break;
                 default:

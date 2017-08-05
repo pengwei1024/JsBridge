@@ -18,7 +18,6 @@ public class StaticModule extends JsStaticModule {
     @JSBridgeMethod
     public void alert(String msg, JBCallback callback) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-        callback.apply("123456");
     }
 
     @JSBridgeMethod

@@ -1,8 +1,14 @@
 package com.apkfuns.jsbridgesample.view;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
@@ -13,12 +19,19 @@ import android.webkit.WebViewClient;
 
 import com.apkfuns.jsbridge.JsBridge;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+
 /**
  * Created by pengwei on 2017/6/11.
  */
 
-public class WebViewActivity extends BaseActivity {
+public class WebViewActivity extends BaseActivity implements WebEvent{
     private JsBridge jsBridge;
+    private TakePhotoResult result;
+    private Uri imageUri;
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
@@ -65,5 +78,48 @@ public class WebViewActivity extends BaseActivity {
     protected void onDestroy() {
         jsBridge.release();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Bitmap photo = null;
+            try {
+                photo = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (result != null) {
+                result.onSuccess(photo);
+            }
+        } else {
+            if (result != null) {
+                result.onFailure("user cancel");
+            }
+        }
+    }
+
+    @Override
+    public void takePhoto(TakePhotoResult result) {
+        this.result = result;
+        File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+        if (outputImage.exists()) {
+            outputImage.delete();
+        }
+        try {
+            outputImage.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= 24) {
+            imageUri = FileProvider.getUriForFile(this,
+                    "com.gyq.cameraalbumtest.fileprovider", outputImage);
+        } else {
+            imageUri = Uri.fromFile(outputImage);
+        }
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, 0);
     }
 }

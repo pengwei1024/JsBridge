@@ -22,7 +22,7 @@ import com.apkfuns.jsbridgesample.module.ListenerModule;
  * Created by pengwei on 2017/6/11.
  */
 
-public class CustomWebViewActivity extends BaseActivity {
+public class CustomWebViewActivity extends BaseActivity implements WebEvent{
     private JsBridge jsBridge;
     private CustomWebView customWebView;
 
@@ -49,6 +49,11 @@ public class CustomWebViewActivity extends BaseActivity {
             }
         });
         customWebView.loadUrl("file:///android_asset/sample.html");
+    }
+
+    @Override
+    public void takePhoto(TakePhotoResult result) {
+
     }
 
     public static class CustomWebView extends FrameLayout implements IWebView {
