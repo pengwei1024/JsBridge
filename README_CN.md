@@ -15,14 +15,13 @@
 下载 [the latest JAR](./jars) 或 Gradle依赖:
 
 ```
-compile 'com.apkfuns.jsbridge:jsbridge:2.0.10'
+compile 'com.apkfuns.jsbridge:jsbridge:2.1.0'
 ```
-该库依赖了`support-annotations`和`fastjson`, 如果项目中已经存在,请排除
+该库依赖了`support-annotations`, 如果项目中已经存在,请排除
 
 ```
-compile('com.apkfuns.jsbridge:jsbridge:2.0.10') {
+compile('com.apkfuns.jsbridge:jsbridge:2.1.0') {
         exclude module: 'support-annotations'
-        exclude module: 'fastjson'
 }
 ```
 

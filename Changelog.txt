@@ -4,6 +4,6 @@ JsBridge Changelog
 Version History
 ---------------
 
-v2.0.0
-+ support x
-+
+v2.1.0
++ 去除 fastjson 依赖
++ 提高注入效率
