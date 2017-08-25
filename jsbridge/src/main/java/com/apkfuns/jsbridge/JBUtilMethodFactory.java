@@ -15,7 +15,9 @@ class JBUtilMethodFactory {
     public static String getUtilMethods(String loadReadyMethod) {
         if (injectFunc == null) {
             JsRunMethod[] methods = new JsRunMethod[]{new GetType(), new ParseFunction(),
-                    new OnJsBridgeReady(loadReadyMethod), new CreateID(), new CallJava()};
+                    new OnJsBridgeReady(loadReadyMethod), new CreateID(), new CallJava(),
+                    new Printer()
+            };
             injectFunc = new StringBuffer();
             for (JsRunMethod method : methods) {
                 injectFunc.append(method.getMethod());
@@ -101,6 +103,19 @@ class JBUtilMethodFactory {
         @Override
         public String methodName() {
             return "_callJava";
+        }
+    }
+
+    static class Printer extends JsRunMethod {
+
+        @Override
+        protected String executeJS() {
+            return "(s){console.error(s)}";
+        }
+
+        @Override
+        public String methodName() {
+            return "d";
         }
     }
 }

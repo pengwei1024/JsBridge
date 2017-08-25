@@ -91,7 +91,7 @@ class JsMethod {
     public String getInjectJs() {
         StringBuilder builder = new StringBuilder();
         if (isStatic) {
-            builder.append("this." + getMethodName() + " = function(){");
+            builder.append("this." + getMethodName() + "=function(){");
         } else {
             builder.append(getMethodName() + ":function(){");
         }
@@ -99,23 +99,22 @@ class JsMethod {
         builder.append("var id=_getID(),args=[];");
         builder.append("if(!" + getCallback() + ")" + getCallback() + "={};");
         builder.append("for(var i in arguments){");
-        builder.append("var name=id+'_a'+i,item=arguments[i],listeners={};");
-        builder.append("var listeners = {};");
-        builder.append("_parseFunction(item, name, listeners);");
-        builder.append("for (var key in listeners) {");
-        builder.append(getCallback() + "[key]=listeners[key];");
+        builder.append("var name=id+'_a'+i,item=arguments[i],l={};");
+        builder.append("_parseFunction(item,name,l);");
+        builder.append("for(var k in l){");
+        builder.append(getCallback() + "[k]=l[k];");
         builder.append("};");
-        builder.append("args.push({type: _getType(item), name: name, value: item})");
+        builder.append("args.push({type:_getType(item),name:name,value:item})");
         builder.append("}");
-        builder.append("var ret =_callJava(id,'" + getModule().getModuleName() + "','"
-                + getMethodName() + "', args);");
-        builder.append("if(ret && ret.success) {");
+        builder.append("var r=_callJava(id,'" + getModule().getModuleName() + "','"
+                + getMethodName() + "',args);");
+        builder.append("if(r&&r.success){");
         if (hasReturn) {
-            builder.append("return ret.msg;");
+            builder.append("return r.msg;");
         }
         builder.append("}else{");
-        builder.append("console.error(ret.msg)}");
-        builder.append("}catch(e){console.error(e);};");
+        builder.append("d(r.msg)}");
+        builder.append("}catch(e){d(e);};");
         builder.append("}");
         if (!isStatic) {
             builder.append(",");
