@@ -302,7 +302,7 @@ class JsBridgeImpl extends JsBridge {
                         Object ret = method.invoke(invokeArgs);
                         setJsPromptResult(result, true, ret == null ? "" : ret);
                     } catch (Exception e) {
-                        setJsPromptResult(result, false, e.getMessage());
+                        setJsPromptResult(result, false, "Error: " + e.toString());
                         JBLog.e("Call JsMethod <" + method.getMethodName() + "> Error", e);
                     }
                     return true;
