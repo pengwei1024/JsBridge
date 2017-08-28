@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridgesample.view;
+package com.apkfuns.jsbridgesample.view.base;
 
 import android.content.Context;
 import android.location.Location;

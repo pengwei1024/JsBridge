@@ -6,8 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.apkfuns.jsbridgesample.R;
-
-import java.util.List;
+import com.apkfuns.jsbridgesample.view.base.BaseActivity;
 
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
@@ -17,6 +16,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         findViewById(R.id.btn_webView).setOnClickListener(this);
         findViewById(R.id.btn_custom_webView).setOnClickListener(this);
+        findViewById(R.id.btn_fragment_webView).setOnClickListener(this);
     }
 
     @Override
@@ -27,6 +27,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.btn_custom_webView:
                 startActivity(new Intent(this, CustomWebViewActivity.class));
+                break;
+            case R.id.btn_fragment_webView:
+                startActivity(new Intent(this, CustomFragmentActivity.class));
                 break;
             default:
                 break;

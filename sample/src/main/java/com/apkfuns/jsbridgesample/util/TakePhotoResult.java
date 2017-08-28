@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridgesample.view;
+package com.apkfuns.jsbridgesample.util;
 
 import android.graphics.Bitmap;
 

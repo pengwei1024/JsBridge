@@ -18,4 +18,11 @@
         android:layout_height="wrap_content"
         android:text="Custom WebView"
         android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_fragment_webView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fragment WebView"
+        android:textAllCaps="false"/>
 </LinearLayout>

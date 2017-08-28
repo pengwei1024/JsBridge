@@ -1,6 +1,7 @@
-package com.apkfuns.jsbridgesample.view;
+package com.apkfuns.jsbridgesample.view.fragment;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,48 +9,56 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
-import android.webkit.ConsoleMessage;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.apkfuns.jsbridge.JsBridge;
+import com.apkfuns.jsbridgesample.HiApplication;
 import com.apkfuns.jsbridgesample.util.TakePhotoResult;
 import com.apkfuns.jsbridgesample.util.WebEvent;
-import com.apkfuns.jsbridgesample.view.base.BaseActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import static android.app.Activity.RESULT_OK;
 
 /**
- * Created by pengwei on 2017/6/11.
+ * Created by pengwei on 2017/8/14.
  */
 
-public class WebViewActivity extends BaseActivity implements WebEvent {
+public class CustomFragment extends Fragment implements WebEvent {
+    private WebView webView;
     private JsBridge jsBridge;
     private TakePhotoResult result;
     private Uri imageUri;
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle("System WebView");
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        webView = new WebView(getContext());
+        return webView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initWebView();
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private void initWebView() {
         jsBridge = JsBridge.loadModule();
-        WebView webView = new WebView(this);
-        setContentView(webView);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl("file:///android_asset/fragment.html");
         WebView.setWebContentsDebuggingEnabled(true);
-        String url = getIntent().getStringExtra("url");
-        if (TextUtils.isEmpty(url)) {
-            url = "file:///android_asset/index.html";
-        }
-        webView.loadUrl(url);
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
@@ -58,54 +67,19 @@ public class WebViewActivity extends BaseActivity implements WebEvent {
                 }
                 return super.onJsPrompt(view, url, message, defaultValue, result);
             }
-
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d(JsBridge.TAG, consoleMessage.message());
-                return true;
-            }
         });
-
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                Log.d(JsBridge.TAG, "start load JsBridge");
                 jsBridge.injectJs(view);
             }
         });
     }
 
     @Override
-    protected void onDestroy() {
-        jsBridge.release();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Bitmap photo = null;
-            try {
-                photo = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            if (result != null) {
-                result.onSuccess(photo);
-            }
-        } else {
-            if (result != null) {
-                result.onFailure("user cancel");
-            }
-        }
-    }
-
-    @Override
     public void takePhoto(TakePhotoResult result) {
         this.result = result;
-        File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+        File outputImage = new File(HiApplication.getInstance().getExternalCacheDir(), "output_image.jpg");
         if (outputImage.exists()) {
             outputImage.delete();
         }
@@ -118,5 +92,25 @@ public class WebViewActivity extends BaseActivity implements WebEvent {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Bitmap photo = null;
+            try {
+                photo = BitmapFactory.decodeStream(getContext().getContentResolver().openInputStream(imageUri));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (result != null) {
+                result.onSuccess(photo);
+            }
+        } else {
+            if (result != null) {
+                result.onFailure("user cancel");
+            }
+        }
     }
 }

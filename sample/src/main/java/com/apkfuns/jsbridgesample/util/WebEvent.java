@@ -1,4 +1,4 @@
-package com.apkfuns.jsbridgesample.view;
+package com.apkfuns.jsbridgesample.util;
 
 /**
  * Created by pengwei on 2017/8/5.

@@ -17,12 +17,15 @@ import com.apkfuns.jsbridge.JsBridge;
 import com.apkfuns.jsbridge.common.IPromptResult;
 import com.apkfuns.jsbridge.common.IWebView;
 import com.apkfuns.jsbridgesample.module.ListenerModule;
+import com.apkfuns.jsbridgesample.util.TakePhotoResult;
+import com.apkfuns.jsbridgesample.util.WebEvent;
+import com.apkfuns.jsbridgesample.view.base.BaseActivity;
 
 /**
  * Created by pengwei on 2017/6/11.
  */
 
-public class CustomWebViewActivity extends BaseActivity implements WebEvent{
+public class CustomWebViewActivity extends BaseActivity implements WebEvent {
     private JsBridge jsBridge;
     private CustomWebView customWebView;
 

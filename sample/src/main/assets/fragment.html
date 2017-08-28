@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JsBridge测试Demo</title>
+    <style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul > li {
+        display: block;
+        text-align: center;
+        list-style: none;
+        background: #ccc;
+        margin: 10px;
+        padding: 8px;
+    }
+
+    #image-preview {
+        max-width: 200px;
+    }
+
+    </style>
+    <script type="text/javascript"
+            src="http://res.wx.qq.com/mmbizwap/zh_CN/htmledition/js/vconsole/2.5.1/vconsole.min.js"></script>
+</head>
+<body>
+<ul id="ul">
+    <li>Take Photo</li>
+</ul>
+<img id="image-preview"/>
+<script type="text/javascript">
+
+    var ul = document.getElementById("ul");
+    var li = ul.getElementsByTagName("li");
+    for (var i = 0; i < li.length; i++) {
+        li[i].index = i;
+        li[i].onclick = function () {
+            switch (this.index) {
+                case 0:
+                MyBridge.native.takePhoto(function(data) {
+                        var image = document.getElementById("image-preview");
+                        image.src= data;
+                        MyBridge.alert("success");
+                    }, function(error){
+                        MyBridge.alert(error);
+                    });
+                 break;
+
+            }
+        }
+    }
+
+    window.onload = function() {
+        window.startTime = new Date().getTime();
+    }
+
+    window.onMyBridgeReady = function () {
+        console.log("onMyBridgeReady load finish, cost:" + (new Date().getTime() - window.startTime) + "ms");
+        MyBridge.page.onResume = function(ret){console.log('onResume', ret)}
+        MyBridge.page.onPause = function(ret){console.log('onPause', ret)}
+    }
+
+
+
+</script>
+</body>
+</html>
