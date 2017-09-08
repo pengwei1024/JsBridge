@@ -7,3 +7,6 @@ Version History
 v2.1.0
 + 去除 fastjson 依赖
 + 提高注入效率
+
+v2.1.1
++ 修复 getInt 等方法抛出异常问题

@@ -39,22 +39,22 @@ class JBMapImpl extends JSONObject implements WritableJBMap {
 
     @Override
     public boolean getBoolean(String name) {
-        return (boolean) get(name);
+        return optBoolean(name);
     }
 
     @Override
     public double getDouble(String name) {
-        return (double) get(name);
+        return optDouble(name);
     }
 
     @Override
     public int getInt(String name) {
-        return (int) get(name);
+        return optInt(name);
     }
 
     @Override
     public long getLong(String name) {
-        return (long) get(name);
+        return optLong(name);
     }
 
     @Override

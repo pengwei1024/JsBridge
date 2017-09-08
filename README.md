@@ -15,12 +15,12 @@ A simpler, extendable bidirectional communication Frame between Android WebView 
 Download [the latest JAR](./jars) or Gradle:
 
 ```
-compile 'com.apkfuns.jsbridge:jsbridge:2.1.0'
+compile 'com.apkfuns.jsbridge:jsbridge:2.1.1'
 ```
 The library dependen on `support-annotations`, if your project already exists, please exclude
 
 ```
-compile('com.apkfuns.jsbridge:jsbridge:2.1.0') {
+compile('com.apkfuns.jsbridge:jsbridge:2.1.1') {
     exclude module: 'support-annotations'
 }
 ```

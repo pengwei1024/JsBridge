@@ -31,22 +31,22 @@ class JBArrayImpl extends JSONArray implements WritableJBArray {
 
     @Override
     public boolean getBoolean(int index) {
-        return (boolean) get(index);
+        return optBoolean(index);
     }
 
     @Override
     public double getDouble(int index) {
-        return (double) get(index);
+        return optDouble(index);
     }
 
     @Override
     public int getInt(int index) {
-        return (int) get(index);
+        return optInt(index);
     }
 
     @Override
     public long getLong(int index) {
-        return (long) get(index);
+        return optLong(index);
     }
 
     @Override

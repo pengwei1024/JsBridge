@@ -15,12 +15,12 @@
 下载 [the latest JAR](./jars) 或 Gradle依赖:
 
 ```
-compile 'com.apkfuns.jsbridge:jsbridge:2.1.0'
+compile 'com.apkfuns.jsbridge:jsbridge:2.1.1'
 ```
 该库依赖了`support-annotations`, 如果项目中已经存在,请排除
 
 ```
-compile('com.apkfuns.jsbridge:jsbridge:2.1.0') {
+compile('com.apkfuns.jsbridge:jsbridge:2.1.1') {
         exclude module: 'support-annotations'
 }
 ```
