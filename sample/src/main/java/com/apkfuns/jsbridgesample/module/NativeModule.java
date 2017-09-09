@@ -122,6 +122,7 @@ public class NativeModule extends JsModule {
             webEvent.takePhoto(new TakePhotoResult() {
                 @Override
                 public void onSuccess(Bitmap bitmap) {
+                    // 传输的最大数据 200w 字符左右，最大图片1.47M 左右
                     if (bitmap != null) {
                         if (success != null) {
                             String base64 = bitmapToBase64(bitmap);
@@ -153,7 +154,7 @@ public class NativeModule extends JsModule {
      */
     public static String bitmapToBase64(Bitmap bitmap) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        int quality = 10;
+        int quality = 50;
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
         byte[] bytes = bos.toByteArray();
         bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
