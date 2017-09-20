@@ -284,7 +284,7 @@ public final class JBUtils {
         } else if (javaObject instanceof JsObject) {
             return ((JsObject) javaObject).convertJS();
         } else {
-            String format = javaObject.toString().replaceAll("'", "\\\\\'");
+            String format = javaObject.toString().replaceAll("'", "\\\\\'").replace("\"","\\\"");
             return "'" + format + "'";
         }
     }
