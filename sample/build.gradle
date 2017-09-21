@@ -6,14 +6,18 @@ android {
 
     defaultConfig {
         applicationId "com.apkfuns.jsbridgesample"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -25,5 +29,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile project(':jsbridge')
+//    compile 'com.apkfuns.jsbridge:jsbridge:2.1.0'
     compile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    compile 'me.majiajie:pager-bottom-tab-strip:1.0.0'
 }

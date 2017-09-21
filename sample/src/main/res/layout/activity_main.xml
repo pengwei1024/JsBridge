@@ -25,4 +25,11 @@
         android:layout_height="wrap_content"
         android:text="Fragment WebView"
         android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_tab_webView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tab Activity"
+        android:textAllCaps="false"/>
 </LinearLayout>

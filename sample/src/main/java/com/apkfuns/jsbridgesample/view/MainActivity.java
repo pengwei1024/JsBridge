@@ -17,6 +17,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.btn_webView).setOnClickListener(this);
         findViewById(R.id.btn_custom_webView).setOnClickListener(this);
         findViewById(R.id.btn_fragment_webView).setOnClickListener(this);
+        findViewById(R.id.btn_tab_webView).setOnClickListener(this);
     }
 
     @Override
@@ -30,6 +31,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.btn_fragment_webView:
                 startActivity(new Intent(this, CustomFragmentActivity.class));
+                break;
+            case R.id.btn_tab_webView:
+                startActivity(new Intent(this, TabActivity.class));
                 break;
             default:
                 break;

@@ -1,7 +1,6 @@
 package com.apkfuns.jsbridgesample.view.fragment;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,10 +35,14 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class CustomFragment extends Fragment implements WebEvent {
+
+    public static final String KEY_URL = "KEY_URL";
+
     private WebView webView;
     private JsBridge jsBridge;
     private TakePhotoResult result;
     private Uri imageUri;
+    private String url;
 
     @Nullable
     @Override
@@ -50,6 +54,12 @@ public class CustomFragment extends Fragment implements WebEvent {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (getArguments() != null) {
+            url = getArguments().getString(KEY_URL);
+        }
+        if (TextUtils.isEmpty(url)) {
+            url = "file:///android_asset/fragment.html";
+        }
         initWebView();
     }
 
@@ -57,7 +67,7 @@ public class CustomFragment extends Fragment implements WebEvent {
     private void initWebView() {
         jsBridge = JsBridge.loadModule();
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("file:///android_asset/fragment.html");
+        webView.loadUrl(url);
         WebView.setWebContentsDebuggingEnabled(true);
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -112,5 +122,13 @@ public class CustomFragment extends Fragment implements WebEvent {
                 result.onFailure("user cancel");
             }
         }
+    }
+
+    public static CustomFragment newInstance(String url) {
+        CustomFragment fragment = new CustomFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_URL, url);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 }

@@ -9,18 +9,19 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.apkfuns.jsbridge.JsBridge;
 import com.apkfuns.jsbridge.module.JBCallback;
 import com.apkfuns.jsbridge.module.JSBridgeMethod;
 import com.apkfuns.jsbridge.module.JsModule;
-import com.apkfuns.jsbridgesample.R;
 import com.apkfuns.jsbridgesample.view.CustomFragmentActivity;
+import com.apkfuns.jsbridgesample.view.TabActivity;
 import com.apkfuns.jsbridgesample.view.base.BaseActivity;
 import com.apkfuns.jsbridgesample.util.TakePhotoResult;
 import com.apkfuns.jsbridgesample.util.WebEvent;
 import com.apkfuns.jsbridgesample.view.WebViewActivity;
-import com.apkfuns.jsbridgesample.view.fragment.CustomFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -115,8 +116,11 @@ public class NativeModule extends JsModule {
             } else if (getContext() instanceof CustomFragmentActivity) {
                 webEvent = (WebEvent) ((CustomFragmentActivity) getContext())
                         .getSupportFragmentManager().findFragmentByTag(CustomFragmentActivity.TAG);
+            } else if (getContext() instanceof TabActivity) {
+                webEvent = (WebEvent) ((TabActivity) getContext()).getCurrentFragment();
             }
             if (webEvent == null) {
+                Log.d(JsBridge.TAG, "webEvent is Null");
                 return;
             }
             webEvent.takePhoto(new TakePhotoResult() {

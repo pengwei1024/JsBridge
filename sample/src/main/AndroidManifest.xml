@@ -22,6 +22,7 @@
         <activity android:name=".view.CustomWebViewActivity"/>
         <activity android:name=".view.WebViewActivity"/>
         <activity android:name=".view.CustomFragmentActivity"/>
+        <activity android:name=".view.TabActivity"/>
     </application>
 
 </manifest>
