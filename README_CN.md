@@ -9,7 +9,7 @@
 - 支持系统 WebView 和 自定义 WebView
 - 权限鉴定由端上实现, H5 端不需要依赖 js 文件
 - 支持 Android API 8+, 避免 addJavascriptInterface 4.2以下漏洞
-- 兼容 iOS [WebViewJavascriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge) 库
+- 兼容 iOS [WebViewJavascriptBridge](https://github.com/pengwei1024/JsBridge-WebViewJavascriptBridge-Sample) 库
 
 ## Getting Started
 下载 [the latest JAR](./jars) 或 Gradle依赖:
