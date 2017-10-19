@@ -9,7 +9,7 @@ A simpler, extendable bidirectional communication Frame between Android WebView 
 - support System WebView and Custom WebView
 - permission authentication is implemented by Native, JS do not need to depend other file
 - support Android API 8+, avoid addJavascriptInterface Vulnerability
-- compatible with iOS [WebViewJavascriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge)
+- compatible with iOS [WebViewJavascriptBridge](https://github.com/pengwei1024/JsBridge-WebViewJavascriptBridge-Sample)
 
 ## Getting Started
 Download [the latest JAR](./jars) or Gradle:
