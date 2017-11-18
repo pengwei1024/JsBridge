@@ -16,9 +16,9 @@ abstract class JsRunMethod {
     public final String getMethod() {
         StringBuilder builder = new StringBuilder();
         if (isPrivate()) {
-            builder.append("function  " + methodName() );
+            builder.append("function " + methodName());
         } else {
-            builder.append("this." + methodName() + " = function");
+            builder.append("this." + methodName() + "=function");
         }
         String exec = executeJS();
         if (!exec.trim().endsWith(";")) {
