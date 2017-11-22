@@ -15,8 +15,8 @@ class JBUtilMethodFactory {
     public static String getUtilMethods(String loadReadyMethod) {
         if (injectFunc == null) {
             JsRunMethod[] methods = new JsRunMethod[]{new GetType(), new ParseFunction(),
-                    new OnJsBridgeReady(loadReadyMethod), new CreateID(), new CallJava(),
-                    new Printer()
+                    new OnJsBridgeReady(loadReadyMethod), new CallJava(),
+                    new Printer(), new CallMethod()
             };
             injectFunc = new StringBuffer();
             for (JsRunMethod method : methods) {
@@ -81,19 +81,6 @@ class JBUtilMethodFactory {
         }
     }
 
-    static class CreateID extends JsRunMethod {
-
-        @Override
-        protected String executeJS() {
-            return "(){return Math.floor(Math.random() * (1 << 10));}";
-        }
-
-        @Override
-        public String methodName() {
-            return "_getID";
-        }
-    }
-
     static class CallJava extends JsRunMethod {
         @Override
         protected String executeJS() {
@@ -116,6 +103,36 @@ class JBUtilMethodFactory {
         @Override
         public String methodName() {
             return "d";
+        }
+    }
+
+    static class CallMethod extends JsRunMethod {
+
+        @Override
+        protected String executeJS() {
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("(callback,methodArg,ret,moduleName,methodName){");
+            buffer.append("try{");
+            buffer.append("var id=Math.floor(Math.random()*(1 << 10)),args = [];");
+            buffer.append("for (var i in methodArg) {");
+            buffer.append("var name = id + '_a' + i, item = methodArg[i], l = {};");
+            buffer.append("_parseFunction(item, name, l);");
+            buffer.append("for (var k in l) {callback[k] = l[k];}");
+            buffer.append("args.push({type: _getType(item), name: name, value: item})");
+            buffer.append("}");
+            buffer.append("var r = _callJava(id, moduleName, methodName, args);");
+            buffer.append("if (r && r.success){");
+            buffer.append("if(ret)return r.msg");
+            buffer.append("}else{");
+            buffer.append("d(r.msg)");
+            buffer.append("}");
+            buffer.append("}catch(e){d(e)}");
+            return buffer.append("}").toString();
+        }
+
+        @Override
+        public String methodName() {
+            return "_method";
         }
     }
 }

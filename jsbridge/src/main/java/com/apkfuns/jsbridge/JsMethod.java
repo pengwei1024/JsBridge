@@ -6,6 +6,7 @@ import com.apkfuns.jsbridge.module.JsStaticModule;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by pengwei on 16/5/11.
@@ -95,26 +96,10 @@ class JsMethod {
         } else {
             builder.append(getMethodName() + ":function(){");
         }
-        builder.append("try{");
-        builder.append("var id=_getID(),args=[];");
         builder.append("if(!" + getCallback() + ")" + getCallback() + "={};");
-        builder.append("for(var i in arguments){");
-        builder.append("var name=id+'_a'+i,item=arguments[i],l={};");
-        builder.append("_parseFunction(item,name,l);");
-        builder.append("for(var k in l){");
-        builder.append(getCallback() + "[k]=l[k];");
-        builder.append("};");
-        builder.append("args.push({type:_getType(item),name:name,value:item})");
-        builder.append("}");
-        builder.append("var r=_callJava(id,'" + getModule().getModuleName() + "','"
-                + getMethodName() + "',args);");
-        builder.append("if(r&&r.success){");
-        if (hasReturn) {
-            builder.append("return r.msg;");
-        }
-        builder.append("}else{");
-        builder.append("d(r.msg)}");
-        builder.append("}catch(e){d(e);};");
+        builder.append(String.format(Locale.getDefault(), "return _method(%s,arguments,%d,'%s','%s')",
+                getCallback(), hasReturn ? 1 : 0,
+                getModule().getModuleName(), getMethodName()));
         builder.append("}");
         if (!isStatic) {
             builder.append(",");
