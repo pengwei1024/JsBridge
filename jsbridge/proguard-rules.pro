@@ -22,7 +22,7 @@
 -keepattributes SourceFile,LineNumberTable,InnerClasses,*JavascriptInterface*
 
 -keep public class com.apkfuns.jsbridge.**{*;}
--keep class * extends com.apkfuns.jsbridge.module.JsModule
+-keep class * extends com.apkfuns.jsbridge.module.JsModule{*;}
 
 
 

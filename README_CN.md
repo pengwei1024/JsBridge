@@ -189,7 +189,7 @@ if (JsBridge) {
 ## Proguard
 ```
 -keep class com.apkfuns.jsbridge.**{*;}
--keep class * extends com.apkfuns.jsbridge.module.JsModule
+-keep class * extends com.apkfuns.jsbridge.module.JsModule{*;}
 ```
 
 

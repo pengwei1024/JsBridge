@@ -188,7 +188,7 @@ For documentation and additional information see [wiki](https://github.com/pengw
 ## Proguard
 ```
 -keep class com.apkfuns.jsbridge.**{*;}
--keep class * extends com.apkfuns.jsbridge.module.JsModule
+-keep class * extends com.apkfuns.jsbridge.module.JsModule{*;}
 ```
 
 ## License
