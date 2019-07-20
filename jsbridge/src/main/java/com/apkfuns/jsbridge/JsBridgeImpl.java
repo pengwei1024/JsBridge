@@ -157,6 +157,11 @@ class JsBridgeImpl extends JsBridge {
     }
 
     @Override
+    public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+        return onCallJsPrompt(message, result);
+    }
+
+    @Override
     public final void clean() {
         evaluateJavascript(newProtocol + "=undefined;");
     }
@@ -172,7 +177,7 @@ class JsBridgeImpl extends JsBridge {
     }
 
     @Override
-    public void evaluateJavascript(final String jsCode) {
+    public void evaluateJavascript(@NonNull final String jsCode) {
         if (mWebView == null) {
             JBLog.d("Please call injectJs first");
             return;
@@ -206,13 +211,13 @@ class JsBridgeImpl extends JsBridge {
 
     private String getInjectJsString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("var " + className + " = function () {");
+        builder.append("var ").append(className).append("=function(){");
         // 注入通用方法
         builder.append(JBUtilMethodFactory.getUtilMethods(newLoadReadyMethod));
         // 注入默认方法
         for (JsModule module : loadModule) {
             HashMap<String, JsMethod> methods = exposedMethods.get(module);
-            if (methods == null || methods.keySet() == null) {
+            if (methods == null) {
                 continue;
             }
             if (module instanceof JsStaticModule) {
@@ -237,17 +242,15 @@ class JsBridgeImpl extends JsBridge {
                     builder.append(className + ".prototype." + module.getModuleName() + " = {");
                     moduleLayers.add(module.getModuleName());
                 }
-                if (methods != null && methods.keySet() != null) {
-                    for (String method : methods.keySet()) {
-                        JsMethod jsMethod = methods.get(method);
-                        builder.append(jsMethod.getInjectJs());
-                    }
+                for (String method : methods.keySet()) {
+                    JsMethod jsMethod = methods.get(method);
+                    builder.append(jsMethod.getInjectJs());
                 }
                 builder.append("};");
             }
         }
         builder.append("};");
-        builder.append("window." + newProtocol + " = new " + className + "();");
+        builder.append("window." + newProtocol + "=new " + className + "();");
         builder.append(newProtocol + ".OnJsBridgeReady();");
         return builder.toString();
     }

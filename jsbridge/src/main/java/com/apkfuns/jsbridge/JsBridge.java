@@ -24,6 +24,9 @@ public abstract class JsBridge {
 
     public abstract boolean callJsPrompt(@NonNull String methodArgs, @NonNull IPromptResult result);
 
+    public abstract boolean onJsPrompt(WebView view, String url, String message,
+                              String defaultValue, JsPromptResult result);
+
     public abstract void evaluateJavascript(@NonNull String jsCode);
 
     public abstract void clean();

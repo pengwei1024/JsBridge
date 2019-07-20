@@ -1,35 +1,43 @@
 package com.apkfuns.jsbridge;
 
+import android.text.TextUtils;
+
+import java.util.HashMap;
+
 /**
  * Created by pengwei on 2017/5/31.
  */
 
 class JBUtilMethodFactory {
-    private static StringBuffer injectFunc;
+    // 注入工具方法JS代码缓存
+    private static final HashMap<String, String> UTIL_METHOD_CACHE = new HashMap<>();
 
     /**
-     * 注入工具类
+     * 注入公用工具类
      *
-     * @return
+     * @return 注入js代码
      */
-    public static String getUtilMethods(String loadReadyMethod) {
-        if (injectFunc == null) {
-            JsRunMethod[] methods = new JsRunMethod[]{new GetType(), new ParseFunction(),
-                    new OnJsBridgeReady(loadReadyMethod), new CallJava(),
-                    new Printer(), new CallMethod()
-            };
-            injectFunc = new StringBuffer();
-            for (JsRunMethod method : methods) {
-                injectFunc.append(method.getMethod());
-            }
+    static String getUtilMethods(String loadReadyMethod) {
+        String cache = UTIL_METHOD_CACHE.get(loadReadyMethod);
+        if (!TextUtils.isEmpty(cache)) {
+            return cache;
         }
+        StringBuilder injectFunc = new StringBuilder();
+        JsRunMethod[] methods = new JsRunMethod[]{new GetType(), new ParseFunction(),
+                new OnJsBridgeReady(loadReadyMethod), new CallJava(),
+                new Printer(), new CallMethod()
+        };
+        for (JsRunMethod method : methods) {
+            injectFunc.append(method.getMethod());
+        }
+        UTIL_METHOD_CACHE.put(loadReadyMethod, injectFunc.toString());
         return injectFunc.toString();
     }
 
     static class OnJsBridgeReady extends JsRunMethod {
         private String loadReadyMethod;
 
-        public OnJsBridgeReady(String loadReadyMethod) {
+        OnJsBridgeReady(String loadReadyMethod) {
             this.loadReadyMethod = loadReadyMethod;
         }
 
@@ -54,6 +62,11 @@ class JBUtilMethodFactory {
         @Override
         public String methodName() {
             return "OnJsBridgeReady";
+        }
+
+        @Override
+        protected boolean enableCache() {
+            return false;
         }
     }
 
@@ -110,7 +123,7 @@ class JBUtilMethodFactory {
 
         @Override
         protected String executeJS() {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.append("(callback,methodArg,ret,moduleName,methodName){");
             buffer.append("try{");
             buffer.append("var id=Math.floor(Math.random()*(1 << 10)),args = [];");
