@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -305,7 +306,11 @@ class JsBridgeImpl extends JsBridge {
                         Object ret = method.invoke(invokeArgs);
                         setJsPromptResult(result, true, ret == null ? "" : ret);
                     } catch (Exception e) {
-                        setJsPromptResult(result, false, "Error: " + e.toString());
+                        Throwable throwable = e;
+                        if (e instanceof InvocationTargetException) {
+                            throwable = ((InvocationTargetException) e).getTargetException();
+                        }
+                        setJsPromptResult(result, false, "Error: " + throwable.toString());
                         JBLog.e("Call JsMethod <" + method.getMethodName() + "> Error", e);
                     }
                     return true;

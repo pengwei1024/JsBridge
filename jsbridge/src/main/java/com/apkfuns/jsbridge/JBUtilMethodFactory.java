@@ -30,8 +30,9 @@ class JBUtilMethodFactory {
         for (JsRunMethod method : methods) {
             injectFunc.append(method.getMethod());
         }
-        UTIL_METHOD_CACHE.put(loadReadyMethod, injectFunc.toString());
-        return injectFunc.toString();
+        String responseText = injectFunc.toString();
+        UTIL_METHOD_CACHE.put(loadReadyMethod, responseText);
+        return responseText;
     }
 
     static class OnJsBridgeReady extends JsRunMethod {
