@@ -1,10 +1,13 @@
 package com.apkfuns.jsbridge;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.apkfuns.jsbridge.module.JSArgumentType;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ final class JBArgumentParser {
     private String module;
     private String method;
     private List<Parameter> parameters;
+    private Throwable throwable;
 
     public long getId() {
         return id;
@@ -50,6 +54,28 @@ final class JBArgumentParser {
 
     public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
+    }
+
+    @NonNull
+    public String getErrorMsg() {
+        return throwable == null? "Unknown Error": throwable.getMessage();
+    }
+
+    @Nullable
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
+    }
+
+    /**
+     * 解析是否成功
+     * @return bool
+     */
+    public boolean isSuccess() {
+        return throwable == null;
     }
 
     public static class Parameter {
@@ -85,43 +111,47 @@ final class JBArgumentParser {
 
     /**
      * 解析为对象
-     * @param jsonString
-     * @return
+     *
+     * @param jsonString 前端传递的参数
+     * @return JBArgumentParser
      */
-    public static JBArgumentParser parse(String jsonString) {
+    @NonNull
+    static JBArgumentParser parse(@Nullable String jsonString) {
+        JBArgumentParser parser = new JBArgumentParser();
         if(TextUtils.isEmpty(jsonString) || (!jsonString.startsWith("{") &&
                 !jsonString.startsWith("["))) {
-            return null;
+            parser.setThrowable(new JSONException("Argument error: " + jsonString));
+            return parser;
         }
-        JBArgumentParser parser = new JBArgumentParser();
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            parser.setId(jsonObject.getLong("id"));
-            parser.setMethod(jsonObject.getString("method"));
-            parser.setModule(jsonObject.getString("module"));
+            parser.setId(jsonObject.optLong("id"));
+            parser.setMethod(jsonObject.optString("method"));
+            parser.setModule(jsonObject.optString("module"));
             List<Parameter> parameterList = new ArrayList<>();
-            JSONArray jsonArray = jsonObject.getJSONArray("parameters");
+            JSONArray jsonArray = jsonObject.optJSONArray("parameters");
             if (jsonArray != null) {
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject item = jsonArray.getJSONObject(i);
+                    JSONObject item = jsonArray.optJSONObject(i);
                     if (item == null) {
                         continue;
                     }
                     Parameter parameter = new Parameter();
                     if (item.has("name")) {
-                        parameter.setName(item.getString("name"));
+                        parameter.setName(item.optString("name"));
                     }
                     if (item.has("type")) {
-                        parameter.setType(item.getInt("type"));
+                        parameter.setType(item.optInt("type"));
                     }
                     if (item.has("value")) {
-                        parameter.setValue(item.getString("value"));
+                        parameter.setValue(item.optString("value"));
                     }
                     parameterList.add(parameter);
                 }
             }
             parser.setParameters(parameterList);
         } catch (Exception e) {
+            parser.setThrowable(e);
             JBLog.e("JBArgumentParser::parse Exception", e);
         }
         return parser;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.JsPromptResult;
 import android.webkit.WebView;
@@ -198,9 +199,10 @@ class JsBridgeImpl extends JsBridge {
         });
     }
 
+    @Nullable
     private JsModule getModule(String moduleName) {
         if (TextUtils.isEmpty(moduleName)) {
-            throw new NullPointerException("Module name is empty");
+            return null;
         }
         for (JsModule module : exposedMethods.keySet()) {
             if (moduleName.equals(module.getModuleName())) {
@@ -257,17 +259,18 @@ class JsBridgeImpl extends JsBridge {
     }
 
     /**
-     * 执行js回调
+     * onJsPrompt 处理
      *
      * @param methodArgs
      * @param result
      */
     private boolean onCallJsPrompt(String methodArgs, Object result) {
+        JBLog.d("callJsPrompt: " + methodArgs);
         if (TextUtils.isEmpty(methodArgs) || result == null) {
             return false;
         }
         JBArgumentParser argumentParser = JBArgumentParser.parse(methodArgs);
-        if (argumentParser != null && !TextUtils.isEmpty(argumentParser.getModule())
+        if (argumentParser.isSuccess() && !TextUtils.isEmpty(argumentParser.getModule())
                 && !TextUtils.isEmpty(argumentParser.getMethod())) {
             JsModule findModule = getModule(argumentParser.getModule());
             if (findModule != null) {
@@ -283,7 +286,7 @@ class JsBridgeImpl extends JsBridge {
                         if (parameters != null && parameters.size() >= i + 1) {
                             JBArgumentParser.Parameter param = parameters.get(i);
                             Object parseObject = JBUtils.parseToObject(type, param, method);
-                            if (parseObject != null && parseObject instanceof JBArgumentErrorException) {
+                            if (parseObject instanceof JBArgumentErrorException) {
                                 setJsPromptResult(result, false, parseObject.toString());
                                 return true;
                             }
@@ -297,6 +300,15 @@ class JsBridgeImpl extends JsBridge {
                                 case JSArgumentType.TYPE_BOOL:
                                     invokeArgs[i] = false;
                                     break;
+                                case JSArgumentType.TYPE_ARRAY:
+                                case JSArgumentType.TYPE_DOUBLE:
+                                case JSArgumentType.TYPE_FLOAT:
+                                case JSArgumentType.TYPE_FUNCTION:
+                                case JSArgumentType.TYPE_INT:
+                                case JSArgumentType.TYPE_LONG:
+                                case JSArgumentType.TYPE_OBJECT:
+                                case JSArgumentType.TYPE_STRING:
+                                case JSArgumentType.TYPE_UNDEFINE:
                                 default:
                                     break;
                             }
@@ -319,9 +331,18 @@ class JsBridgeImpl extends JsBridge {
             setJsPromptResult(result, false, "JBArgument Parse error");
             return true;
         }
+        JBLog.e("JBArgument error", argumentParser.getThrowable());
+        setJsPromptResult(result, false, argumentParser.getErrorMsg());
         return false;
     }
 
+    /**
+     * 设置 prompt 回调结果
+     *
+     * @param promptResult JsPromptResult
+     * @param success      bool 是否执行成功
+     * @param msg          返回结果
+     */
     private void setJsPromptResult(Object promptResult, boolean success, Object msg) {
         JSONObject ret = new JSONObject();
         try {
@@ -335,7 +356,7 @@ class JsBridgeImpl extends JsBridge {
         } else if (promptResult instanceof IPromptResult) {
             ((IPromptResult) promptResult).confirm(ret.toString());
         } else {
-            throw new IllegalArgumentException("JsPromptResult Error");
+            throw new IllegalArgumentException("JsPromptResult Type Error: " + msg);
         }
     }
 

@@ -7,16 +7,17 @@ import android.util.Log;
  */
 
 class JBLog {
-    private static JsBridgeConfigImpl config = JsBridgeConfigImpl.getInstance();
+    // DEBUG
+    private static final boolean DEBUG = JsBridgeConfigImpl.getInstance().isDebug();
 
     public static void d(String msg) {
-        if (config.isDebug()) {
+        if (DEBUG) {
             Log.d(JsBridge.TAG, msg);
         }
     }
 
     public static void e(String msg, Throwable throwable) {
-        if (config.isDebug()) {
+        if (DEBUG) {
             Log.e(JsBridge.TAG, msg, throwable);
         }
     }
