@@ -68,8 +68,9 @@ class JBMapImpl extends JSONObject implements WritableJBMap {
 
     @Override
     public JBCallback getCallback(String name) {
-        if (get(name) != null && get(name) instanceof JBCallback) {
-            return ((JBCallback) get(name));
+        Object result = get(name);
+        if (result instanceof JBCallback) {
+            return (JBCallback) result;
         }
         return null;
     }
